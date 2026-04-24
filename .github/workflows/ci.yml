@@ -1,0 +1,86 @@
+name: Laravel CI with SonarCloud
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  laravel-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: laravel_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      # 1. Checkout kode
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Wajib untuk SonarCloud
+
+      # 2. Setup PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, bcmath, pdo, pdo_mysql, xml, xdebug
+          coverage: xdebug
+
+      # 3. Cache Composer
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      # 4. Install dependencies
+      - name: Install Composer dependencies
+        run: composer install --no-progress --prefer-dist --optimize-autoloader
+
+      # 5. Setup environment
+      - name: Copy .env
+        run: cp .env.example .env
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Set environment variables
+        run: |
+          echo "DB_CONNECTION=mysql" >> .env
+          echo "DB_HOST=btsq5ctxjsfzowsme8kl-mysql.services.clever-cloud.com" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_DATABASE=btsq5ctxjsfzowsme8kl" >> .env
+          echo "DB_USERNAME=udahksgef0moxjsz" >> .env
+          echo "DB_PASSWORD=ec4eWrGLzrgUevZS7y71" >> .env
+
+      # 6. Jalankan migrasi
+      - name: Run database migrations
+        run: php artisan migrate --force
+
+      # 7. Jalankan tests dengan coverage
+      - name: Run PHPUnit tests
+        run: |
+          php artisan test --coverage-clover=coverage.xml
+        env:
+          XDEBUG_MODE: coverage
+
+      # 8. SonarCloud Scan
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
