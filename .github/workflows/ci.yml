@@ -61,11 +61,11 @@ jobs:
       - name: Set environment variables
         run: |
           echo "DB_CONNECTION=mysql" >> .env
-          echo "DB_HOST=btsq5ctxjsfzowsme8kl-mysql.services.clever-cloud.com" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo "DB_PORT=3306" >> .env
-          echo "DB_DATABASE=btsq5ctxjsfzowsme8kl" >> .env
-          echo "DB_USERNAME=udahksgef0moxjsz" >> .env
-          echo "DB_PASSWORD=ec4eWrGLzrgUevZS7y71" >> .env
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
 
       # 6. Jalankan migrasi
       - name: Run database migrations
