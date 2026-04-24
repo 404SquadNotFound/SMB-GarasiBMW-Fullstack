@@ -1,0 +1,43 @@
+
+.left-image-container {
+    background: url('../assets/login-assets/login-image.png') no-repeat center center;
+    background-size: cover;
+    border-radius: 1.5rem; 
+}
+
+
+.overlay {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0) 40%, rgba(15, 23, 42, 0.95) 100%);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+
+.custom-input {
+    background-color: #e2e8f0;
+    border: 1px solid #cbd5e1;
+    font-size: 0.95rem; 
+}
+
+.custom-input::placeholder {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.custom-input:focus {
+    background-color: #f8fafc;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 0.25rem rgba(74, 144, 226, 0.15);
+}
+
+.custom-btn {
+    background-color: #4a90e2;
+    border: none;
+    font-size: 1rem;
+}
+
+.custom-btn:hover {
+    background-color: #3b82f6;
+}
