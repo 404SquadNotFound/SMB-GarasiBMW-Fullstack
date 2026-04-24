@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -26,6 +26,7 @@
         }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .sidebar-item svg {
             transition: transform 0.2s;
