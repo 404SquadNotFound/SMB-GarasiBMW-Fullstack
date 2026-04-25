@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController; 
+use App\Http\Controllers\EngineTypeController; 
 
 // Route Login
 Route::get('/', function () {
@@ -46,6 +47,8 @@ Route::get('/master-data/jenis-mesin/edit/{id}', function ($id) {
 Route::get('/master-data/jenis-mesin/delete/{id}', function ($id) {
     return view('pages.master_data.jenis_mesin.jenisMesin');
 })->name('jenis-mesin.delete');
+Route::get('/jenis-mesin/export/excel', [EngineTypeController::class, 'exportExcel'])->name('jenis-mesin.export');
+Route::get('/jenis-mesin/export/pdf', [EngineTypeController::class, 'exportPdf'])->name('jenis-mesin.export.pdf');
 
 // Route Master Data -> Jenis Mobil
 Route::get('/jenis-mobil', function () {

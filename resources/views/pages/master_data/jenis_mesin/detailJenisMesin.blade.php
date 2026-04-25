@@ -22,6 +22,11 @@
     </div>
 
     <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text);
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Kode dicopy!', showConfirmButton: false, timer: 1500 });
+        }
+
         async function fetchEngineDetail() {
             const token = localStorage.getItem('access_token');
             const pathArray = window.location.pathname.split('/');
