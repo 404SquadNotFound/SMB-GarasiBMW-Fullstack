@@ -1,5 +1,8 @@
 ﻿@extends('layouts.master')
 
+@section('title', 'Tambah Supplier')
+@section('title_header', 'Master Data | Supplier')
+
 @section('table_header')
     <th class="px-6 py-5">Nama Supplier</th>
     <th class="px-6 py-5">Deskripsi</th>
@@ -16,7 +19,9 @@
     @include('layouts.action_bar', [
         'placeholder' => 'Cari Supplier...',
         'addUrl' => route('supplier.create'),
-        'btnText' => 'Tambah Supplier'
+        'btnText' => 'Tambah Supplier',
+        'exportExcelUrl' => route('supplier.export'),
+        'exportPdfUrl' => route('supplier.export.pdf'),
     ])
     @include('layouts.table_wrapper')
 

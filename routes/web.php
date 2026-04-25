@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\SupplierController; 
 
 // Route Login
 Route::get('/', function () {
@@ -96,6 +97,8 @@ Route::get('/supplier/edit/{id}', function ($id) {
 Route::get('/supplier/delete/{id}', function ($id) {
     return view('pages.master_data.supplier.supplier');
 })->name('supplier.delete');
+Route::get('/supplier/export', [SupplierController::class, 'exportExcel'])->name('supplier.export');
+Route::get('/supplier/export/pdf', [SupplierController::class, 'exportPdf'])->name('supplier.export.pdf');
 
 // Route Kepegawaian -> Data Karyawan
 Route::get('/manajemen-pegawai', function () {
