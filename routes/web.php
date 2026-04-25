@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CustomerController;
 
 // Route Login
 Route::get('/', function () {
@@ -8,6 +9,8 @@ Route::get('/', function () {
 })->name('login');
 
 // Route Master Data -> Pelanggan
+
+
 Route::get('/pelanggan', function () {
     return view('pages.pelanggan.pelanggan');
 })->name('pelanggan.index');
@@ -23,6 +26,8 @@ Route::get('/pelanggan/edit/{id}', function ($id) {
 Route::get('/pelanggan/delete/{id}', function ($id) {
     return view('pages.pelanggan.pelanggan');
 })->name('pelanggan.delete');
+
+Route::get('/pelanggan/export', [CustomerController::class, 'exportExcel'])->name('pelanggan.export');
 
 //Route Master Data -> Jenis Mesin
 Route::get('/jenis-mesin', function () {

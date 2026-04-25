@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\services\ExportService;
 
 class CustomerController extends Controller
 {
@@ -51,13 +52,13 @@ class CustomerController extends Controller
                 $modelName = $carType ? $carType->name : 'Unknown Model';
 
                 $customer->vehicles()->create([
-                    'car_type_id'     => $carData['car_type_id'],
-                    'model'           => $modelName,
-                    'license_plate'   => $carData['license_plate'],
-                    'odometer'        => $carData['km_reading'] ?? 0,
+                    'car_type_id' => $carData['car_type_id'],
+                    'model' => $modelName,
+                    'license_plate' => $carData['license_plate'],
+                    'odometer' => $carData['km_reading'] ?? 0,
                     'production_code' => $carData['year'] ?? null,
-                    'engine_code'     => $carData['engine_name'] ?? null,
-                    'created_by'      => $request->user()->employees_id ?? 1
+                    'engine_code' => $carData['engine_name'] ?? null,
+                    'created_by' => $request->user()->employees_id ?? 1
                 ]);
             }
 
@@ -118,5 +119,30 @@ class CustomerController extends Controller
             'status' => 'success',
             'message' => 'Data Pelanggan berhasil dihapus!',
         ], 200);
+    }
+
+    public function exportExcel(ExportService $exportService)
+    {
+        $headers = ['ID', 'Nama', 'Nomor Telepon', 'Alamat', 'Daftar Kendaraan', 'Didaftarkan Oleh'];
+        $query = Customer::with(['creator', 'vehicles']); 
+        $fileName = 'data_pelanggan_' . date('Ymd') . '.xlsx';
+
+        return $exportService->exportToExcel($fileName, $headers, $query, function ($item) {
+
+            $daftarKendaraan = $item->vehicles->isNotEmpty() 
+                ? $item->vehicles->map(function ($vehicle) {
+                    return $vehicle->license_plate . ' (' . $vehicle->model . ')';
+                })->implode(', ') 
+                : 'Belum ada kendaraan';
+
+            return [
+                $item->customer_id,
+                $item->name,
+                $item->phone_number,
+                $item->address,
+                $daftarKendaraan,
+                $item->creator ? $item->creator->name : '-',
+            ];
+        });
     }
 }
