@@ -30,6 +30,7 @@ Route::get('/pelanggan/delete/{id}', function ($id) {
 })->name('pelanggan.delete');
 
 Route::get('/pelanggan/export', [CustomerController::class, 'exportExcel'])->name('pelanggan.export');
+Route::get('/pelanggan/export/pdf', [CustomerController::class, 'exportPdf'])->name('pelanggan.export.pdf');
 
 //Route Master Data -> Jenis Mesin
 Route::get('/jenis-mesin', function () {

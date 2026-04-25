@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Tests\TestCase;
 use Mockery;
 
-class CustomerExportTest extends TestCase
+class CustomerExcelExportTest extends TestCase
 {
     private function makeVehicle(string $plate, string $model): Vehicle
     {

@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Http\services\ExportService;
+use App\Http\Services\ExportService;
+use App\Http\Services\PdfExportService;
 
 class CustomerController extends Controller
 {
@@ -33,6 +34,42 @@ class CustomerController extends Controller
             'cars.*.year' => 'nullable',
             'cars.*.engine_name' => 'nullable|string',
         ]);
+        
+        
+        $validPrefixes = [
+            'A', 'B', 'D', 'E', 'F', 'T', 'Z', 'G', 'H', 'K', 'R', 'AA', 'AB', 'AD', 'L', 'M', 'N', 'P', 'S', 'W', 'AE', 'AG',
+            'BL', 'BB', 'BK', 'BA', 'BM', 'BP', 'BG', 'BN', 'BE', 'BD', 'BH',
+            'DK', 'DR', 'EA', 'DH', 'EB', 'ED',
+            'KB', 'DA', 'KH', 'KT', 'KU',
+            'DB', 'DL', 'DM', 'DN', 'DT', 'DD', 'DC', 'DP',
+            'DE', 'DG', 'PA', 'PB', 'PD', 'PE', 'PG', 'PS', 'PT'
+        ];
+
+        $formattedCars = [];
+
+        foreach ($request->cars as $index => $car) {
+            $rawPlate = preg_replace('/[^A-Z0-9]/i', '', strtoupper($car['license_plate']));
+
+            if (preg_match('/^([A-Z]{1,2})(\d{1,4})([A-Z]{0,3})$/', $rawPlate, $matches)) {
+                
+                $prefix = $matches[1]; 
+
+                if (!in_array($prefix, $validPrefixes)) {
+                    return response()->json([
+                        'message' => "Kode wilayah '{$prefix}' pada plat '{$car['license_plate']}' tidak dikenali di Indonesia. Silakan periksa kembali!"
+                    ], 422);
+                }
+                
+                $formattedPlate = trim($matches[1] . ' ' . $matches[2] . ' ' . $matches[3]);
+                $car['license_plate'] = $formattedPlate;
+                $formattedCars[] = $car;
+
+            } else {
+                return response()->json([
+                    'message' => "Format nomor polisi '" . $car['license_plate'] . "' tidak valid! Gunakan format standar (Contoh: B 1020 JAW)."
+                ], 422);
+            }
+        }
 
         // MULAI TRANSAKSI
         DB::beginTransaction();
@@ -47,7 +84,7 @@ class CustomerController extends Controller
             ]);
 
             // 2. Simpan Mobil 
-            foreach ($validated['cars'] as $carData) {
+            foreach ($formattedCars as $carData) {
                 $carType = \App\Models\CarType::find($carData['car_type_id']);
                 $modelName = $carType ? $carType->name : 'Unknown Model';
 
@@ -144,5 +181,26 @@ class CustomerController extends Controller
                 $item->creator ? $item->creator->name : '-',
             ];
         });
+    }
+
+    public function exportPdf(PdfExportService $pdfExportService){
+        $query = Customer::with(['creator', 'vehicles']);
+        $fileName = 'laporan_pelanggan_' . date('Ymd') . '.pdf';
+
+        return $pdfExportService->export(
+            $fileName,
+            $query,
+            fn($item) => [
+                'ID' => $item->customer_id,
+                'Nama' => $item->name,
+                'telepon' => $item->phone_number,
+                'Alamat' => $item->address,
+                'Kendaraan' => $item->vehicles->isNotEmpty() 
+                    ? $item->vehicles->map(fn($v) => $v->license_plate)->implode(', ') 
+                    : '-',
+                'Pendaftar' => $item->creator ? $item->creator->name : '-',
+            ],
+            ['title' => 'Laporan Data Pelanggan GarasiBMW']
+        );
     }
 }
