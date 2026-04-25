@@ -5,12 +5,20 @@ namespace Tests\Feature;
 use App\Http\Controllers\ItemCategoryController;
 use App\Http\Services\PdfExportService;
 use App\Models\ItemCategory;
+use App\Models\Employee;
 use Tests\TestCase;
 use Mockery;
 
 class ItemCategoryPdfExportTest extends TestCase
 {
-    private function makeCategory(array $attrs, int $sparepartsCount = 0): ItemCategory
+    private function makeCreator(string $name): Employee
+    {
+        $creator = new Employee();
+        $creator->name = $name;
+        return $creator;
+    }
+
+    private function makeCategory(array $attrs, int $sparepartsCount = 0, $creator = null): ItemCategory
     {
         $category = new ItemCategory();
         $category->category_id      = $attrs['category_id'];
@@ -18,17 +26,19 @@ class ItemCategoryPdfExportTest extends TestCase
         $category->descriptions     = $attrs['descriptions'] ?? null;
         $category->created_by       = $attrs['created_by'] ?? null;
         $category->spareparts_count = $sparepartsCount;
+        $category->setRelation('creator', $creator);
         return $category;
     }
 
     public function test_export_pdf_returns_response_with_correct_data(): void
     {
+        $creator = $this->makeCreator('Admin GarasiBMW');
         $category = $this->makeCategory([
             'category_id'  => 1,
             'name'         => 'Pelumas',
             'descriptions' => 'Oli dan pelumas mesin',
             'created_by'   => 7,
-        ], sparepartsCount: 8);
+        ], 8, $creator);
 
         $pdfService = Mockery::mock(PdfExportService::class);
         $pdfService->shouldReceive('export')
@@ -43,7 +53,7 @@ class ItemCategoryPdfExportTest extends TestCase
                 $this->assertEquals('Pelumas',              $row['Nama Kategori']);
                 $this->assertEquals('Oli dan pelumas mesin', $row['Deskripsi']);
                 $this->assertEquals(8,                      $row['Jumlah Suku Cadang']);
-                $this->assertEquals(7,                      $row['Dibuat Oleh']);
+                $this->assertEquals('Admin GarasiBMW',      $row['Dibuat Oleh']);
 
                 return response()->make('fake-pdf', 200);
             });
@@ -61,7 +71,7 @@ class ItemCategoryPdfExportTest extends TestCase
             'name'         => 'Transmisi',
             'descriptions' => null,
             'created_by'   => null,
-        ]);
+        ], 0, null);
 
         $pdfService = Mockery::mock(PdfExportService::class);
         $pdfService->shouldReceive('export')
@@ -118,12 +128,13 @@ class ItemCategoryPdfExportTest extends TestCase
 
     public function test_export_pdf_row_keys_are_in_bahasa_indonesia(): void
     {
+        $creator = $this->makeCreator('Teknisi');
         $category = $this->makeCategory([
             'category_id'  => 3,
             'name'         => 'Suspensi',
             'descriptions' => 'Komponen suspensi kendaraan',
             'created_by'   => 2,
-        ], sparepartsCount: 3);
+        ], 3, $creator);
 
         $pdfService = Mockery::mock(PdfExportService::class);
         $pdfService->shouldReceive('export')
@@ -131,7 +142,7 @@ class ItemCategoryPdfExportTest extends TestCase
             ->andReturnUsing(function ($fileName, $query, $mapRow, $options) use ($category) {
                 $row = $mapRow($category);
 
-                $this->assertArrayHasKey('ID',                  $row);
+                $this->assertArrayHasKey('ID',                   $row);
                 $this->assertArrayHasKey('Nama Kategori',        $row);
                 $this->assertArrayHasKey('Deskripsi',            $row);
                 $this->assertArrayHasKey('Jumlah Suku Cadang',   $row);
