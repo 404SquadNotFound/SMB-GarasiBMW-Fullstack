@@ -74,7 +74,7 @@ jobs:
       # 7. Jalankan tests dengan coverage
       - name: Run PHPUnit tests
         run: |
-          php artisan test --coverage-clover=coverage.xml
+          php artisan test 
         env:
           XDEBUG_MODE: coverage
 
