@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\EngineType;
 use Illuminate\Http\Request;
+use App\Http\Services\PdfExportService;
+use App\Http\services\ExportService;
 
 class EngineTypeController extends Controller
 {
-    public function index(Request $request)
+private function applyFilters(Request $request)
     {
         $query = EngineType::query();
 
-        // 1. Search Debounce (Nama Mesin atau Silinder)
-        if ($request->has('search')) {
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
@@ -20,17 +21,22 @@ class EngineTypeController extends Controller
             });
         }
 
-        // 2. Filter Bahan Bakar
         if ($request->filled('fuel_type')) {
             $query->where('fuel_type', $request->fuel_type);
         }
 
-        // 3. Filter Konfigurasi Silinder
         if ($request->filled('cylinders')) {
             $query->where('cylinders', $request->cylinders);
         }
 
-        return $query->orderBy('created_at', 'desc')->paginate($request->limit ?? 10);
+        return $query;
+    }
+
+    public function index(Request $request)
+    {
+        return $this->applyFilters($request)
+            ->orderBy('created_at', 'desc')
+            ->paginate($request->limit ?? 10);
     }
 
     // Fungsi buat ambil pilihan filter unik dari DB
@@ -99,5 +105,43 @@ class EngineTypeController extends Controller
     {
         EngineType::findOrFail($id)->delete();
         return response()->json(['status' => 'success', 'message' => 'Tipe Mesin dihapus'], 200);
+    }
+
+public function exportExcel(Request $request, ExportService $exportService)
+    {
+        $headers = ['Nama Mesin', 'Silinder', 'Kapasitas Oli (L)', 'Tipe BBM', 'Kapasitas Mesin (cc)', 'Tanggal Dibuat'];
+        $query = $this->applyFilters($request); // Menggunakan filter yang sama dengan index
+        $fileName = 'data_mesin_' . date('Ymd_His') . '.xlsx';
+
+        return $exportService->exportToExcel($fileName, $headers, $query, function ($item) {
+            return [
+                $item->name,
+                $item->cylinders,
+                $item->oil_cap,
+                $item->fuel_type,
+                $item->engine_cap,
+                $item->created_at->format('d-m-Y'),
+            ];
+        });
+    }
+
+    public function exportPdf(Request $request, PdfExportService $pdfExportService)
+    {
+        $query = $this->applyFilters($request);
+        $fileName = 'data_mesin_' . date('Ymd_His') . '.pdf';
+
+        return $pdfExportService->export(
+            $fileName,
+            $query,
+            fn($item) => [
+                'Nama' => $item->name,
+                'Silinder' => $item->cylinders,
+                'Oli' => $item->oil_cap,
+                'BBM' => $item->fuel_type,
+                'Kapasitas' => $item->engine_cap,
+                'Tanggal' => $item->created_at->format('d-m-Y'),
+            ],
+            ['title' => 'Laporan Data Tipe Mesin']
+        );
     }
 }

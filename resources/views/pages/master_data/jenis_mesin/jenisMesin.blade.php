@@ -27,7 +27,9 @@
         'placeholder' => 'Cari Jenis Mesin...',
         'filterModalId' => 'modalFilterMesin',
         'addUrl' => route('jenis-mesin.create'),
-        'btnText' => 'Tambah Jenis Mesin'
+        'btnText' => 'Tambah Jenis Mesin',
+        'exportExcelUrl' => route('jenis-mesin.export'),
+        'exportPdfUrl' => route('jenis-mesin.export.pdf')
     ])
 
     @include('layouts.table_wrapper')
@@ -61,6 +63,8 @@
                     <button onclick="resetFilter()" class="flex-1 py-3 bg-white border border-[#D9E2EC] text-[#627D98] font-bold rounded-xl text-[14px] hover:bg-gray-100 transition-all">Reset</button>
                     <button onclick="applyFilter()" class="flex-1 py-3 bg-[#1273EB] text-white font-bold rounded-xl text-[14px] hover:bg-[#0E62CC] transition-all shadow-lg shadow-blue-100">Terapkan</button>
                 </div>
+                <div class="flex gap-2 mb-4">
+            </div>
             </div>
         </div>
     </div>
@@ -187,5 +191,16 @@
             loadFilterOptions();
             fetchEngineTypes();
         });
+
+        function exportData(type) {
+            const search = document.getElementById('searchInput').value;
+            const fuel = document.getElementById('filterFuel').value;
+            const cylinders = document.getElementById('filterCylinders').value;
+            
+            // Membangun URL dengan query string yang aktif saat ini
+            const url = `/api/engine-types/export/${type}?search=${search}&fuel_type=${fuel}&cylinders=${cylinders}`;
+            
+            window.location.href = url;
+            }
     </script>
 @endsection
