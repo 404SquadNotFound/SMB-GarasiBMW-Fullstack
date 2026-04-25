@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Data Suku Cadang')
 @section('title_header', 'Data Suku Cadang')
@@ -28,7 +28,9 @@
         'placeholder'   => 'Cari Suku Cadang...',
         'filterModalId' => 'modalFilterSukuCadang',
         'addUrl'        => route('suku-cadang.create'),
-        'btnText'       => 'Tambah Suku Cadang'
+        'btnText'       => 'Tambah Suku Cadang',
+        'exportExcelUrl'=> 'javascript:exportSukuCadang()',
+        'exportPdfUrl'  => 'javascript:exportSukuCadangPdf()'
     ])
 
     @include('layouts.table_wrapper')
@@ -223,6 +225,77 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadFilterOptions();
             fetchSpareparts();
+            checkLowStock();
         });
+
+        // 6. Cek Low Stock
+        async function checkLowStock() {
+            try {
+                const res = await fetch('/api/spareparts-low-stock', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await res.json();
+                if (res.ok && result.data && result.data.length > 0) {
+                    let text = '<ul class="text-left mb-0">';
+                    result.data.forEach(item => {
+                        text += `<li class="mb-1"><b>${item.name}</b> (Sisa: <span class="text-red-500 font-bold">${item.quantity}</span>)</li>`;
+                    });
+                    text += '</ul>';
+
+                    Swal.fire({
+                        title: 'Peringatan Stok Tipis!',
+                        html: text,
+                        icon: 'warning',
+                        confirmButtonColor: '#1273EB',
+                    });
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        // 7. Export Excel
+        async function exportSukuCadang() {
+            try {
+                Swal.fire({ title: 'Mengekspor Excel...', text: 'Mohon tunggu', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                const res = await fetch('/api/spareparts-export', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Data_Suku_Cadang.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    Swal.close();
+                } else {
+                    Swal.fire('Error', 'Gagal mengekspor data Excel', 'error');
+                }
+            } catch (e) { console.error(e); Swal.fire('Error', 'Terjadi kesalahan sistem', 'error'); }
+        }
+
+        // 8. Export PDF
+        async function exportSukuCadangPdf() {
+            try {
+                Swal.fire({ title: 'Mengekspor PDF...', text: 'Mohon tunggu', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                const res = await fetch('/api/spareparts-export-pdf', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Data_Suku_Cadang.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    Swal.close();
+                } else {
+                    Swal.fire('Error', 'Gagal mengekspor data PDF', 'error');
+                }
+            } catch (e) { console.error(e); Swal.fire('Error', 'Terjadi kesalahan sistem', 'error'); }
+        }
     </script>
 @endsection

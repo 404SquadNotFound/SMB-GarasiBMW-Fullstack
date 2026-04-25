@@ -54,6 +54,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/engine-options', [EngineTypeController::class, 'getFilterOptions']);
     Route::get('/sparepart-options', [SparepartController::class, 'getFilterOptions']);
     Route::get('/employee-options', [EmployeeController::class, 'getFilterOptions']);
+    
+    // Suku Cadang Extras
+    Route::get('/spareparts-low-stock', [SparepartController::class, 'lowStock']);
+    Route::get('/spareparts-export', [SparepartController::class, 'exportExcel']);
+    Route::get('/spareparts-export-pdf', [SparepartController::class, 'exportPdf']);
 
     // Route API Resources yang dibatasi (cuma bisa store dan destroy)
     Route::apiResource('transaction-items', TransactionItemController::class)->only(['store', 'destroy']);
