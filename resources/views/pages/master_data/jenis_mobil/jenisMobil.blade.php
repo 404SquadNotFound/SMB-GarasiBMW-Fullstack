@@ -23,6 +23,8 @@
         'filterModalId' => 'modalFilterMobil',
         'addUrl' => route('jenis-mobil.create'),
         'btnText' => 'Tambah Jenis Mobil'
+        'exportExcelUrl' => route('jenis-mobil.export'),
+        'exportPdfUrl' => route('jenis-mobil.export.pdf'),  
     ])
 
     @include('layouts.table_wrapper')
