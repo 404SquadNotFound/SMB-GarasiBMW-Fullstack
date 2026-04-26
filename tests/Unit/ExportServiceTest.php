@@ -1,5 +1,5 @@
 <?php
-namespace Tests\Unit\Service;
+namespace Tests\Unit;
 
 use App\Http\Services\ExportService;
 use Illuminate\Database\Eloquent\Builder;
