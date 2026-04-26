@@ -11,8 +11,6 @@ use Mockery;
 class SupplierTest extends TestCase
 {
     use RefreshDatabase;
-
-    /** @test */
     public function it_can_get_all_suppliers()
     {
         Supplier::factory()->count(3)->create();
@@ -27,7 +25,6 @@ class SupplierTest extends TestCase
                  ]);
     }
 
-    /** @test */
     public function it_can_search_suppliers()
     {
         Supplier::create([
@@ -45,7 +42,6 @@ class SupplierTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
     public function it_can_show_supplier_detail()
     {
         $supplier = Supplier::create([
@@ -61,7 +57,6 @@ class SupplierTest extends TestCase
                  ]);
     }
 
-    /** @test */
     public function it_returns_404_if_supplier_not_found()
     {
         $response = $this->getJson('/api/suppliers/999');
@@ -69,7 +64,6 @@ class SupplierTest extends TestCase
         $response->assertStatus(404);
     }
 
-    /** @test */
     public function it_can_store_supplier()
     {
         $data = [
@@ -89,7 +83,6 @@ class SupplierTest extends TestCase
         ]);
     }
 
-    /** @test */
     public function it_fails_store_validation()
     {
         $response = $this->postJson('/api/suppliers', []);
@@ -97,7 +90,6 @@ class SupplierTest extends TestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
     public function it_can_update_supplier()
     {
         $supplier = Supplier::create([
@@ -120,7 +112,6 @@ class SupplierTest extends TestCase
         ]);
     }
 
-    /** @test */
     public function it_fails_update_validation()
     {
         $supplier = Supplier::create([
@@ -135,7 +126,6 @@ class SupplierTest extends TestCase
         $response->assertStatus(422);
     }
 
-    /** @test */
     public function it_can_delete_supplier()
     {
         $supplier = Supplier::create([
@@ -152,7 +142,6 @@ class SupplierTest extends TestCase
         ]);
     }
 
-    /** @test */
     public function it_can_export_excel()
     {
         $mock = Mockery::mock(SupplierService::class);
@@ -167,7 +156,6 @@ class SupplierTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /** @test */
     public function it_can_export_pdf()
     {
         $mock = Mockery::mock(SupplierService::class);
