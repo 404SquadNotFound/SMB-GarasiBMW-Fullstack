@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\ItemCategory;
 use Illuminate\Http\Request;
+use App\Http\Services\ExportService;
+use App\Http\Services\PdfExportService;
 
 class ItemCategoryController extends Controller
 {
@@ -71,14 +73,40 @@ class ItemCategoryController extends Controller
         ], 200);
     }
 
-    public function destroy($id)
-    {
-        $category = ItemCategory::findOrFail($id);
-        $category->delete();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Kategori berhasil dihapus!',
-        ], 200);
+    public function exportExcel(ExportService $exportService)
+    {
+        $headers = ['ID', 'Nama Kategori', 'Deskripsi', 'Jumlah Suku Cadang', 'Dibuat Oleh'];
+        $query = ItemCategory::withCount('spareparts')->with('creator');
+        $fileName = 'data_kategori_barang_' . date('Ymd') . '.xlsx';
+
+        return $exportService->exportToExcel($fileName, $headers, $query, function ($item) {
+            return [
+                $item->category_id,
+                $item->name,
+                $item->descriptions ?? '-',
+                $item->spareparts_count ?? 0,
+                $item->creator ? $item->creator->name : '-',
+            ];
+        });
+    }
+
+    public function exportPdf(PdfExportService $pdfExportService)
+    {
+        $query = ItemCategory::withCount('spareparts')->with('creator');
+        $fileName = 'laporan_kategori_barang_' . date('Ymd') . '.pdf';
+
+        return $pdfExportService->export(
+            $fileName,
+            $query,
+            fn($item) => [
+                'ID'             => $item->category_id,
+                'Nama Kategori'  => $item->name,
+                'Deskripsi'      => $item->descriptions ?? '-',
+                'Jumlah Suku Cadang' => $item->spareparts_count ?? 0,
+                'Dibuat Oleh'    => $item->creator ? $item->creator->name : '-',
+            ],
+            ['title' => 'Laporan Master Data Kategori Barang']
+        );
     }
 }

@@ -27,9 +27,10 @@
 
 @section('content')
     @include('layouts.action_bar', [
-        'placeholder' => 'Cari Akun...', 
+        'placeholder' => 'Cari Pelanggan...', 
         'addUrl' => route('pelanggan.create'), 
-        'btnText' => 'Tambah Akun'
+        'btnText' => 'Tambah Pelanggan',
+        'exportExcelUrl' => route('pelanggan.export')
     ])
     @include('layouts.table_wrapper')
 

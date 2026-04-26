@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\SupplierController; 
+use App\Http\Controllers\EngineTypeController; 
 
 // Route Login
 Route::get('/', function () {
@@ -8,6 +11,8 @@ Route::get('/', function () {
 })->name('login');
 
 // Route Master Data -> Pelanggan
+
+
 Route::get('/pelanggan', function () {
     return view('pages.pelanggan.pelanggan');
 })->name('pelanggan.index');
@@ -23,6 +28,9 @@ Route::get('/pelanggan/edit/{id}', function ($id) {
 Route::get('/pelanggan/delete/{id}', function ($id) {
     return view('pages.pelanggan.pelanggan');
 })->name('pelanggan.delete');
+
+Route::get('/pelanggan/export', [CustomerController::class, 'exportExcel'])->name('pelanggan.export');
+Route::get('/pelanggan/export/pdf', [CustomerController::class, 'exportPdf'])->name('pelanggan.export.pdf');
 
 //Route Master Data -> Jenis Mesin
 Route::get('/jenis-mesin', function () {
@@ -40,6 +48,8 @@ Route::get('/master-data/jenis-mesin/edit/{id}', function ($id) {
 Route::get('/master-data/jenis-mesin/delete/{id}', function ($id) {
     return view('pages.master_data.jenis_mesin.jenisMesin');
 })->name('jenis-mesin.delete');
+Route::get('/jenis-mesin/export/excel', [EngineTypeController::class, 'exportExcel'])->name('jenis-mesin.export');
+Route::get('/jenis-mesin/export/pdf', [EngineTypeController::class, 'exportPdf'])->name('jenis-mesin.export.pdf');
 
 // Route Master Data -> Jenis Mobil
 Route::get('/jenis-mobil', function () {
@@ -91,6 +101,8 @@ Route::get('/supplier/edit/{id}', function ($id) {
 Route::get('/supplier/delete/{id}', function ($id) {
     return view('pages.master_data.supplier.supplier');
 })->name('supplier.delete');
+Route::get('/supplier/export', [SupplierController::class, 'exportExcel'])->name('supplier.export');
+Route::get('/supplier/export/pdf', [SupplierController::class, 'exportPdf'])->name('supplier.export.pdf');
 
 // Route Kepegawaian -> Data Karyawan
 Route::get('/manajemen-pegawai', function () {

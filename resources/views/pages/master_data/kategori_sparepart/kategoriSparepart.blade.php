@@ -21,7 +21,9 @@
     @include('layouts.action_bar', [
         'placeholder' => 'Cari Kategori Sparepart...',
         'addUrl' => route('kategori-sparepart.create'),
-        'btnText' => 'Tambah Kategori Sparepart'
+        'btnText' => 'Tambah Kategori Sparepart',
+        'exportExcelUrl'=> 'javascript:exportItemCategory()',
+        'exportPdfUrl'  => 'javascript:exportItemCategoryPdf()'
     ])
 
     @include('layouts.table_wrapper')
@@ -111,5 +113,51 @@
         document.addEventListener('DOMContentLoaded', () => {
             fetchCategories();
         });
+
+        // 7. Export Excel
+        async function exportItemCategory() {
+            try {
+                Swal.fire({ title: 'Mengekspor Excel...', text: 'Mohon tunggu', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                const res = await fetch('/api/item-categories-export', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Data_Kategori.xlsx';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    Swal.close();
+                } else {
+                    Swal.fire('Error', 'Gagal mengekspor data Excel', 'error');
+                }
+            } catch (e) { console.error(e); Swal.fire('Error', 'Terjadi kesalahan sistem', 'error'); }
+        }
+
+        // 8. Export PDF
+        async function exportItemCategoryPdf() {
+            try {
+                Swal.fire({ title: 'Mengekspor PDF...', text: 'Mohon tunggu', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                const res = await fetch('/api/item-categories-export-pdf', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const blob = await res.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Data_Kategori.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    Swal.close();
+                } else {
+                    Swal.fire('Error', 'Gagal mengekspor data PDF', 'error');
+                }
+            } catch (e) { console.error(e); Swal.fire('Error', 'Terjadi kesalahan sistem', 'error'); }
+        }
     </script>
 @endsection

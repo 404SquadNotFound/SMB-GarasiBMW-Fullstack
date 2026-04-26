@@ -26,12 +26,12 @@
 
     @foreach ($data as $item)
         <tr class="hover:bg-[#F9FCFF] transition-colors group">
-            <td class="px-6 py-[18px] font-bold text-[#213F5C]">{{ $item['name'] }}</td>
-            <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">{{ $item['phone'] }}</td>
-            <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">{{ $item['license_plate'] }}</td>
-            <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">{{ $item['car_model'] }}</td>
-            <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">{{ $item['engine_code'] }}</td>
-            <td class="px-6 py-[18px] text-center">
+            <td class="px-6 py-4.5 font-bold text-[#213F5C]">{{ $item['name'] }}</td>
+            <td class="px-6 py-4.5 text-[#213F5C] font-semibold text-[13px]">{{ $item['phone'] }}</td>
+            <td class="px-6 py-4.5 text-[#213F5C] font-semibold text-[13px]">{{ $item['license_plate'] }}</td>
+            <td class="px-6 py-4.5 text-[#213F5C] font-semibold text-[13px]">{{ $item['car_model'] }}</td>
+            <td class="px-6 py-4.5 text-[#213F5C] font-semibold text-[13px]">{{ $item['engine_code'] }}</td>
+            <td class="px-6 py-4.5 text-center">
                 <button
                     class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#EAF2FF] text-[#1273EB] border border-[#B1D3FF] rounded-full text-[12px] font-bold hover:bg-[#D4E8FF] transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">

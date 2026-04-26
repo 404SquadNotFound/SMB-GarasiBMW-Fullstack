@@ -49,25 +49,46 @@
     ])
 
     <script>
+        let isDirty = false;
+
+        function formatNumberInput(e) {
+            let value = e.target.value.replace(/[^\d]/g, "");
+            if (value.length > 0) {
+                e.target.value = new Intl.NumberFormat('id-ID').format(value);
+            }
+        }
+
+        document.getElementById('engine_cap').addEventListener('input', formatNumberInput);
+        document.getElementById('oil_cap').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9,.]/g, '');
+        });
+
+        document.getElementById('addEngineForm').addEventListener('input', () => isDirty = true);
+
         document.getElementById('submitBtnApi').onclick = async (e) => {
             e.preventDefault();
             const token = localStorage.getItem('access_token');
+
+            let valOil = document.getElementById('oil_cap').value;
+            const rawEngineCap = document.getElementById('engine_cap').value.replace(/\./g, '');
+            const cleanOilCap = parseFloat(valOil.replace(',', '.'));
             
             const data = {
                 name: document.getElementById('name').value,
                 cylinders: document.getElementById('cylinders').value,
-                engine_cap: Number(document.getElementById('engine_cap').value),
-                oil_cap: parseFloat(document.getElementById('oil_cap').value),
+                engine_cap: Number(rawEngineCap),
+                oil_cap: cleanOilCap,
                 fuel_type: document.getElementById('fuel_type').value,
             };
 
+            // Validasi sederhana
+            if (!data.name || !data.engine_cap || !data.oil_cap) {
+                Swal.fire('Oops!', 'Semua field wajib diisi brok!', 'warning');
+                return;
+            }
+
             try {
-                // Tampilkan Loading
-                Swal.fire({
-                    title: 'Menyimpan data...',
-                    allowOutsideClick: false,
-                    didOpen: () => { Swal.showLoading() }
-                });
+                Swal.fire({ title: 'Menyimpan data...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
                 const response = await fetch('/api/engine-types', {
                     method: 'POST',
@@ -82,25 +103,30 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    await Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Jenis mesin baru berhasil disimpan.',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
+                    isDirty = false;
+                    await Swal.fire({ icon: 'success', title: 'Berhasil!', timer: 2000, showConfirmButton: false });
                     window.location.href = "{{ route('jenis-mesin.index') }}";
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal Simpan',
-                        text: result.message || 'Cek kembali inputan lu brok!'
-                    });
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: result.message || 'Cek lagi inputan lu!' });
                 }
             } catch (error) {
-                console.error(error);
-                Swal.fire('Error', 'Terjadi kesalahan koneksi ke server.', 'error');
+                Swal.fire('Error', 'Koneksi server bermasalah.', 'error');
             }
         };
+
+        window.addEventListener('beforeunload', (e) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const btn = document.getElementById('submitBtnApi');
+                if (btn) btn.click();
+            }
+        });
     </script>
 @endsection

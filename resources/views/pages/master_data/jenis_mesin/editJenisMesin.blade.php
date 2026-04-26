@@ -25,11 +25,11 @@
         </div>
         <div>
             <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kapasitas Mesin (cc) <span class="text-red-500">*</span></label>
-            <input type="number" id="engine_cap" required placeholder="Contoh: 2500" class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none">
+            <input type="text" id="engine_cap" required placeholder="Contoh: 2.500" class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none">
         </div>
         <div>
             <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kapasitas Oli (Liter) <span class="text-red-500">*</span></label>
-            <input type="number" step="0.1" id="oil_cap" required placeholder="Contoh: 6.5" class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none">
+            <input type="text" id="oil_cap" required placeholder="Contoh: 6,5" class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none">
         </div>
         <div>
             <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Bahan Bakar <span class="text-red-500">*</span></label>
@@ -49,26 +49,37 @@
     ])
 
     <script>
+        let isDirty = false;
         const pathArray = window.location.pathname.split('/');
         const engineId = pathArray[pathArray.length - 1];
         const token = localStorage.getItem('access_token');
 
+        function formatNumberInput(e) {
+            let value = e.target.value.replace(/[^\d]/g, "");
+            if (value.length > 0) {
+                e.target.value = new Intl.NumberFormat('id-ID').format(value);
+            }
+        }
+
+        document.getElementById('engine_cap').addEventListener('input', formatNumberInput);
+        document.getElementById('oil_cap').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9,.]/g, '');
+        });
+
         async function loadEngineData() {
             try {
                 const response = await fetch(`/api/engine-types/${engineId}`, {
-                    headers: {
-                        'Accept': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
                 });
                 const result = await response.json();
                 if (response.ok) {
                     const data = result.data;
                     document.getElementById('name').value = data.name;
                     document.getElementById('cylinders').value = data.cylinders;
-                    document.getElementById('engine_cap').value = data.engine_cap;
+                    document.getElementById('engine_cap').value = new Intl.NumberFormat('id-ID').format(data.engine_cap);
                     document.getElementById('oil_cap').value = data.oil_cap;
                     document.getElementById('fuel_type').value = data.fuel_type;
+                    document.getElementById('editEngineForm').addEventListener('input', () => isDirty = true);
                 }
             } catch (error) { console.error('Error:', error); }
         }
@@ -78,21 +89,19 @@
         document.getElementById('submitBtnApi').onclick = async (e) => {
             e.preventDefault();
             
+            const rawEngineCap = document.getElementById('engine_cap').value.replace(/\./g, '');
+            const rawOilCap = document.getElementById('oil_cap').value.replace(',', '.');
+            
             const updatedData = {
                 name: document.getElementById('name').value,
                 cylinders: document.getElementById('cylinders').value,
-                engine_cap: Number(document.getElementById('engine_cap').value),
-                oil_cap: parseFloat(document.getElementById('oil_cap').value),
+                engine_cap: Number(rawEngineCap),
+                oil_cap: parseFloat(rawOilCap),
                 fuel_type: document.getElementById('fuel_type').value,
             };
 
             try {
-                // Tampilkan Loading
-                Swal.fire({
-                    title: 'Memperbarui data...',
-                    allowOutsideClick: false,
-                    didOpen: () => { Swal.showLoading() }
-                });
+                Swal.fire({ title: 'Memperbarui data...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
                 const response = await fetch(`/api/engine-types/${engineId}`, {
                     method: 'PUT',
@@ -104,27 +113,28 @@
                     body: JSON.stringify(updatedData)
                 });
 
-                const result = await response.json();
-
                 if (response.ok) {
-                    await Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Data mesin BMW lu udah diperbarui.',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
+                    isDirty = false;
+                    await Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Data mesin sudah diperbarui.', timer: 2000, showConfirmButton: false });
                     window.location.href = "{{ route('jenis-mesin.index') }}";
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal Update',
-                        text: result.message || 'Cek lagi inputannya brok!'
-                    });
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: 'Cek lagi inputannya brok!' });
                 }
             } catch (error) {
                 Swal.fire('Error', 'Koneksi API bermasalah.', 'error');
             }
         };
+
+        window.addEventListener('beforeunload', (e) => {
+            if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const btn = document.getElementById('submitBtnApi');
+                if (btn) btn.click();
+            }
+        });
     </script>
 @endsection

@@ -23,7 +23,6 @@
             Filter
         </button>
 
-        // test
         <div class="relative group">
             <button type="button"
                 class="flex items-center gap-2 px-5 py-[11px] bg-white border border-[#D9E2EC] rounded-[10px] font-bold text-[13px] text-[#213F5C] shadow-sm hover:bg-gray-50 transition-all">
