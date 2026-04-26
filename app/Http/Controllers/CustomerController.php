@@ -132,4 +132,15 @@ class CustomerController extends Controller
             'message' => 'Data Pelanggan berhasil dihapus!',
         ], 200);
     }
+
+    public function exportExcel(CustomerService $customerService)
+    {
+        // Controller lalu menyuruh Service untuk bekerja
+        return $customerService->downloadExcel();
+    }
+
+    public function exportPdf(CustomerService $customerService)
+    {
+        return $customerService->downloadPdf();
+    }
 }

@@ -30,7 +30,8 @@
         'placeholder' => 'Cari Pelanggan...', 
         'addUrl' => route('pelanggan.create'), 
         'btnText' => 'Tambah Pelanggan',
-        'exportExcelUrl' => route('pelanggan.export')
+        'exportExcelUrl' => route('pelanggan.export'),
+        'exportPdfUrl' => route('pelanggan.export.pdf'),
     ])
     @include('layouts.table_wrapper')
 
