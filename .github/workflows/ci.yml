@@ -52,12 +52,13 @@ jobs:
 
       # 8. SonarCloud Scan 
       - name: SonarCloud Scan
-        run: |
-          sonar-scanner \
-            -Dsonar.projectKey=404SquadNotFound_SMB-GarasiBMW-Fullstack \
-            -Dsonar.organization=404squadnotfound \
-            -Dsonar.sources=app,database,routes,config \
-            -Dsonar.tests=tests \
-            -Dsonar.php.coverage.reportPaths=build/coverage.xml
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=404SquadNotFound_SMB-GarasiBMW-Fullstack
+            -Dsonar.organization=404squadnotfound
+            -Dsonar.sources=app,database,routes,config
+            -Dsonar.tests=tests
+            -Dsonar.php.coverage.reportPaths=build/coverage.xml
