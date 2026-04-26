@@ -12,7 +12,7 @@ use Tests\TestCase;
 use Mockery;
 use Carbon\Carbon;
 
-class EngineTypeExportTest extends TestCase
+class EngineTypeTest extends TestCase
 {
     private function makeEngineType(array $attrs): EngineType
     {

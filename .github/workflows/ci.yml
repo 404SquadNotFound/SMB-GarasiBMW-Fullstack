@@ -10,77 +10,58 @@ jobs:
   laravel-tests:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: laravel_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
-      # 1. Checkout kode
+      # 1. Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Wajib untuk SonarCloud
+          fetch-depth: 0
 
       # 2. Setup PHP
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, bcmath, pdo, pdo_mysql, xml, xdebug
+          extensions: mbstring, bcmath, pdo, pdo_mysql, pdo_sqlite, xml, xdebug
           coverage: xdebug
 
-      # 3. Cache Composer
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-
-
-      # 4. Install dependencies
+      # 3. Install dependencies
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
-      # 5. Setup environment
-      - name: Copy .env
-        run: cp .env.example .env
-
-      - name: Generate application key
-        run: php artisan key:generate
-
-      - name: Set environment variables
+      # 4. Setup environment
+      - name: Setup environment
         run: |
-          echo "DB_CONNECTION=mysql" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_PORT=3306" >> .env
-          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          cp .env.example .env
+          php artisan key:generate
 
-      # 6. Jalankan migrasi
-      - name: Run database migrations
-        run: php artisan migrate --force
+      # 5. Prepare build folder
+      - name: Prepare build folder
+        run: mkdir -p build
 
-      # 7. Jalankan tests dengan coverage
-      - name: Run PHPUnit tests
+      # 6. Run PHPUnit + coverage
+      - name: Run PHPUnit tests with coverage
+        run: php vendor/bin/phpunit --coverage-clover=build/coverage.xml
+
+      # 7. Debug (optional tapi bagus)
+      - name: Debug coverage file
         run: |
-          php artisan test 
-        env:
-          XDEBUG_MODE: coverage
+          echo "Current dir:"
+          pwd
+          echo "Root files:"
+          ls -la
+          echo "Build files:"
+          ls -la build
 
-      # 8. SonarCloud Scan
+      # 8. SonarCloud Scan (FIXED)
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=404SquadNotFound_SMB-GarasiBMW-Fullstack
+            -Dsonar.organization=404squadnotfound
+            -Dsonar.sources=app
+            -Dsonar.tests=tests
+            -Dsonar.php.coverage.reportPaths=build/coverage.xml
