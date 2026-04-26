@@ -156,7 +156,7 @@ class CustomerServiceTest extends TestCase
         Mockery::close();
         parent::tearDown();
     }
-
+    
     public function test_format_and_validate_succeeds_with_multiple_valid_cars()
     {
         $cars = [
