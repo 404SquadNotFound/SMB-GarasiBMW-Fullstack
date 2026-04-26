@@ -21,4 +21,9 @@ class CarType extends Model
     {
         return $this->hasMany(Vehicle::class, 'car_type_id', 'car_type_id');
     }
+
+    public function creator()
+{
+    return $this->belongsTo(\App\Models\Employee::class, 'created_by', 'employees_id');
+}
 }
