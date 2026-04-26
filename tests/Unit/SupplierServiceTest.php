@@ -34,14 +34,15 @@ class SupplierServiceTest extends TestCase
         $supplier->supplier_id = $attrs['supplier_id'];
         $supplier->name = $attrs['name'];
         $supplier->description = $attrs['description'] ?? null;
-        $supplier->created_at = $attrs['created_at'] ?? now();
+
+        if (array_key_exists('created_at', $attrs)) {
+            $supplier->created_at = $attrs['created_at'];
+        } else {
+            $supplier->created_at = now();
+        }
 
         return $supplier;
     }
-
-    // =========================================================================
-    // downloadExcel() Tests
-    // =========================================================================
 
     public function test_download_excel_maps_data_correctly()
     {
