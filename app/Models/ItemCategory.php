@@ -16,4 +16,9 @@ class ItemCategory extends Model
     {
         return $this->hasMany(Sparepart::class, 'item_category_id', 'category_id');
     }
+
+    public function creator()
+    {
+        return $this->belongsTo(Employee::class, 'created_by', 'employees_id');
+    }
 }

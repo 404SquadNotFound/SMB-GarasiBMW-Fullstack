@@ -38,6 +38,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route custom buat update status servis
     Route::put('/transactions/{id}/status', [ServiceTransactionController::class, 'updateStatus']);
 
+    // Kategori Barang Export
+    Route::get('/item-categories-export', [ItemCategoryController::class, 'exportExcel']);
+    Route::get('/item-categories-export-pdf', [ItemCategoryController::class, 'exportPdf']);
+
     // Route API Resources (Otomatis cuma bikin GET, POST, PUT/PATCH, DELETE)
     Route::apiResource('employees', EmployeeController::class);
     Route::apiResource('attendances', AttendanceController::class);
@@ -59,6 +63,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/spareparts-low-stock', [SparepartController::class, 'lowStock']);
     Route::get('/spareparts-export', [SparepartController::class, 'exportExcel']);
     Route::get('/spareparts-export-pdf', [SparepartController::class, 'exportPdf']);
+
+    // Customer Export
+    Route::get('/customers-export', [CustomerController::class, 'exportExcel']);
+    Route::get('/customers-export-pdf', [CustomerController::class, 'exportPdf']);
 
     // Route API Resources yang dibatasi (cuma bisa store dan destroy)
     Route::apiResource('transaction-items', TransactionItemController::class)->only(['store', 'destroy']);
