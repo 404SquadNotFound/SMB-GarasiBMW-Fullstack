@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Services\PdfExportService;
+use App\Http\Services\SupplierService;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
-use App\Http\services\ExportService;
 
 class SupplierController extends Controller
 {
+    protected $supplierService;
+
+    public function __construct(SupplierService $supplierService)
+    {
+        $this->supplierService = $supplierService;
+    }
+
     public function index(Request $request)
     {
         $query = Supplier::query();
@@ -34,7 +40,7 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name'        => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
         ]);
 
@@ -46,7 +52,7 @@ class SupplierController extends Controller
     {
         $supplier = Supplier::findOrFail($id);
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name'        => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
         ]);
 
@@ -60,37 +66,13 @@ class SupplierController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Supplier dihapus'], 200);
     }
 
-    public function exportExcel(ExportService $exportService)
+    public function exportExcel()
     {
-        $headers = ['ID', 'Nama Supplier', 'Deskripsi', 'Tanggal Dibuat'];
-        $query = Supplier::query();
-        $fileName = 'data_supplier_' . date('Ymd') . '.xlsx';
-
-        return $exportService->exportToExcel($fileName, $headers, $query, function ($item) {
-            return [
-                $item->supplier_id,
-                $item->name,
-                $item->description ?? '-',
-                $item->created_at->format('d-m-Y'),
-            ];
-        });
+        return $this->supplierService->downloadExcel();
     }
 
-    public function exportPdf(PdfExportService $pdfExportService)
+    public function exportPdf()
     {
-        $query = Supplier::query();
-        $fileName = 'data_supplier_' . date('Ymd') . '.pdf';
-
-        return $pdfExportService->export(
-            $fileName,
-            $query,
-            fn($item) => [
-                'ID' => $item->supplier_id,
-                'Nama' => $item->name,
-                'Deskripsi' => $item->description ?? '-',
-                'Tanggal' => $item->created_at->format('d-m-Y'),
-            ],
-            ['title' => 'Laporan Data Supplier']
-        );
+        return $this->supplierService->downloadPdf();
     }
 }

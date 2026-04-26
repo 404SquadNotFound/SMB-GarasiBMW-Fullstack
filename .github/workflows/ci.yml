@@ -10,20 +10,6 @@ jobs:
   laravel-tests:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: laravel_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       # 1. Checkout kode
       - name: Checkout repository
@@ -36,7 +22,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, bcmath, pdo, pdo_mysql, xml, xdebug
+          extensions: mbstring, bcmath, pdo, pdo_mysql, pdo_sqlite, xml, xdebug
           coverage: xdebug
 
       # 3. Cache Composer
@@ -58,25 +44,21 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate
 
-      - name: Set environment variables
+      # 6. Jalankan tests dengan coverage (SQLite in-memory via phpunit.xml)
+      - name: Run PHPUnit tests with coverage
         run: |
-          echo "DB_CONNECTION=mysql" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_PORT=3306" >> .env
-          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> .env
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-
-      # 6. Jalankan migrasi
-      - name: Run database migrations
-        run: php artisan migrate --force
-
-      # 7. Jalankan tests dengan coverage
-      - name: Run PHPUnit tests
+          XDEBUG_MODE=coverage ./vendor/bin/phpunit \
+            --coverage-clover=coverage.xml
+      
+      # 7. Verifikasi coverage.xml terbuat
+      - name: Verify coverage report exists
         run: |
-          php artisan test 
-        env:
-          XDEBUG_MODE: coverage
+          if [ ! -f coverage.xml ]; then
+            echo "coverage.xml not found!"
+            exit 1
+          fi
+          echo "Coverage file size: $(wc -c < coverage.xml) bytes"
+          head -5 coverage.xml
 
       # 8. SonarCloud Scan
       - name: SonarCloud Scan
