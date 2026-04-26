@@ -128,4 +128,42 @@ class CarTypeController extends Controller
             'data' => $series
         ], 200);
     }
+
+    public function exportExcel(Request $request, ExportService $exportService)
+    {
+        $headers = ['No. Chasis', 'Nama', 'Seri', 'Kode Mesin', 'Tipe Mesin', 'Dibuat Oleh'];
+        $query = $this->applyFilters($request); // Menggunakan filter yang sama dengan index
+        $fileName = 'data_mobil_' . date('Ymd_His') . '.xlsx';
+
+        return $exportService->exportToExcel($fileName, $headers, $query, function ($item) {
+            return [
+                $item->chassis_number,
+                $item->name,
+                $item->series,
+                $item->engine_code,
+                $item->engine_type_id,
+                $item->created_by ? $item->creator ? $item->creator->name : '-' : '-',
+            ];
+        });
+    }
+
+    public function exportPdf(Request $request, PdfExportService $pdfExportService)
+    {
+        $query = $this->applyFilters($request);
+        $fileName = 'data_mobil_' . date('Ymd_His') . '.pdf';
+
+        return $pdfExportService->export(
+            $fileName,
+            $query,
+            fn($item) => [
+                'No. Chasis' => $item->chassis_number,
+                'Nama' => $item->name,
+                'Seri' => $item->series,
+                'Kode Mesin' => $item->engine_code,
+                'Tipe Mesin' => $item->engine_type_id,
+                'Dibuat Oleh' => $item->created_by ? $item->creator ? $item->creator->name : '-' : '-',
+            ],
+            ['title' => 'Laporan Data Tipe Mobil']
+        );
+    }
 }
