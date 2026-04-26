@@ -67,6 +67,8 @@ Route::get('/jenis-mobil/edit/{id}', function ($id) {
 Route::get('/jenis-mobil/delete/{id}', function ($id) {
     return view('pages.master_data.jenis_mobil.jenisMobil');
 })->name('jenis-mobil.delete');
+Route::get('/jenis-mobil/export/excel', [CarTypeController::class, 'exportExcel'])->name('jenis-mobil.export');
+Route::get('/jenis-mobil/export/pdf', [CarTypeController::class, 'exportPdf'])->name('jenis-mobil.export.pdf');
 
 //Route Master Data -> Kategori Sparepart
 Route::get('/kategori-sparepart', function () {
