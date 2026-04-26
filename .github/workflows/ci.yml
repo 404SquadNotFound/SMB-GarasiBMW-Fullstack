@@ -11,11 +11,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout kode
+      # 1. Checkout
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Wajib untuk SonarCloud
+          fetch-depth: 0
 
       # 2. Setup PHP
       - name: Setup PHP
@@ -25,44 +25,40 @@ jobs:
           extensions: mbstring, bcmath, pdo, pdo_mysql, pdo_sqlite, xml, xdebug
           coverage: xdebug
 
-      # 3. Cache Composer
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-
-
-      # 4. Install dependencies
+      # 3. Install deps
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
-      # 5. Setup environment
-      - name: Copy .env
-        run: cp .env.example .env
+      # 4. Env setup
+      - name: Setup environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
 
-      - name: Generate application key
-        run: php artisan key:generate
+      # 5. Prepare folder
+      - name: Prepare build folder
+        run: mkdir -p build
 
-      # 6. Jalankan tests dengan coverage (SQLite in-memory via phpunit.xml)
+      # 6. Run PHPUnit + coverage
       - name: Run PHPUnit tests with coverage
-        run: |
-          XDEBUG_MODE=coverage ./vendor/bin/phpunit \
-            --coverage-clover=coverage.xml
-      
-      # 7. Verifikasi coverage.xml terbuat
-      - name: Verify coverage report exists
-        run: |
-          if [ ! -f coverage.xml ]; then
-            echo "coverage.xml not found!"
-            exit 1
-          fi
-          echo "Coverage file size: $(wc -c < coverage.xml) bytes"
-          head -5 coverage.xml
+        run: php vendor/bin/phpunit --coverage-clover=build/coverage.xml
 
-      # 8. SonarCloud Scan
+      # 7. Debug 
+      - name: Debug coverage file
+        run: |
+          pwd
+          ls -la
+          ls -la build
+
+      # 8. SonarCloud Scan 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=404SquadNotFound_SMB-GarasiBMW-Fullstack
+            -Dsonar.organization=404squadnotfound
+            -Dsonar.sources=app,database,routes,config
+            -Dsonar.tests=tests
+            -Dsonar.php.coverage.reportPaths=build/coverage.xml
