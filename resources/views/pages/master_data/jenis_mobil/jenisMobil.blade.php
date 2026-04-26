@@ -23,7 +23,7 @@
         'filterModalId' => 'modalFilterMobil',
         'addUrl' => route('jenis-mobil.create'),
         'btnText' => 'Tambah Jenis Mobil',
-        'exportExcelUrl' => route('jenis-mobil.export'),
+        'exportExcelUrl' => route('jenis-mobil.export.excel'),
         'exportPdfUrl' => route('jenis-mobil.export.pdf'),  
     ])
 

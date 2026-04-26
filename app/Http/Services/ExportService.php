@@ -19,7 +19,7 @@ class ExportService
     {
         return Response::streamDownload(function () use ($headers, $query, $mapRow) {
             $writer = new Writer();
-            $writer->openToFile('php://output'); // Vercel safe
+            $writer->openToFile('php://output'); 
 
             $writer->addRow(Row::fromValues($headers));
 
