@@ -23,49 +23,50 @@ class SupplierServiceTest extends TestCase
         parent::setUp();
 
         $this->excelMock = Mockery::mock(ExportService::class);
-        $this->pdfMock = Mockery::mock(PdfExportService::class);
+        $this->pdfMock   = Mockery::mock(PdfExportService::class);
 
         $this->supplierService = new SupplierService($this->excelMock, $this->pdfMock);
     }
 
     private function makeSupplier(array $attrs): Supplier
     {
-        $supplier = new Supplier();
+        $supplier              = new Supplier();
         $supplier->supplier_id = $attrs['supplier_id'];
-        $supplier->name = $attrs['name'];
+        $supplier->name        = $attrs['name'];
         $supplier->description = $attrs['description'] ?? null;
-        $supplier->created_at = $attrs['created_at'] ?? now();
+        $supplier->created_at  = $attrs['created_at'] ?? now();
 
         return $supplier;
     }
+
+    // =========================================================================
+    // downloadExcel() Tests
+    // =========================================================================
 
     public function test_download_excel_maps_data_correctly()
     {
         $supplier = $this->makeSupplier([
             'supplier_id' => 1,
-            'name' => 'Garasi BMW Supplier',
+            'name'        => 'Garasi BMW Supplier',
             'description' => 'Genuine Parts',
-            'created_at' => now(),
+            'created_at'  => now(),
         ]);
 
         $this->excelMock->shouldReceive('exportToExcel')
             ->once()
             ->andReturnUsing(function ($fileName, $headers, $query, $mapRow) use ($supplier) {
-                // Validasi nama file
                 $this->assertMatchesRegularExpression(
                     '/^data_supplier_\d{8}\.xlsx$/',
                     $fileName,
                     'Format nama file harus data_supplier_YYYYMMDD.xlsx'
                 );
 
-                // Validasi headers
                 $this->assertEquals(
                     ['ID', 'Nama Supplier', 'Deskripsi', 'Tanggal Dibuat'],
                     $headers,
                     'Headers tidak sesuai'
                 );
 
-                // Validasi mapping baris
                 $row = $mapRow($supplier);
                 $this->assertCount(4, $row, 'Row harus memiliki 4 kolom');
                 $this->assertEquals(1, $row[0]);
@@ -85,9 +86,9 @@ class SupplierServiceTest extends TestCase
     {
         $supplier = $this->makeSupplier([
             'supplier_id' => 2,
-            'name' => 'Supplier Tanpa Deskripsi',
+            'name'        => 'Supplier Tanpa Deskripsi',
             'description' => null,
-            'created_at' => now(),
+            'created_at'  => now(),
         ]);
 
         $this->excelMock->shouldReceive('exportToExcel')
@@ -141,64 +142,48 @@ class SupplierServiceTest extends TestCase
     {
         $supplier = $this->makeSupplier([
             'supplier_id' => 5,
-            'name' => 'Supplier Tanpa Tanggal',
+            'name'        => 'Supplier Tanpa Tanggal',
             'description' => 'Test',
-            'created_at' => null,
+            'created_at'  => null,
         ]);
 
-        $capturedMapRow = null; 
+        $capturedMapRow = null;
 
         $this->excelMock->shouldReceive('exportToExcel')
             ->once()
             ->andReturnUsing(function ($fileName, $headers, $query, $mapRow) use (&$capturedMapRow) {
-                $capturedMapRow = $mapRow; 
+                $capturedMapRow = $mapRow;
                 return new StreamedResponse(function () {}, 200);
             });
 
         $this->supplierService->downloadExcel();
 
-        // Sekarang expectException + pemanggilan closure ada di scope test yang benar
-        $this->expectException(\Error::class);
-        $capturedMapRow($supplier); 
+        $threw = false;
+        try {
+            $capturedMapRow($supplier);
+        } catch (\Error $e) {
+            $threw = true;
+        }
+
+        $this->assertTrue($threw, 'Expected Error to be thrown when created_at is null');
     }
 
-    public function test_download_pdf_created_at_null_throws_error()
-    {
-        $supplier = $this->makeSupplier([
-            'supplier_id' => 6,
-            'name' => 'Supplier Tanpa Tanggal',
-            'description' => 'Test',
-            'created_at' => null,
-        ]);
-
-        $capturedMapRow = null;
-
-        $this->pdfMock->shouldReceive('export')
-            ->once()
-            ->andReturnUsing(function ($fileName, $query, $mapRow, $options) use (&$capturedMapRow) {
-                $capturedMapRow = $mapRow;
-                return response()->make('fake-pdf-content', 200);
-            });
-
-        $this->supplierService->downloadPdf();
-
-        $this->expectException(\Error::class);
-        $capturedMapRow($supplier);
-    }
+    // =========================================================================
+    // downloadPdf() Tests
+    // =========================================================================
 
     public function test_download_pdf_maps_data_correctly()
     {
         $supplier = $this->makeSupplier([
             'supplier_id' => 3,
-            'name' => 'PT Garasi BMW',
+            'name'        => 'PT Garasi BMW',
             'description' => 'OEM Supplier',
-            'created_at' => now(),
+            'created_at'  => now(),
         ]);
 
         $this->pdfMock->shouldReceive('export')
             ->once()
             ->andReturnUsing(function ($fileName, $query, $mapRow, $options) use ($supplier) {
-                // Validasi nama file
                 $this->assertMatchesRegularExpression(
                     '/^data_supplier_\d{8}\.pdf$/',
                     $fileName,
@@ -232,9 +217,9 @@ class SupplierServiceTest extends TestCase
     {
         $supplier = $this->makeSupplier([
             'supplier_id' => 4,
-            'name' => 'Supplier Kosong',
+            'name'        => 'Supplier Kosong',
             'description' => null,
-            'created_at' => now(),
+            'created_at'  => now(),
         ]);
 
         $this->pdfMock->shouldReceive('export')
@@ -282,6 +267,40 @@ class SupplierServiceTest extends TestCase
 
         $this->supplierService->downloadPdf();
     }
+
+    public function test_download_pdf_created_at_null_throws_error()
+    {
+        $supplier = $this->makeSupplier([
+            'supplier_id' => 6,
+            'name'        => 'Supplier Tanpa Tanggal',
+            'description' => 'Test',
+            'created_at'  => null,
+        ]);
+
+        $capturedMapRow = null;
+
+        $this->pdfMock->shouldReceive('export')
+            ->once()
+            ->andReturnUsing(function ($fileName, $query, $mapRow, $options) use (&$capturedMapRow) {
+                $capturedMapRow = $mapRow;
+                return response()->make('fake-pdf-content', 200);
+            });
+
+        $this->supplierService->downloadPdf();
+
+        $threw = false;
+        try {
+            $capturedMapRow($supplier);
+        } catch (\Error $e) {
+            $threw = true;
+        }
+
+        $this->assertTrue($threw, 'Expected Error to be thrown when created_at is null');
+    }
+
+    // =========================================================================
+    // Exception propagation Tests
+    // =========================================================================
 
     public function test_download_excel_propagates_exception_from_service()
     {
