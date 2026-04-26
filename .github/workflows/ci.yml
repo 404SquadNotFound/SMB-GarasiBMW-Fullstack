@@ -25,17 +25,17 @@ jobs:
           extensions: mbstring, bcmath, pdo, pdo_mysql, pdo_sqlite, xml, xdebug
           coverage: xdebug
 
-      # 3. Install deps
+      # 3. Install dependencies
       - name: Install Composer dependencies
         run: composer install --no-progress --prefer-dist --optimize-autoloader
 
-      # 4. Env setup
+      # 4. Setup environment
       - name: Setup environment
         run: |
           cp .env.example .env
           php artisan key:generate
 
-      # 5. Prepare folder
+      # 5. Prepare build folder
       - name: Prepare build folder
         run: mkdir -p build
 
@@ -43,22 +43,25 @@ jobs:
       - name: Run PHPUnit tests with coverage
         run: php vendor/bin/phpunit --coverage-clover=build/coverage.xml
 
-      # 7. Debug 
+      # 7. Debug (optional tapi bagus)
       - name: Debug coverage file
         run: |
+          echo "Current dir:"
           pwd
+          echo "Root files:"
           ls -la
+          echo "Build files:"
           ls -la build
 
-      # 8. SonarCloud Scan 
+      # 8. SonarCloud Scan (FIXED)
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
             -Dsonar.projectKey=404SquadNotFound_SMB-GarasiBMW-Fullstack
             -Dsonar.organization=404squadnotfound
-            -Dsonar.sources=app,database,routes,config
+            -Dsonar.sources=app
             -Dsonar.tests=tests
             -Dsonar.php.coverage.reportPaths=build/coverage.xml
