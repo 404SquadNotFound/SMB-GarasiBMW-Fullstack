@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\CarType;
 use Illuminate\Http\Request;
+use App\Http\Services\CarTypeService;
+
 
 class CarTypeController extends Controller
 {
@@ -129,41 +131,21 @@ class CarTypeController extends Controller
         ], 200);
     }
 
-    public function exportExcel(Request $request, ExportService $exportService)
-    {
-        $headers = ['No. Chasis', 'Nama', 'Seri', 'Kode Mesin', 'Tipe Mesin', 'Dibuat Oleh'];
-        $query = $this->applyFilters($request); // Menggunakan filter yang sama dengan index
-        $fileName = 'data_mobil_' . date('Ymd_His') . '.xlsx';
+      protected $carTypeService;
 
-        return $exportService->exportToExcel($fileName, $headers, $query, function ($item) {
-            return [
-                $item->chassis_number,
-                $item->name,
-                $item->series,
-                $item->engine_code,
-                $item->engine_type_id,
-                $item->created_by ? $item->creator ? $item->creator->name : '-' : '-',
-            ];
-        });
+    public function __construct(CarTypeService $carTypeService)
+    {
+        $this->carTypeService = $carTypeService;
     }
 
-    public function exportPdf(Request $request, PdfExportService $pdfExportService)
+    public function downloadExcel()
     {
-        $query = $this->applyFilters($request);
-        $fileName = 'data_mobil_' . date('Ymd_His') . '.pdf';
-
-        return $pdfExportService->export(
-            $fileName,
-            $query,
-            fn($item) => [
-                'No. Chasis' => $item->chassis_number,
-                'Nama' => $item->name,
-                'Seri' => $item->series,
-                'Kode Mesin' => $item->engine_code,
-                'Tipe Mesin' => $item->engine_type_id,
-                'Dibuat Oleh' => $item->created_by ? $item->creator ? $item->creator->name : '-' : '-',
-            ],
-            ['title' => 'Laporan Data Tipe Mobil']
-        );
+        return $this->carTypeService->downloadExcel();
     }
+
+    public function downloadPdf()
+    {
+        return $this->carTypeService->downloadPdf();
+    }
+
 }
