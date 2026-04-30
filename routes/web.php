@@ -5,6 +5,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\EngineTypeController;
 use App\Http\Controllers\CarTypeController;
+use App\Http\Controllers\AntrianPengerjaanController;
 
 
 // Route Login
@@ -202,3 +203,18 @@ Route::get('/suku-cadang/edit/{id}', function ($id) {
 Route::get('/suku-cadang/delete/{id}', function ($id) {
     return view('pages.suku_cadang.sukuCadang');
 })->name('suku-cadang.delete');
+
+//buat Antrian Pengerjaan
+Route::get('/antrian-pengerjaan', function () {
+    return view('pages.antrian_pengerjaan.manajemenAntrianPengerjaan');
+})->name('antrian-pengerjaan.index');
+Route::get('/antrian-pengerjaan/create', function () {
+    return view('pages.antrian_pengerjaan.tambahManajemenAntrianPengerjaan');
+})->name('antrian-pengerjaan.create');
+Route::get('/antrian-pengerjaan/{id}', function ($id) {
+    return view('pages.antrian_pengerjaan.detailManajemenAntrianPengerjaan');
+})->name('antrian-pengerjaan.show');
+Route::get('/antrian-pengerjaan/{id}/edit', function ($id) {
+    return view('pages.antrian_pengerjaan.manajemenAntrianPengerjaan');
+})->name('antrian-pengerjaan.edit');
+

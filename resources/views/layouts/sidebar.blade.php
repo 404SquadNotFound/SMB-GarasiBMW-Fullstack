@@ -56,9 +56,9 @@
                     </a>
                 </div>
                 <div class="mx-[12px]">
-                    <a href="#"
+                    <a href="{{ route('antrian-pengerjaan.index') }}"
                         class="block pl-[40px] py-[12px] text-[14px] font-medium transition-colors rounded-[10px]
-                        {{ request()->is('#') ? 'text-[#213F5C] font-bold bg-bmw-active-btn' : 'text-[#526D82] hover:text-bmw-blue' }}">
+                        {{ request()->is('jenis-mesin*') ? 'text-[#213F5C] font-bold bg-bmw-active-btn' : 'text-[#526D82] hover:text-bmw-blue' }}">
                         Antrian Pengerjaan
                     </a>
                 </div>
