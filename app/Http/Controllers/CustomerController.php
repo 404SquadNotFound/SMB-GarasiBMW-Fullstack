@@ -101,7 +101,7 @@ class CustomerController extends Controller
         ], 200);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, CustomerService $customerService)
     {
         $customer = Customer::findOrFail($id);
 
@@ -109,17 +109,69 @@ class CustomerController extends Controller
             'name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
             'address' => 'required|string',
+            'cars' => 'required|array|min:1',
+            'cars.*.car_type_id' => 'required|exists:car_types,car_type_id',
+            'cars.*.license_plate' => 'required|string',
+            'cars.*.km_reading' => 'nullable',
+            'cars.*.year' => 'nullable',
+            'cars.*.engine_name' => 'nullable|string',
         ]);
 
-        $validated['edited_by'] = $request->user()->employees_id ?? 1;
+        $validationResult = $customerService->formatAndValidate($validated['cars']);
 
-        $customer->update($validated);
+        if (!$validationResult['success']) {
+            return response()->json([
+                'message' => $validationResult['message']
+            ], 422);
+        }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Data Pelanggan berhasil diupdate!',
-            'data' => $customer
-        ], 200);
+        $formattedCars = $validationResult['data'];
+
+        DB::beginTransaction();
+
+        try {
+            $customer->update([
+                'name' => $validated['name'],
+                'phone_number' => $validated['phone_number'],
+                'address' => $validated['address'],
+                'edited_by' => $request->user()->employees_id ?? 1
+            ]);
+
+            // Menghapus vehicle lama yang sudah tidak ada
+            $customer->vehicles()->delete();
+
+            // Insert ulang semua vehicle
+            foreach ($formattedCars as $carData) {
+                $carType = CarType::find($carData['car_type_id']);
+                $modelName = $carType ? $carType->name : 'Unknown Model';
+
+                $customer->vehicles()->create([
+                    'car_type_id' => $carData['car_type_id'],
+                    'model' => $modelName,
+                    'license_plate' => $carData['license_plate'],
+                    'odometer' => $carData['km_reading'] ?? 0,
+                    'production_code' => $carData['year'] ?? null,
+                    'engine_code' => $carData['engine_name'] ?? null,
+                    'created_by' => $request->user()->employees_id ?? 1
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data Pelanggan berhasil diupdate!',
+                'data' => $customer->load('vehicles')
+            ], 200);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal update data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function destroy($id)
