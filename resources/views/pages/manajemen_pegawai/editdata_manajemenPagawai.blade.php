@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Edit Data Pegawai')
 @section('title_header', 'Manajemen Pegawai | Edit Pegawai')
@@ -66,9 +66,9 @@
             </div>
 
             <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Email <span class="text-red-500">*</span></label>
-                <input type="email" id="email" required placeholder="nama@email.com"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C] placeholder-gray-400 focus:border-[#1273EB] transition">
+                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Email <span class="text-gray-400 font-normal text-[11px] ml-1">(tidak bisa diubah)</span></label>
+                <input type="email" id="email" required placeholder="nama@email.com" disabled
+                    class="w-full px-5 py-3.5 bg-gray-100 border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-gray-500 cursor-not-allowed">
             </div>
 
             <div>
