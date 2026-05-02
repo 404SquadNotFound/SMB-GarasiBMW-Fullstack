@@ -129,7 +129,9 @@
                     </button>
                     <div id="stokDropdownList"
                         class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
-                        <div id="stokDropdownItems" class="max-h-[380px] overflow-y-auto custom-scrollbar"></div>
+                        <div id="stokDropdownItems" class="max-h-[380px] overflow-y-auto custom-scrollbar">
+                            {{-- Diisi oleh JS --}}
+                        </div>
                     </div>
                 </div>
                 <input type="hidden" id="inputStok" value="">
@@ -168,63 +170,11 @@
 @endsection
 
 @section('content')
-    @include('layouts.form_wrapper', [
+    @include('layouts.form_wrapper_antrian', [
         'backUrl'       => route('antrian-pengerjaan.index'),
         'submitBtnText' => 'Simpan Perubahan',
         'sectionTitle'  => 'Edit Informasi Data Servis',
     ])
-
-    <style>
-        .main-form-content {
-            max-width: 100%;
-            overflow: visible;
-        }
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
-        #stokDropdownWrapper {
-            position: relative;
-        }
-        .stok-option-item {
-            display: flex;
-            align-items: stretch;
-            border-bottom: 1px solid #F0F4FA;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-        .stok-option-item:last-child { border-bottom: none; }
-        .stok-option-item:hover { background-color: #F9FBFF; }
-        .stok-option-item.selected { background-color: #EAF2FF; }
-        .stok-option-left {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 16px;
-            border-right: 1px solid #F0F4FA;
-            min-width: 64px;
-            background-color: #F9FBFF;
-        }
-        .stok-option-left-label { font-size: 11px; color: #9CA3AF; font-weight: 600; margin-bottom: 2px; }
-        .stok-option-left-value { font-size: 22px; font-weight: 800; color: #213F5C; line-height: 1; }
-        .stok-option-right {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 12px 16px;
-            flex: 1;
-        }
-        #stokDropdownItems {
-            max-height: 320px !important;
-            overflow-y: auto !important;
-            display: block !important;
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
-    </style>
 
     <script>
         // ── Ambil ID antrian dari sessionStorage ──────────────────────────────────

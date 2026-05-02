@@ -168,116 +168,11 @@
 @endsection
 
 @section('content')
-    @include('layouts.form_wrapper', [
+    @include('layouts.form_wrapper_antrian', [
         'backUrl'       => route('antrian-pengerjaan.index'),
         'submitBtnText' => 'Simpan Data',
         'sectionTitle'  => 'Informasi Data Servis',
     ])
-
-    <style>
-        .main-form-content {
-            max-width: 100%;
-            overflow: visible;
-        }
-
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
-
-        #stokDropdownWrapper {
-            position: relative;
-        }
-
-        .form-container-class {
-            overflow: visible !important;
-        }
-
-        .stok-option-item {
-            display: flex;
-            align-items: stretch;
-            border-bottom: 1px solid #F0F4FA;
-            cursor: pointer;
-            transition: background 0.15s;
-        }
-        .stok-option-item:last-child {
-            border-bottom: none;
-        }
-        .stok-option-item:hover {
-            background-color: #F9FBFF;
-        }
-        .stok-option-item.selected {
-            background-color: #EAF2FF;
-        }
-        .stok-option-left {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 16px;
-            border-right: 1px solid #F0F4FA;
-            min-width: 64px;
-            background-color: #F9FBFF;
-        }
-        .stok-option-left-label {
-            font-size: 11px;
-            color: #9CA3AF;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-        .stok-option-left-value {
-            font-size: 22px;
-            font-weight: 800;
-            color: #213F5C;
-            line-height: 1;
-        }
-        .stok-option-right {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 12px 16px;
-            flex: 1;
-        }
-        .stok-option-name {
-            font-size: 14px;
-            font-weight: 800;
-            color: #213F5C;
-            margin-bottom: 4px;
-        }
-        .stok-option-name span.qty {
-            font-size: 13px;
-            font-weight: 600;
-            color: #6B7280;
-            margin-left: 6px;
-        }
-        .stok-option-meta {
-            font-size: 11px;
-            color: #9CA3AF;
-        }
-        .stok-option-meta span {
-            margin-right: 4px;
-        }
-
-        #stokDropdownItems {
-            max-height: 320px !important;
-            overflow-y: auto !important;
-            display: block !important;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #d1d5db;
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #9ca3af;
-        }
-    </style>
 
     <script>
         let isDirty = false;
@@ -432,7 +327,6 @@
         }
 
         function openStokDropdown() {
-            // FIX: hanya render ulang jika belum terbuka, cegah DOM reflow berulang
             if (!isStokDropdownOpen) {
                 renderStokOptions();
             }
@@ -464,7 +358,6 @@
             document.getElementById('inputStok').value      = '';
             document.getElementById('inputStokLabel').value = '';
 
-            // FIX: rebuild hanya konten dalam contentContainer, bukan seluruh wrapper
             const contentContainer = document.getElementById('stokDropdownContent');
             if (contentContainer) {
                 contentContainer.innerHTML = `
@@ -497,7 +390,6 @@
             document.getElementById('inputJumlah').value     = '';
             resetStokDropdown();
 
-            // FIX: fokus tanpa menyebabkan scroll jump
             requestAnimationFrame(() => {
                 document.getElementById('inputNamaBarang')?.focus({ preventScroll: true });
             });
@@ -591,7 +483,6 @@
             const keyword = e.target.value.trim();
             if (keyword.length > 0) {
                 renderStokOptions(keyword);
-                // FIX: buka tanpa memanggil renderStokOptions ulang di openStokDropdown
                 document.getElementById('stokDropdownList').classList.remove('hidden');
                 const chevron = document.getElementById('stokDropdownChevron');
                 if (chevron) chevron.style.transform = 'rotate(180deg)';
@@ -666,7 +557,7 @@
                 const tag      = document.activeElement?.tagName?.toLowerCase();
                 const isTyping = ['input', 'textarea', 'select'].includes(tag);
                 if (isTyping) {
-                    e.preventDefault(); // Cegah default (submit form native), tapi jangan trigger submit
+                    e.preventDefault();
                     return;
                 }
                 e.preventDefault();
