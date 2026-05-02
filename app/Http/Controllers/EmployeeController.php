@@ -51,7 +51,7 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'join_date' => 'required|date',
             'birth_date' => 'required|date',
@@ -60,7 +60,18 @@ class EmployeeController extends Controller
             'password' => 'required|min:6',
             'role' => 'required|in:pemilik_bengkel,finance,kepala_bengkel,kepala_admin,admin,karyawan',
             'base_salary' => 'required|numeric',
+        ], [
+            'email.unique' => 'Email ini sudah digunakan! 1 Pegawai harus menggunakan 1 email unik yang berbeda dan tidak boleh sama.'
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        $validated = $validator->validated();
 
         $validated['password'] = Hash::make($validated['password']);
 
@@ -103,11 +114,11 @@ class EmployeeController extends Controller
     public function destroy($id)
     {
         $employee = Employee::findOrFail($id);
-        $employee->update(['status' => false]);
+        $employee->delete();
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Pegawai berhasil dinonaktifkan!',
+            'message' => 'Pegawai berhasil dihapus!',
         ], 200);
     }
 
