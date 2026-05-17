@@ -3,7 +3,6 @@
 namespace App\Http\Services;
 
 use App\Models\Customer;
-use App\Models\CarType;
 use App\Http\Services\ExportService;
 use App\Http\Services\PdfExportService;
 
