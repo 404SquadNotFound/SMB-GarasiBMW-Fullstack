@@ -74,7 +74,7 @@
 
                     <div class="flex items-center gap-3">
                         <div
-                            class="flex items-center gap-2.5 bg-[#F7F9FC] border border-[#D9E2EC] px-3 py-1.5 rounded-lg">
+                            class="flex items-center gap-2.5 bg-[#F7F9FC] border border-[#D9E2EC] px-3 h-12 rounded-lg">
                             <div id="user-initial"
                                 class="w-9 h-9 rounded-full bg-[#213F5C] flex items-center justify-center text-white font-bold text-[14px]">
                                 ?
@@ -87,8 +87,9 @@
                                 </p>
                             </div>
                         </div>
+
                         <button onclick="handleLogout()"
-                            class="flex items-center gap-2 bg-[#FFF5F5] border border-[#FFDADA] text-[#CF3C3C] font-bold px-5 py-2.5 rounded-lg text-[13px] hover:bg-[#FFE8E8] transition-all">
+                            class="flex items-center justify-center gap-2 bg-[#FFF5F5] border border-[#FFDADA] text-[#CF3C3C] font-bold px-5 h-12 rounded-lg text-[13px] hover:bg-[#FFE8E8] transition-all">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5"
                                 viewBox="0 0 24 24">
                                 <path
@@ -130,12 +131,12 @@
             localStorage.setItem('user_role', role);
 
             // Update DOM header langsung
-            const nameEl    = document.getElementById('user-name-header');
-            const roleEl    = document.getElementById('user-role-header');
+            const nameEl = document.getElementById('user-name-header');
+            const roleEl = document.getElementById('user-role-header');
             const initialEl = document.getElementById('user-initial');
 
-            if (nameEl)    nameEl.innerText    = name;
-            if (roleEl)    roleEl.innerText    = role.replace(/_/g, ' ');
+            if (nameEl) nameEl.innerText = name;
+            if (roleEl) roleEl.innerText = role.replace(/_/g, ' ');
             if (initialEl) initialEl.innerText = name.charAt(0).toUpperCase();
         }
 

@@ -88,11 +88,12 @@
                                 <td class="px-6 py-5 text-[#627D98] max-w-[200px] truncate font-medium">${c.address}</td>
                                 <td class="px-6 py-5 text-[#213F5C] font-bold whitespace-nowrap">${plates}</td>
                                 <td class="px-6 py-5 text-[#213F5C] whitespace-nowrap text-[13px]">${models}</td>
-                                <td class="px-6 py-5 text-center">
-                                    <a href="/pelanggan/detail/${c.customer_id}" 
-                                       class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#EAF2FF] text-[#1273EB] border border-[#B1D3FF] rounded-full text-[12px] font-bold hover:bg-[#D4E8FF] transition-all shadow-sm">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                            <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <td class="px-6 py-4.5 text-center">
+                                    <a href="/pelanggan/detail/${c.customer_id}"
+                                        onclick="goToDetail(event, ${c.customer_id})"
+                                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#EAF2FF] text-[#1273EB] border border-[#B1D3FF] rounded-full text-[12px] font-bold hover:bg-[#D4E8FF] transition-all">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                         Detail
                                     </a>
