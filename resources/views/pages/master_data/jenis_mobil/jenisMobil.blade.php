@@ -8,7 +8,7 @@
     <th class="px-6 py-5">Nama Model</th>
     <th class="px-6 py-5">Seri</th>
     <th class="px-6 py-5">Kode Mesin</th>
-    <th class="px-6 py-5 text-center">Action</th>
+    <th class="px-6 py-5 text-center">Aksi</th>
 @endsection
 
 @section('table_body')

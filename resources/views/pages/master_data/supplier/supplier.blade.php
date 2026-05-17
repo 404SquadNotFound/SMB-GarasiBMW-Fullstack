@@ -6,7 +6,7 @@
 @section('table_header')
     <th class="px-6 py-5">Nama Supplier</th>
     <th class="px-6 py-5">Deskripsi</th>
-    <th class="px-6 py-5 text-center">Action</th>
+    <th class="px-6 py-5 text-center">Aksi</th>
 @endsection
 
 @section('table_body')

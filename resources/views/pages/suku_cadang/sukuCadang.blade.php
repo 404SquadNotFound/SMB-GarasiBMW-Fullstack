@@ -11,7 +11,7 @@
     <th class="px-6 py-5">Harga Beli</th>
     <th class="px-6 py-5">Harga Jual</th>
     <th class="px-6 py-5">Stok</th>
-    <th class="px-6 py-5 text-center">Action</th>
+    <th class="px-6 py-5 text-center">Aksi</th>
 @endsection
 
 {{-- 2. WAJIB ADA BODY TABEL --}}

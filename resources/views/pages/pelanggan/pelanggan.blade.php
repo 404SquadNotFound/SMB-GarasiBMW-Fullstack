@@ -9,7 +9,7 @@
     <th class="px-6 py-5 text-[13px] font-bold text-[#627D98] uppercase tracking-wider">Alamat Pengguna</th>
     <th class="px-6 py-5 text-[13px] font-bold text-[#627D98] uppercase tracking-wider">Nomor Polisi</th>
     <th class="px-6 py-5 text-[13px] font-bold text-[#627D98] uppercase tracking-wider">Model Mobil</th>
-    <th class="px-6 py-5 text-center text-[13px] font-bold text-[#627D98] uppercase tracking-wider">Action</th>
+    <th class="px-6 py-5 text-center text-[13px] font-bold text-[#627D98] uppercase tracking-wider">Aksi</th>
 @endsection
 
 @section('table_body')

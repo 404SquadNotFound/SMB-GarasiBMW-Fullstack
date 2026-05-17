@@ -10,7 +10,7 @@
     <th class="px-6 py-5">Kapasitas Oli</th>
     <th class="px-6 py-5">Bahan Bakar</th>
     <th class="px-6 py-5">Kapasitas Mesin</th>
-    <th class="px-6 py-5 text-center">Action</th>
+    <th class="px-6 py-5 text-center">Aksi</th>
 @endsection
 
 {{-- 2. WAJIB ADA BODY TABEL DENGAN ID YANG SESUAI SCRIPT --}}

@@ -10,7 +10,7 @@
     <th class="px-6 py-5">Penalti</th>
     <th class="px-6 py-5">Tabungan</th>
     <th class="px-6 py-5">Role</th>
-    <th class="px-6 py-5 text-center">Action</th>
+    <th class="px-6 py-5 text-center">Aksi</th>
 @endsection
 
 @section('table_body')

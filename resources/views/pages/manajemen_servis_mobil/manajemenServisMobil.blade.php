@@ -11,7 +11,7 @@
     <th class="px-6 py-5">Model Mobil</th>
     <th class="px-6 py-5">Kode Mesin</th>
     <th class="px-6 py-5">Status</th>
-    <th class="px-6 py-5 text-center">Action</th>
+    <th class="px-6 py-5 text-center">Aksi</th>
 @endsection
 
 @section('table_body')
