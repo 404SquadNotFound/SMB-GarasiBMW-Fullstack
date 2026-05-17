@@ -134,11 +134,11 @@
                 const tr  = document.createElement('tr');
                 tr.className = 'hover:bg-[#F9FCFF] transition-colors group';
                 tr.innerHTML = `
-                    <td class="px-6 py-4.5 font-bold text-[#213F5C]">${escHtml(item.name)}</td>
-                    <td class="px-6 py-4.5 text-[#213F5C] font-semibold text-[13px]">${escHtml(item.phone)}</td>
-                    <td class="px-6 py-4.5 text-[#213F5C] font-semibold text-[13px]">${escHtml(item.license_plate)}</td>
-                    <td class="px-6 py-4.5 text-[#213F5C] font-semibold text-[13px]">${escHtml(item.car_model)}</td>
-                    <td class="px-6 py-4.5 text-center">
+                    <td class="px-6 py-[18px] font-bold text-[#213F5C]">${escHtml(item.name)}</td>
+                    <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${escHtml(item.phone)}</td>
+                    <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${escHtml(item.license_plate)}</td>
+                    <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${escHtml(item.car_model)}</td>
+                    <td class="px-6 py-[18px] text-center">
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-[12px] font-bold border ${cfg.bg} ${cfg.text} ${cfg.border}">
                             ${escHtml(item.status)}
                         </span>
