@@ -10,7 +10,7 @@
     <th class="px-6 py-5 whitespace-nowrap">Durasi Kerja</th>
     <th class="px-6 py-5 whitespace-nowrap">Role</th>
     <th class="px-6 py-5 whitespace-nowrap">Status</th>
-    <th class="px-6 py-5 text-center whitespace-nowrap">Aksi</th>
+    <th class="px-6 py-5 text-center whitespace-nowrap">Ak</th>
 @endsection
 
 {{-- 2. WAJIB ADA BODY TABEL DENGAN ID YANG SESUAI SCRIPT --}}
@@ -131,8 +131,15 @@
                                 <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${item.join_date ?? '-'}</td>
                                 <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${item.role}</td>
                                 <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${statusBadge}</td>
-                                <td class="px-6 py-[18px] text-center">
-                                    <a href="/manajemen-pegawai/detail/${item.employees_id}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#EAF2FF] text-[#1273EB] border border-[#B1D3FF] rounded-full text-[12px] font-bold hover:bg-[#D4E8FF]">Detail</a>
+                                <td class="px-6 py-4.5 text-center">
+                                    <a href="/manajemen-pegawai/detail/${item.employees_id}"
+                                        onclick="goToDetail(event, ${item.employees_id})"
+                                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#EAF2FF] text-[#1273EB] border border-[#B1D3FF] rounded-full text-[12px] font-bold hover:bg-[#D4E8FF] transition-all">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        Detail
+                                    </a>
                                 </td>
                             </tr>`;
                     });
