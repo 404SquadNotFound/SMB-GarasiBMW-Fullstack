@@ -14,7 +14,7 @@
     <nav class="flex-1 bg-bmw-light-bg p-[16px] space-y-[4px]">
 
         {{-- Beranda --}}
-        <a href="#"
+        <a href="{{ route('beranda.index') }}"
             class="flex items-center gap-[14px] px-[16px] py-[12px] rounded-[10px] text-[#213F5C] hover:bg-white/50 transition-all group">
             <svg class="w-[22px] h-[22px] text-[#213F5C]/70 group-hover:text-bmw-blue" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m0 0l-7 7-7-7M19 10v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>

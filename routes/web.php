@@ -13,9 +13,12 @@ Route::get('/', function () {
     return view('login');
 })->name('login');
 
+// Route Beranda
+Route::get('/beranda', function () {
+    return view('pages.beranda');
+})->name('beranda.index');
+
 // Route Master Data -> Pelanggan
-
-
 Route::get('/pelanggan', function () {
     return view('pages.pelanggan.pelanggan');
 })->name('pelanggan.index');
