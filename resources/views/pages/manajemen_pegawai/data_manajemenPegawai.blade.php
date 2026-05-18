@@ -24,10 +24,12 @@
 
 @section('content')
     @include('layouts.action_bar', [
-        'placeholder'   => 'Cari Nama Karyawan...',
+        'placeholder' => 'Cari Nama Karyawan...',
         'filterModalId' => 'modalFilterKaryawan',
-        'addUrl'        => route('manajemen-pegawai.create'),
-        'btnText'       => 'Tambah Akun'
+        'addUrl' => route('manajemen-pegawai.create'),
+        'btnText' => 'Tambah Akun',
+        'exportExcelUrl' => route('manajemen-pegawai.export'),
+        'exportPdfUrl' => route('manajemen-pegawai.export.pdf'),
     ])
 
     @include('layouts.table_wrapper')
@@ -36,30 +38,38 @@
     <div id="modalFilterKaryawan" class="fixed inset-0 z-50 hidden overflow-y-auto">
         <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="toggleModal('modalFilterKaryawan')"></div>
         <div class="flex items-center justify-center min-h-screen p-4">
-            <div class="relative bg-white rounded-[20px] shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+            <div
+                class="relative bg-white rounded-[20px] shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
                 <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
                     <h3 class="text-lg font-bold text-[#213F5C]">Filter Karyawan</h3>
                     <button onclick="toggleModal('modalFilterKaryawan')" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
                     </button>
                 </div>
                 <div class="p-6 space-y-4">
                     <div>
                         <label class="block text-[13px] font-bold text-[#627D98] mb-2 uppercase tracking-wider">Role</label>
-                        <select id="filterRole" class="w-full px-4 py-3 bg-[#F9FBFF] border border-[#D9E2EC] rounded-xl outline-none text-[#213F5C] font-semibold">
+                        <select id="filterRole"
+                            class="w-full px-4 py-3 bg-[#F9FBFF] border border-[#D9E2EC] rounded-xl outline-none text-[#213F5C] font-semibold">
                             <option value="">Semua Role</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-[13px] font-bold text-[#627D98] mb-2 uppercase tracking-wider">Status</label>
-                        <select id="filterStatus" class="w-full px-4 py-3 bg-[#F9FBFF] border border-[#D9E2EC] rounded-xl outline-none text-[#213F5C] font-semibold">
+                        <label
+                            class="block text-[13px] font-bold text-[#627D98] mb-2 uppercase tracking-wider">Status</label>
+                        <select id="filterStatus"
+                            class="w-full px-4 py-3 bg-[#F9FBFF] border border-[#D9E2EC] rounded-xl outline-none text-[#213F5C] font-semibold">
                             <option value="">Semua Status</option>
                         </select>
                     </div>
                 </div>
                 <div class="px-6 py-5 bg-gray-50 flex gap-3">
-                    <button onclick="resetFilter()" class="flex-1 py-3 bg-white border border-[#D9E2EC] text-[#627D98] font-bold rounded-xl text-[14px] hover:bg-gray-100 transition-all">Reset</button>
-                    <button onclick="applyFilter()" class="flex-1 py-3 bg-[#1273EB] text-white font-bold rounded-xl text-[14px] hover:bg-[#0E62CC] transition-all shadow-lg shadow-blue-100">Terapkan</button>
+                    <button onclick="resetFilter()"
+                        class="flex-1 py-3 bg-white border border-[#D9E2EC] text-[#627D98] font-bold rounded-xl text-[14px] hover:bg-gray-100 transition-all">Reset</button>
+                    <button onclick="applyFilter()"
+                        class="flex-1 py-3 bg-[#1273EB] text-white font-bold rounded-xl text-[14px] hover:bg-[#0E62CC] transition-all shadow-lg shadow-blue-100">Terapkan</button>
                 </div>
             </div>
         </div>
@@ -87,7 +97,10 @@
             try {
                 const url = `/api/employees?limit=10&search=${search}&role=${role}&status=${status}`;
                 const res = await fetch(url, {
-                    headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
 
                 const result = await res.json();
@@ -120,9 +133,9 @@
                     // RENDER DATA (Kalo ada)
                     items.forEach(item => {
                         const isAktif = item.status == 1 || item.status === true || item.status === 'aktif';
-                        const statusBadge = isAktif
-                            ? '<span class="px-2.5 py-1 rounded-md bg-green-50 text-green-600 text-[11px] font-bold">Aktif</span>'
-                            : '<span class="px-2.5 py-1 rounded-md bg-red-50 text-red-500 text-[11px] font-bold">Non-Aktif</span>';
+                        const statusBadge = isAktif ?
+                            '<span class="px-2.5 py-1 rounded-md bg-green-50 text-green-600 text-[11px] font-bold">Aktif</span>' :
+                            '<span class="px-2.5 py-1 rounded-md bg-red-50 text-red-500 text-[11px] font-bold">Non-Aktif</span>';
 
                         tbody.innerHTML += `
                             <tr class="hover:bg-[#F9FCFF] transition-colors group">
@@ -150,14 +163,15 @@
                 }
             } catch (e) {
                 console.error(e);
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-10 text-red-500">Gagal load data. Cek koneksi API!</td></tr>';
+                tbody.innerHTML =
+                    '<tr><td colspan="6" class="text-center py-10 text-red-500">Gagal load data. Cek koneksi API!</td></tr>';
             }
         }
 
         async function loadFilterOptions() {
             const roleSelect = document.getElementById('filterRole');
             const statusSelect = document.getElementById('filterStatus');
-            
+
             const roleSelected = roleSelect.value;
             const statusSelected = statusSelect.value;
 
@@ -167,26 +181,32 @@
                 if (statusSelected) queryParams.append('status', statusSelected);
 
                 const res = await fetch(`/api/employee-options?${queryParams.toString()}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 const result = await res.json();
-                
+
                 if (res.ok && result.data) {
                     roleSelect.innerHTML = '<option value="">Semua Role</option>';
                     statusSelect.innerHTML = '<option value="">Semua Status</option>';
 
                     if (result.data.roles) {
                         result.data.roles.forEach(r => {
-                            roleSelect.innerHTML += `<option value="${r}" ${r === roleSelected ? 'selected' : ''}>${r}</option>`;
+                            roleSelect.innerHTML +=
+                                `<option value="${r}" ${r === roleSelected ? 'selected' : ''}>${r}</option>`;
                         });
                     }
                     if (result.data.statuses) {
                         Object.entries(result.data.statuses).forEach(([val, label]) => {
-                            statusSelect.innerHTML += `<option value="${val}" ${val === statusSelected ? 'selected' : ''}>${label}</option>`;
+                            statusSelect.innerHTML +=
+                                `<option value="${val}" ${val === statusSelected ? 'selected' : ''}>${label}</option>`;
                         });
                     }
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error(e);
+            }
         }
 
         // Cascading: update options saat filter diganti

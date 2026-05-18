@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
@@ -128,6 +129,8 @@ Route::get('/manajemen-pegawai/edit/{id}', function ($id) {
 Route::get('/manajemen-pegawai/delete/{id}', function ($id) {
     return view('pages.manajemen_pegawai.data_manajemenPegawai');
 })->name('manajemen-pegawai.delete');
+Route::get('/manajemen-pegawai/export', [EmployeeController::class, 'exportExcel'])->name('manajemen-pegawai.export');
+Route::get('/manajemen-pegawai/export/pdf', [EmployeeController::class, 'exportPdf'])->name('manajemen-pegawai.export.pdf');
 
 // Route Kepegawaian -> Laporan Absensi
 Route::get('/laporan-absensi', function () {
