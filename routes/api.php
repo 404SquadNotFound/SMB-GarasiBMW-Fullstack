@@ -6,6 +6,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ServiceTransactionController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SparepartController;
+use App\Http\Controllers\SparepartStockController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\ItemCategoryController;
@@ -63,6 +64,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/spareparts-low-stock', [SparepartController::class, 'lowStock']);
     Route::get('/spareparts-export', [SparepartController::class, 'exportExcel']);
     Route::get('/spareparts-export-pdf', [SparepartController::class, 'exportPdf']);
+
+    // Suku Cadang Stocks (nested resource)
+    Route::get('/spareparts/{sparepartId}/stocks', [SparepartStockController::class, 'index']);
+    Route::post('/spareparts/{sparepartId}/stocks', [SparepartStockController::class, 'store']);
+    Route::post('/spareparts/{sparepartId}/stocks/bulk', [SparepartStockController::class, 'bulkStore']);
+    Route::put('/spareparts/{sparepartId}/stocks/{stockId}', [SparepartStockController::class, 'update']);
+    Route::delete('/spareparts/{sparepartId}/stocks/{stockId}', [SparepartStockController::class, 'destroy']);
 
     // Customer Export
     Route::get('/customers-export', [CustomerController::class, 'exportExcel']);

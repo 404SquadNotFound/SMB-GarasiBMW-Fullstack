@@ -1,11 +1,10 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Tambah Suku Cadang')
 @section('title_header', 'Master Data | Suku Cadang')
 
 @section('form_icon')
-    <div
-        class="w-12 h-12 bg-[#1273EB] rounded-[15px] flex items-center justify-center text-white shadow-lg shadow-blue-200">
+    <div class="w-12 h-12 bg-[#1273EB] rounded-[15px] flex items-center justify-center text-white shadow-lg shadow-blue-200">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"></path>
         </svg>
@@ -15,313 +14,421 @@
 @section('form_title', 'Menambahkan Data Suku Cadang')
 
 @section('form_fields')
-    <form id="addSparePartForm" class="space-y-6">
+    <div class="space-y-6" x-data="sparepartForm()" x-init="init()">
 
-        {{-- Informasi Suku Cadang --}}
-        <div class="bg-white border border-[#E5E9F2] rounded-2xl p-6 space-y-4">
-            <div class="flex items-center gap-2 mb-2">
-                <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
+        {{-- BOX 1: INFORMASI SUKU CADANG --}}
+        <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
+                <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"></path>
                 </svg>
-                <h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Suku Cadang</h3>
+                <h2 class="text-[16px] font-bold text-[#213F5C]">Informasi Suku Cadang</h2>
             </div>
+            <div class="p-8 space-y-6">
 
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kode Barang <span
-                        class="text-red-500">*</span></label>
-                <input type="text" id="item_code" required placeholder="Masukan kode barang"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C] placeholder-gray-400">
-            </div>
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kode Barang
+                        <span class="text-xs font-normal text-gray-400">(otomatis)</span>
+                    </label>
+                    <input type="text" :value="itemCodePreview" readonly placeholder="Pilih kategori dulu..."
+                        class="w-full px-5 py-3.5 bg-gray-100 border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-gray-500 cursor-not-allowed">
+                </div>
 
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Nama Suku Cadang <span
-                        class="text-red-500">*</span></label>
-                <input type="text" id="name" required placeholder="Masukan nama suku cadang"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C] placeholder-gray-400">
-            </div>
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Nama Suku Cadang <span class="text-red-500">*</span></label>
+                    <input type="text" x-model="formData.name" placeholder="Masukkan nama suku cadang"
+                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl focus:border-[#1273EB] transition-all outline-none text-[#213F5C] font-semibold text-[14px]">
+                </div>
 
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kategori <span
-                        class="text-red-500">*</span></label>
-                <select id="item_category_id" required
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C]">
-                    <option value="" disabled selected>Pilih Kategori</option>
-                </select>
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kategori <span class="text-red-500">*</span></label>
+                    <select x-model="formData.item_category_id" @change="onCategoryChange()"
+                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl focus:border-[#1273EB] transition-all outline-none text-[#213F5C] font-semibold text-[14px]">
+                        <option value="">Pilih Kategori</option>
+                        <template x-for="cat in categories" :key="cat.category_id">
+                            <option :value="cat.category_id" :data-name="cat.name" x-text="cat.name"></option>
+                        </template>
+                    </select>
+                </div>
             </div>
         </div>
 
-        {{-- Informasi Mobil Suku Cadang --}}
-        <div class="bg-white border border-[#E5E9F2] rounded-2xl p-6 space-y-4">
-            <div class="flex items-center gap-2 mb-2">
-                <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M8 17H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3M8 17l4 4m0 0l4-4m-4 4V11" />
-                </svg>
-                <h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Mobil Suku Cadang</h3>
+        {{-- BOX 2: INFORMASI MOBIL --}}
+        <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
+                <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" stroke-width="2"></path>
+                        <path d="M13 16H6l-2-5h15l-2 5zM5 11L6.5 6h11L19 11" stroke-width="2"></path>
+                    </svg>
+                </div>
+                <h2 class="text-[16px] font-bold text-[#213F5C]">Informasi Mobil</h2>
             </div>
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Tipe Mobil</label>
-                <select id="car_type"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C]">
-                    <option value="">-- Semua Tipe Mobil --</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kode Mesin</label>
-                <select id="engine_code"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C]">
-                    <option value="">-- Semua Kode Mesin --</option>
-                </select>
-            </div>
-        </div>
-
-        {{-- Harga dan Stok --}}
-        <div class="bg-white border border-[#E5E9F2] rounded-2xl p-6 space-y-4">
-            <div class="flex items-center gap-2 mb-2">
-                <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M8 17H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3M8 17l4 4m0 0l4-4m-4 4V11" />
-                </svg>
-                <h3 class="text-[15px] font-bold text-[#213F5C]">Harga dan Stok</h3>
-            </div> 
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Harga Pokok Produksi (HPP) <span class="text-red-500">*</span></label>
-                <input type="text" id="cost_off_sell" required inputmode="numeric" pattern="[0-9]*" placeholder="Contoh: 500000"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C] placeholder-gray-400">
-            </div>
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Harga Jual <span class="text-red-500">*</span></label>
-                <input type="text" id="selling_price" required inputmode="numeric" pattern="[0-9]*" placeholder="Contoh: 1000000"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C] placeholder-gray-400">
-            </div>
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Jumlah Barang <span class="text-red-500">*</span></label>
-                <input type="text" id="quantity" required inputmode="numeric" pattern="[0-9]*" placeholder="Contoh: 10"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C] placeholder-gray-400">
-            </div>
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Supplier</label>
-                <select id="supplier_id"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C]">
-                    <option value="" disabled selected>Pilih Supplier</option>
-                </select>
-            </div>
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Tanggal Masuk <span
-                        class="text-red-500">*</span></label>
-                <input type="date" id="date" required
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C]">
+            <div class="p-8 space-y-4">
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Tipe Mobil</label>
+                    <select x-model="formData.car_type_id" @change="onCarTypeChange()"
+                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] font-semibold text-[#213F5C]">
+                        <option value="">-- Semua Tipe Mobil --</option>
+                        <template x-for="car in carTypes" :key="car.car_type_id">
+                            <option :value="car.car_type_id" x-text="`${car.chassis_number} - ${car.name} (${car.series})`"></option>
+                        </template>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kode Mesin</label>
+                    <select x-model="formData.engine_code" @change="onEngineChange()"
+                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] font-semibold text-[#213F5C]">
+                        <option value="">-- Semua Kode Mesin --</option>
+                        <template x-for="eng in availableEngines" :key="eng">
+                            <option :value="eng" x-text="eng"></option>
+                        </template>
+                    </select>
+                </div>
             </div>
         </div>
 
-    </form>
+        {{-- BOX 3: STOK & HARGA (Multi-entry, sama pola data mobil pelanggan) --}}
+        <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
+                <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-width="2"></path>
+                    </svg>
+                </div>
+                <h2 class="text-[16px] font-bold text-[#213F5C]">Stok & Harga</h2>
+            </div>
+            <div class="p-8 space-y-6">
+
+                {{-- Daftar entri stok yang sudah ditambahkan --}}
+                <template x-for="(stock, index) in stocks" :key="index">
+                    <div class="bg-white border border-[#E5E9F2] rounded-3xl p-8 flex items-center shadow-sm mb-4">
+                        <div class="w-fit">
+                            <h4 class="text-[18px] font-bold text-[#213F5C]"
+                                x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(stock.selling_price)"></h4>
+                            <p class="text-[13px] text-gray-400 font-bold mt-1"
+                                x-text="stock.supplier_name || 'Tanpa Supplier'"></p>
+                        </div>
+                        <div class="flex-1"></div>
+                        <div class="text-right mr-10">
+                            <p class="text-[20px] font-bold text-[#213F5C]" x-text="stock.quantity + ' pcs'"></p>
+                            <p class="text-[12px] text-gray-400 font-bold uppercase"
+                                x-text="'HPP: Rp ' + new Intl.NumberFormat('id-ID').format(stock.cost_off_sell) + ' | ' + stock.date"></p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button type="button" @click="editStockFromList(index)"
+                                class="p-2 text-blue-500 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                            <button type="button" @click="removeStock(index)"
+                                class="p-2 text-red-500 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </template>
+
+                {{-- Tombol "Tambah Entri Stok" — muncul saat form tersembunyi --}}
+                <button type="button" x-show="!showStockForm" @click="openStockForm()"
+                    class="w-full py-4 bg-[#1273EB] text-white rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-blue-100 hover:bg-[#0E59B8] transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                        <path d="M12 4.5v15m7.5-7.5h-15"></path>
+                    </svg>
+                    Tambah Entri Stok
+                </button>
+
+                {{-- FORM INPUT STOK (inline, sama pola data mobil) --}}
+                <div x-show="showStockForm" class="bg-[#F8FAFF] border border-[#D1E4FF] rounded-3xl p-8 space-y-6" x-transition x-cloak>
+                    <h3 class="text-[14px] font-bold text-[#213F5C]"
+                        x-text="editStockIndex !== null ? 'Ubah Entri Stok' : 'Tambahkan Entri Stok'"></h3>
+                    <div class="grid grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">HPP <span class="text-red-500">*</span></label>
+                            <input type="number" x-model="tempStock.cost_off_sell" placeholder="Contoh: 500000"
+                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C]">
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Harga Jual <span class="text-red-500">*</span></label>
+                            <input type="number" x-model="tempStock.selling_price" placeholder="Contoh: 1000000"
+                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C]">
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Jumlah <span class="text-red-500">*</span></label>
+                            <input type="number" x-model="tempStock.quantity" placeholder="Contoh: 10"
+                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C]">
+                        </div>
+                        <div>
+                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Tanggal Masuk <span class="text-red-500">*</span></label>
+                            <input type="date" x-model="tempStock.date"
+                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C]">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Supplier</label>
+                            <select x-model="tempStock.supplier_id"
+                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px] font-semibold text-[#213F5C]">
+                                <option value="">-- Tanpa Supplier --</option>
+                                <template x-for="sup in suppliers" :key="sup.supplier_id">
+                                    <option :value="sup.supplier_id" x-text="sup.name"></option>
+                                </template>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" @click="addStockToList()"
+                            class="flex-1 py-3.5 bg-[#1273EB] text-white rounded-xl font-bold text-[14px] hover:bg-[#0E59B8]"
+                            x-text="editStockIndex !== null ? 'Simpan Perubahan' : 'Simpan'"></button>
+                        <button type="button" @click="closeStockForm()"
+                            class="px-8 py-3.5 bg-white border border-gray-200 text-gray-500 rounded-xl font-bold text-[14px] hover:bg-gray-50">Batal</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
 @endsection
 
 @section('content')
     @include('layouts.form_wrapper', [
         'backUrl' => route('suku-cadang.index'),
-        'submitBtnText' => 'Simpan Data'
+        'submitBtnText' => 'Simpan Data',
+        'submitBtnId' => 'submitBtnApi',
     ])
 
     <script>
-        const token = localStorage.getItem('access_token');
+        function sparepartForm() {
+            return {
+                formData: { name: '', item_category_id: '', car_type_id: '', engine_code: '' },
+                tempStock: { cost_off_sell: '', selling_price: '', quantity: '', date: '', supplier_id: '' },
+                stocks: [],
+                suppliers: [],
+                categories: [],
+                carTypes: [],
+                allEngines: [],
+                availableEngines: [],
+                showStockForm: false,
+                editStockIndex: null,
+                itemCodePreview: 'Pilih kategori dulu...',
+                token: localStorage.getItem('access_token'),
 
-        // ─── Data stores ──────────────────────────────────────────
-        let allCarTypes = [];   // { car_type_id, name, chassis_number, engine_code: "M54, N42", ... }
-        let allEngines  = [];   // unique engine name strings extracted from car_types
+                async init() {
+                    const headers = { 'Authorization': `Bearer ${this.token}`, 'Accept': 'application/json' };
 
-        // ─── Blokir input non-angka ───────────────────────────────
-        document.querySelectorAll('input[inputmode="numeric"]').forEach(input => {
-            input.addEventListener('keydown', (e) => {
-                const allowed = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab', 'Home', 'End'];
-                if (!allowed.includes(e.key) && !/^[0-9]$/.test(e.key)) e.preventDefault();
-            });
-            input.addEventListener('paste', (e) => {
-                if (!/^[0-9]+$/.test(e.clipboardData.getData('text'))) e.preventDefault();
-            });
-        });
+                    // Load car types
+                    try {
+                        const res = await fetch('/api/car-types?limit=200', { headers });
+                        const r = await res.json();
+                        this.carTypes = r.data?.data ?? r.data ?? [];
+                        // Extract semua engine codes unik
+                        const engineSet = new Set();
+                        this.carTypes.forEach(car => {
+                            if (car.engine_code) {
+                                car.engine_code.split(',').map(e => e.trim()).filter(Boolean).forEach(e => engineSet.add(e));
+                            }
+                        });
+                        this.allEngines = [...engineSet].sort();
+                        this.availableEngines = this.allEngines;
+                    } catch (e) { console.error('Gagal fetch car-types', e); }
 
-        // ─── Fetch & populate dropdowns saat DOM ready ────────────
-        document.addEventListener('DOMContentLoaded', async () => {
-            const headers = { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` };
+                    // Load suppliers
+                    try {
+                        const res = await fetch('/api/suppliers?limit=200', { headers });
+                        const r = await res.json();
+                        this.suppliers = r.data?.data ?? r.data ?? [];
+                    } catch (e) { console.error('Gagal fetch suppliers', e); }
 
-            // 1. Fetch car types (paginated, ambil banyak)
-            try {
-                const res = await fetch('/api/car-types?limit=200', { headers });
-                const result = await res.json();
-                allCarTypes = result.data?.data ?? result.data ?? [];
+                    // Load categories
+                    try {
+                        const res = await fetch('/api/item-categories?limit=200', { headers });
+                        const r = await res.json();
+                        this.categories = r.data?.data ?? r.data ?? [];
+                    } catch (e) { console.error('Gagal fetch categories', e); }
 
-                // Extract unique engine names dari kolom engine_code tiap mobil
-                const engineSet = new Set();
-                allCarTypes.forEach(car => {
-                    if (car.engine_code) {
-                        car.engine_code.split(',').map(e => e.trim()).filter(Boolean).forEach(e => engineSet.add(e));
+                    // Hook tombol simpan di sidebar
+                    const btn = document.getElementById('submitBtnApi');
+                    if (btn) btn.onclick = (e) => { e.preventDefault(); this.submitAllData(); };
+                },
+
+                onCarTypeChange() {
+                    this.formData.engine_code = '';
+                    if (!this.formData.car_type_id) {
+                        this.availableEngines = this.allEngines;
+                        return;
                     }
-                });
-                allEngines = [...engineSet].sort();
+                    const car = this.carTypes.find(c => c.car_type_id == this.formData.car_type_id);
+                    if (car && car.engine_code) {
+                        this.availableEngines = car.engine_code.split(',').map(e => e.trim()).filter(Boolean);
+                    } else {
+                        this.availableEngines = [];
+                    }
+                },
 
-                populateCarTypes(allCarTypes);
-                populateEngines(allEngines);
-            } catch (e) { console.error('Gagal fetch car-types:', e); }
+                onEngineChange() {
+                    if (!this.formData.engine_code) {
+                        this.formData.car_type_id = '';
+                        this.availableEngines = this.allEngines;
+                        return;
+                    }
+                    // Filter tipe mobil yang punya mesin ini
+                    const filtered = this.carTypes.filter(car =>
+                        car.engine_code && car.engine_code.split(',').map(e => e.trim()).includes(this.formData.engine_code)
+                    );
+                    if (filtered.length === 1) this.formData.car_type_id = filtered[0].car_type_id;
+                },
 
-            // 2. Fetch suppliers
-            try {
-                const res = await fetch('/api/suppliers?limit=200', { headers });
-                const result = await res.json();
-                const suppliers = result.data?.data ?? result.data ?? [];
-                const select = document.getElementById('supplier_id');
-                suppliers.forEach(s => {
-                    const opt = document.createElement('option');
-                    opt.value = s.supplier_id;
-                    opt.textContent = s.name;
-                    select.appendChild(opt);
-                });
-            } catch (e) { console.error('Gagal fetch suppliers:', e); }
+                getPrefixFromCategoryName(name) {
+                    const l = name.toLowerCase();
+                    if (l.includes('oli') || l.includes('cairan')) return 'oil';
+                    if (l.includes('pengereman') || l.includes('brake')) return 'brake';
+                    if (l.includes('mesin') || l.includes('engine')) return 'eng';
+                    if (l.includes('kaki') || l.includes('suspension')) return 'susp';
+                    if (l.includes('elektrikal') || l.includes('electrical')) return 'elec';
+                    const p = (l.split(' ')[0] || '').replace(/[^a-z]/g, '');
+                    return p || 'item';
+                },
 
-            // 3. Fetch item categories
-            try {
-                const res = await fetch('/api/item-categories?limit=200', { headers });
-                const result = await res.json();
-                const categories = result.data?.data ?? result.data ?? [];
-                const select = document.getElementById('item_category_id');
-                categories.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c.category_id;
-                    opt.textContent = c.name;
-                    select.appendChild(opt);
-                });
-            } catch (e) { console.error('Gagal fetch item-categories:', e); }
-        });
+                async onCategoryChange() {
+                    const cat = this.categories.find(c => c.category_id == this.formData.item_category_id);
+                    if (!cat) { this.itemCodePreview = 'Pilih kategori dulu...'; return; }
+                    const prefix = this.getPrefixFromCategoryName(cat.name);
+                    this.itemCodePreview = `${prefix}-... (loading)`;
+                    try {
+                        const res = await fetch(`/api/spareparts?search=${encodeURIComponent(prefix + '-')}&limit=200`, {
+                            headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${this.token}` }
+                        });
+                        const r = await res.json();
+                        const items = r.data?.data ?? r.data ?? [];
+                        let maxNum = 0;
+                        items.forEach(item => {
+                            if (item.item_code && item.item_code.startsWith(prefix + '-')) {
+                                const num = parseInt(item.item_code.split('-').pop()) || 0;
+                                if (num > maxNum) maxNum = num;
+                            }
+                        });
+                        this.itemCodePreview = `${prefix}-${maxNum + 1}`;
+                    } catch (e) {
+                        this.itemCodePreview = `${prefix}-1 (estimasi)`;
+                    }
+                },
 
-        // ─── Populate helpers ─────────────────────────────────────
-        function populateCarTypes(cars) {
-            const select = document.getElementById('car_type');
-            // Simpan selected value sebelum clear
-            const currentVal = select.value;
-            select.innerHTML = '<option value="">-- Semua Tipe Mobil --</option>';
-            cars.forEach(car => {
-                const opt = document.createElement('option');
-                opt.value = car.car_type_id;
-                opt.textContent = `${car.chassis_number} - ${car.name} (${car.series})`;
-                select.appendChild(opt);
-            });
-            // Restore selection if still available
-            if (currentVal) select.value = currentVal;
-        }
+                openStockForm() {
+                    this.editStockIndex = null;
+                    this.tempStock = { cost_off_sell: '', selling_price: '', quantity: '', date: '', supplier_id: '' };
+                    this.showStockForm = true;
+                },
 
-        function populateEngines(engines) {
-            const select = document.getElementById('engine_code');
-            const currentVal = select.value;
-            select.innerHTML = '<option value="">-- Semua Kode Mesin --</option>';
-            engines.forEach(name => {
-                const opt = document.createElement('option');
-                opt.value = name;
-                opt.textContent = name;
-                select.appendChild(opt);
-            });
-            if (currentVal) select.value = currentVal;
-        }
+                closeStockForm() { this.showStockForm = false; this.editStockIndex = null; },
 
-        // ─── Cascading filter logic ───────────────────────────────
-        // Saat pilih TIPE MOBIL → filter kode mesin yang tersedia
-        document.getElementById('car_type').addEventListener('change', function() {
-            const selectedCar = this.value;
-            if (!selectedCar) {
-                // Reset: tampilkan semua mesin
-                populateEngines(allEngines);
-                return;
-            }
+                editStockFromList(index) {
+                    this.editStockIndex = index;
+                    this.tempStock = { ...this.stocks[index] };
+                    this.showStockForm = true;
+                },
 
-            // Cari car yang dipilih, extract engine codes-nya
-            const car = allCarTypes.find(c => Number(c.car_type_id) === Number(selectedCar));
-            if (car && car.engine_code) {
-                const availableEngines = car.engine_code.split(',').map(e => e.trim()).filter(Boolean);
-                populateEngines(availableEngines);
-            }
-        });
+                addStockToList() {
+                    if (!this.tempStock.cost_off_sell || !this.tempStock.selling_price || !this.tempStock.quantity || !this.tempStock.date) {
+                        return Swal.fire('Data Belum Lengkap!', 'HPP, Harga Jual, Jumlah, dan Tanggal wajib diisi.', 'warning');
+                    }
+                    const sup = this.suppliers.find(s => s.supplier_id == this.tempStock.supplier_id);
+                    const stockData = {
+                        ...this.tempStock,
+                        cost_off_sell: Number(this.tempStock.cost_off_sell),
+                        selling_price: Number(this.tempStock.selling_price),
+                        quantity:      Number(this.tempStock.quantity),
+                        supplier_name: sup ? sup.name : '',
+                    };
+                    if (this.editStockIndex !== null) {
+                        this.stocks[this.editStockIndex] = stockData;
+                        this.stocks = [...this.stocks]; // trigger Alpine reactivity
+                    } else {
+                        this.stocks.push(stockData);
+                    }
+                    this.closeStockForm();
+                },
 
-        // Saat pilih KODE MESIN → filter tipe mobil yang punya mesin itu
-        document.getElementById('engine_code').addEventListener('change', function() {
-            const selectedEngine = this.value;
-            if (!selectedEngine) {
-                // Reset: tampilkan semua mobil
-                populateCarTypes(allCarTypes);
-                return;
-            }
+                removeStock(index) { this.stocks.splice(index, 1); },
 
-            // Filter mobil yang engine_code-nya mengandung mesin yang dipilih
-            const filteredCars = allCarTypes.filter(car =>
-                car.engine_code && car.engine_code.split(',').map(e => e.trim()).includes(selectedEngine)
-            );
-            populateCarTypes(filteredCars);
-        });
+                async submitAllData() {
+                    if (!this.formData.name.trim()) {
+                        return Swal.fire('Error', 'Nama suku cadang wajib diisi!', 'error');
+                    }
+                    if (!this.formData.item_category_id) {
+                        return Swal.fire('Error', 'Kategori wajib dipilih!', 'error');
+                    }
+                    if (this.stocks.length === 0) {
+                        return Swal.fire('Error', 'Minimal tambahkan 1 entri stok!', 'error');
+                    }
 
-        // Submit handler (di luar forEach)
-        document.getElementById('submitBtnApi').onclick = async (e) => {
-            e.preventDefault();
-            const token = localStorage.getItem('access_token');
+                    const firstStock = this.stocks[0];
+                    const cat = this.categories.find(c => c.category_id == this.formData.item_category_id);
 
-            const categorySelect = document.getElementById('item_category_id');
-            const data = {
-                item_code:        document.getElementById('item_code').value,
-                name:             document.getElementById('name').value,
-                category:         categorySelect.selectedOptions[0]?.text || '',
-                item_category_id: categorySelect.value || null,
-                cost_off_sell:    Number(document.getElementById('cost_off_sell').value) || 0,
-                selling_price:    Number(document.getElementById('selling_price').value),
-                quantity:         Number(document.getElementById('quantity').value),
-                supplier_id:      document.getElementById('supplier_id').value || null,
-                car_type_id:      document.getElementById('car_type').value || null,
-                date:             document.getElementById('date').value,
-            };
+                    const sparepartData = {
+                        name:             this.formData.name,
+                        category:         cat ? cat.name : '',
+                        item_category_id: this.formData.item_category_id,
+                        car_type_id:      this.formData.car_type_id || null,
+                        supplier_id:      firstStock.supplier_id || null,
+                        cost_off_sell:    firstStock.cost_off_sell,
+                        selling_price:    firstStock.selling_price,
+                        quantity:         this.stocks.reduce((s, st) => s + st.quantity, 0),
+                        date:             firstStock.date,
+                    };
 
-            try {
-                Swal.fire({
-                    title: 'Menyimpan data...',
-                    allowOutsideClick: false,
-                    didOpen: () => { Swal.showLoading() }
-                });
+                    Swal.fire({ title: 'Menyimpan data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-                const response = await fetch('/api/spareparts', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify(data)
-                });
+                    try {
+                        // 1. Buat sparepart utama
+                        const res1 = await fetch('/api/spareparts', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${this.token}` },
+                            body: JSON.stringify(sparepartData)
+                        });
+                        const result1 = await res1.json();
 
-                const result = await response.json();
+                        if (!res1.ok) {
+                            let msg = result1.message || 'Gagal menyimpan.';
+                            if (result1.errors) msg = Object.values(result1.errors).flat().join('\n');
+                            return Swal.fire({ icon: 'error', title: 'Gagal Simpan', text: msg });
+                        }
 
-                if (response.ok) {
-                    await Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: 'Data suku cadang baru berhasil disimpan.',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    window.location.href = "{{ route('suku-cadang.index') }}";
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal Simpan',
-                        text: result.message || 'Cek kembali inputan lu brok!'
-                    });
+                        const sparepartId = result1.data?.sparepart_id;
+
+                        // 2. Bulk simpan entri stok
+                        const stockPayload = this.stocks.map(st => ({
+                            cost_off_sell: st.cost_off_sell,
+                            selling_price: st.selling_price,
+                            quantity:      st.quantity,
+                            date:          st.date,
+                            supplier_id:   st.supplier_id || null,
+                        }));
+
+                        await fetch(`/api/spareparts/${sparepartId}/stocks/bulk`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': `Bearer ${this.token}` },
+                            body: JSON.stringify({ stocks: stockPayload })
+                        });
+
+                        await Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: `Data suku cadang & ${this.stocks.length} entri stok berhasil disimpan.`,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                        window.location.href = "{{ route('suku-cadang.index') }}";
+
+                    } catch (e) {
+                        console.error(e);
+                        Swal.fire('Error', 'Terjadi kesalahan koneksi ke server.', 'error');
+                    }
                 }
-            } catch (error) {
-                console.error(error);
-                Swal.fire('Error', 'Terjadi kesalahan koneksi ke server.', 'error');
             }
-        };
+        }
     </script>
+
+    <style>[x-cloak] { display: none !important; }</style>
 @endsection

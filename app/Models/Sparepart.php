@@ -26,4 +26,9 @@ class Sparepart extends Model
     {
         return $this->belongsTo(CarType::class, 'car_type_id', 'car_type_id');
     }
+
+    public function stocks()
+    {
+        return $this->hasMany(SparepartStock::class, 'sparepart_id', 'sparepart_id');
+    }
 }
