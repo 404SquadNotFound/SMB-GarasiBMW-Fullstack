@@ -10,7 +10,7 @@
     <th class="px-6 py-5 whitespace-nowrap">Durasi Kerja</th>
     <th class="px-6 py-5 whitespace-nowrap">Role</th>
     <th class="px-6 py-5 whitespace-nowrap">Status</th>
-    <th class="px-6 py-5 text-center whitespace-nowrap">Ak</th>
+    <th class="px-6 py-5 text-center whitespace-nowrap">Aksi</th>
 @endsection
 
 {{-- 2. WAJIB ADA BODY TABEL DENGAN ID YANG SESUAI SCRIPT --}}
