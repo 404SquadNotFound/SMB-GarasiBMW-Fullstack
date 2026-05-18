@@ -50,54 +50,54 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 
         {{-- Menunggu --}}
-        <div class="bg-white rounded-[16px] border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
-            <div class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <p id="statMenunggu" class="text-[28px] font-bold text-[#213F5C]">–</p>
+                <p id="statMenunggu" class="text-[28px] font-bold text-[#213F5C]"></p>
                 <p class="text-[13px] text-[#627D98] font-semibold">Menunggu</p>
             </div>
         </div>
 
         {{-- Pengecekan --}}
-        <div class="bg-white rounded-[16px] border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
-            <div class="w-11 h-11 rounded-full bg-[#FFF4E5] flex items-center justify-center flex-shrink-0">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full bg-[#FFF4E5] flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5 text-[#F59E0B]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0015.803 15.803z"/>
                 </svg>
             </div>
             <div>
-                <p id="statPengecekan" class="text-[28px] font-bold text-[#F59E0B]">–</p>
+                <p id="statPengecekan" class="text-[28px] font-bold text-[#F59E0B]"></p>
                 <p class="text-[13px] text-[#627D98] font-semibold">Pengecekan</p>
             </div>
         </div>
 
         {{-- Dikerjakan --}}
-        <div class="bg-white rounded-[16px] border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
-            <div class="w-11 h-11 rounded-full bg-[#EAF2FF] flex items-center justify-center flex-shrink-0">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full bg-[#EAF2FF] flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                           d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/>
                 </svg>
             </div>
             <div>
-                <p id="statDikerjakan" class="text-[28px] font-bold text-[#1273EB]">–</p>
+                <p id="statDikerjakan" class="text-[28px] font-bold text-[#1273EB]"></p>
                 <p class="text-[13px] text-[#627D98] font-semibold">Dikerjakan</p>
             </div>
         </div>
 
         {{-- Selesai --}}
-        <div class="bg-white rounded-[16px] border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
-            <div class="w-11 h-11 rounded-full bg-[#E8F5E9] flex items-center justify-center flex-shrink-0">
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
+            <div class="w-11 h-11 rounded-full bg-[#E8F5E9] flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5 text-[#22C55E]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
             <div>
-                <p id="statSelesai" class="text-[28px] font-bold text-[#22C55E]">–</p>
+                <p id="statSelesai" class="text-[28px] font-bold text-[#22C55E]"></p>
                 <p class="text-[13px] text-[#627D98] font-semibold">Selesai</p>
             </div>
         </div>
