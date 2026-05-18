@@ -15,281 +15,280 @@
 @section('form_title', 'Menambahkan Mobil Masuk')
 
 @section('form_fields')
-<div class="space-y-6">
+    <div class="space-y-6">
 
-    {{-- =========================================================
+        {{-- =========================================================
          BOX 1 : Informasi Pemilik Kendaraan
     ========================================================= --}}
-    <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
-        <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
-            <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#1273EB]">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+        <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
+                <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#1273EB]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+                <h2 class="text-[16px] font-bold text-[#213F5C]">Informasi Pemilik Kendaraan</h2>
             </div>
-            <h2 class="text-[16px] font-bold text-[#213F5C]">Informasi Pemilik Kendaraan</h2>
+
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
+                        Nama Lengkap <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="name" required placeholder="Masukkan nama lengkap"
+                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+                </div>
+
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
+                        Nomor Telepon <span class="text-red-500">*</span>
+                    </label>
+
+                    <input type="text" id="phone" required inputmode="numeric" maxlength="12"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Masukkan nomor telepon"
+                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+                </div>
+
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
+                        Alamat <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="address" required placeholder="Masukkan alamat lengkap"
+                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+                </div>
+            </div>
         </div>
 
-        <div class="p-8 space-y-6">
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
-                    Nama Lengkap <span class="text-red-500">*</span>
-                </label>
-                <input type="text" id="name" required placeholder="Masukkan nama lengkap"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
-            </div>
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
-                    Nomor Telepon <span class="text-red-500">*</span>
-                </label>
-                <input type="text" id="phone" required placeholder="Masukkan nomor telepon"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
-            </div>
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
-                    Alamat <span class="text-red-500">*</span>
-                </label>
-                <input type="text" id="address" required placeholder="Masukkan alamat lengkap"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
-            </div>
-        </div>
-    </div>
-
-    {{-- =========================================================
+        {{-- =========================================================
          BOX 2 : Informasi Mobil Pelanggan
     ========================================================= --}}
-    <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
-        <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
-            <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 16H6l-2-6h15l-1 4M3 11l1-4h14" />
-                </svg>
+        <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
+                <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16H6l-2-6h15l-1 4M3 11l1-4h14" />
+                    </svg>
+                </div>
+                <h2 class="text-[16px] font-bold text-[#213F5C]">Informasi Mobil Pelanggan</h2>
             </div>
-            <h2 class="text-[16px] font-bold text-[#213F5C]">Informasi Mobil Pelanggan</h2>
+
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Mobil</label>
+                    <input type="text" id="car_model" placeholder="Masukkan model mobil"
+                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+                </div>
+
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
+                        Nomor Polisi
+                    </label>
+
+                    <input type="text" id="license_plate" maxlength="9" oninput="formatPlatNomor(this)"
+                        placeholder="Contoh: D1234ABC"
+                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+                </div>
+
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kode Mesin</label>
+                    <input type="text" id="engine_code" placeholder="Masukkan kode mesin"
+                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+                </div>
+
+                <div>
+                    <label class="block text-[14px] font-bold text-[#213F5C] mb-2">KM Masuk Mobil</label>
+                    <input type="text" id="km_masuk" placeholder="Masukkan kilometer"
+                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+                </div>
+            </div>
         </div>
 
-        <div class="p-8 space-y-6">
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Mobil</label>
-                <input type="text" id="car_model" placeholder="Masukkan model mobil"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
-            </div>
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Nomor Polisi</label>
-                <input type="text" id="license_plate" placeholder="Masukkan nomor polisi"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
-            </div>
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kode Mesin</label>
-                <input type="text" id="engine_code" placeholder="Masukkan kode mesin"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
-            </div>
-
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">KM Masuk Mobil</label>
-                <input type="text" id="km_masuk" placeholder="Masukkan kilometer"
-                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
-            </div>
-        </div>
-    </div>
-
-    {{-- =========================================================
+        {{-- =========================================================
          BOX 3 : Penggunaan Suku Cadang
     ========================================================= --}}
-    <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
-        <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
-            <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+        <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
+            <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
+                <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+                <h2 class="text-[16px] font-bold text-[#213F5C]">Penggunaan Suku Cadang</h2>
             </div>
-            <h2 class="text-[16px] font-bold text-[#213F5C]">Penggunaan Suku Cadang</h2>
-        </div>
 
-        <div class="p-8 space-y-6">
+            <div class="p-8 space-y-6">
 
-            {{-- List item suku cadang --}}
-            <div id="sukuCadangList" class="space-y-4"></div>
+                {{-- List item suku cadang --}}
+                <div id="sukuCadangList" class="space-y-4"></div>
 
-            {{-- Tombol tambah --}}
-            <button type="button" id="btnTambahSukuCadang"
-                class="w-full py-4 bg-[#1273EB] text-white rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-blue-100 hover:bg-[#0E59B8] transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path d="M12 4.5v15m7.5-7.5h-15"></path>
-                </svg>
-                Tambah Suku Cadang
-            </button>
+                {{-- Tombol tambah --}}
+                <button type="button" id="btnTambahSukuCadang"
+                    class="w-full py-4 bg-[#1273EB] text-white rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-blue-100 hover:bg-[#0E59B8] transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                        <path d="M12 4.5v15m7.5-7.5h-15"></path>
+                    </svg>
+                    Tambah Suku Cadang
+                </button>
 
-            {{-- FORM TAMBAH SUKU CADANG --}}
-            <div id="formSukuCadang"
-                class="hidden bg-[#F8FAFF] border border-[#D1E4FF] rounded-3xl p-8 space-y-6">
+                {{-- FORM TAMBAH SUKU CADANG --}}
+                <div id="formSukuCadang" class="hidden bg-[#F8FAFF] border border-[#D1E4FF] rounded-3xl p-8 space-y-6">
 
-                <h3 class="text-[14px] font-bold text-[#213F5C]">
-                    Tambahkan Penggunaan Suku Cadang
-                </h3>
+                    <h3 class="text-[14px] font-bold text-[#213F5C]">
+                        Tambahkan Penggunaan Suku Cadang
+                    </h3>
 
-                <div class="space-y-5">
+                    <div class="space-y-5">
 
-                    <div>
-                        <label class="block text-[13px] font-bold text-[#213F5C] mb-2">
-                            Nama Barang
-                        </label>
+                        <div>
+                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">
+                                Nama Barang
+                            </label>
 
-                        <input type="text" id="inputNamaBarang"
-                            placeholder="Contoh: Filter Oli BMW"
-                            class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] text-[14px] text-[#213F5C]">
-                    </div>
-
-                    {{-- Dropdown stok --}}
-                    <div>
-                        <label class="block text-[13px] font-bold text-[#213F5C] mb-2">
-                            Stok
-                        </label>
-
-                        <div class="relative" id="stokDropdownWrapper">
-                            <button type="button" id="stokDropdownTrigger"
-                                class="w-full bg-white border border-[#E5E9F2] rounded-xl text-left transition-all focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 outline-none overflow-hidden"
-                                onclick="toggleStokDropdown()">
-
-                                <div id="stokDropdownContent"
-                                    class="flex items-center justify-between min-h-[58px]">
-                                    <span id="stokDropdownLabel"
-                                        class="px-5 py-3.5 text-[13px] text-gray-400">
-                                        Pilih Stok Yang Ingin Digunakan
-                                    </span>
-
-                                    <div class="px-4">
-                                        <svg id="stokDropdownChevron"
-                                            class="w-4 h-4 text-gray-400 transition-transform duration-200"
-                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                stroke-width="2" d="M19 9l-7 7-7-7" />
-                                        </svg>
-                                    </div>
-                                </div>
-                            </button>
-
-                            <div id="stokDropdownList"
-                                class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
-
-                                <div id="stokDropdownItems"
-                                    class="max-h-[380px] overflow-y-auto custom-scrollbar">
-                                </div>
-                            </div>
+                            <input type="text" id="inputNamaBarang" placeholder="Contoh: Filter Oli BMW"
+                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] text-[14px] text-[#213F5C]">
                         </div>
 
-                        <input type="hidden" id="inputStok" value="">
-                        <input type="hidden" id="inputStokLabel" value="">
+                        {{-- Dropdown stok --}}
+                        <div>
+                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">
+                                Stok
+                            </label>
+
+                            <div class="relative" id="stokDropdownWrapper">
+                                <button type="button" id="stokDropdownTrigger"
+                                    class="w-full bg-white border border-[#E5E9F2] rounded-xl text-left transition-all focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 outline-none overflow-hidden"
+                                    onclick="toggleStokDropdown()">
+
+                                    <div id="stokDropdownContent" class="flex items-center justify-between min-h-[58px]">
+                                        <span id="stokDropdownLabel" class="px-5 py-3.5 text-[13px] text-gray-400">
+                                            Pilih Stok Yang Ingin Digunakan
+                                        </span>
+
+                                        <div class="px-4">
+                                            <svg id="stokDropdownChevron"
+                                                class="w-4 h-4 text-gray-400 transition-transform duration-200"
+                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </button>
+
+                                <div id="stokDropdownList"
+                                    class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
+
+                                    <div id="stokDropdownItems" class="max-h-[380px] overflow-y-auto custom-scrollbar">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="inputStok" value="">
+                            <input type="hidden" id="inputStokLabel" value="">
+                        </div>
+
+                        <div>
+                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">
+                                Jumlah Stok Yang Digunakan
+                            </label>
+
+                            <input type="number" id="inputJumlah" placeholder="Contoh: 1" min="1"
+                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] text-[14px] text-[#213F5C]">
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-[13px] font-bold text-[#213F5C] mb-2">
-                            Jumlah Stok Yang Digunakan
-                        </label>
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" id="btnSimpanSukuCadang"
+                            class="flex-1 py-3.5 bg-[#1273EB] text-white rounded-xl font-bold text-[14px] hover:bg-[#0E59B8]">
+                            Simpan
+                        </button>
 
-                        <input type="number" id="inputJumlah"
-                            placeholder="Contoh: 1" min="1"
-                            class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] text-[14px] text-[#213F5C]">
+                        <button type="button" id="btnBatalSukuCadang"
+                            class="px-8 py-3.5 bg-white border border-gray-200 text-gray-500 rounded-xl font-bold text-[14px] hover:bg-gray-50">
+                            Batal
+                        </button>
                     </div>
                 </div>
 
-                <div class="flex gap-3 pt-2">
-                    <button type="button" id="btnSimpanSukuCadang"
-                        class="flex-1 py-3.5 bg-[#1273EB] text-white rounded-xl font-bold text-[14px] hover:bg-[#0E59B8]">
-                        Simpan
-                    </button>
-
-                    <button type="button" id="btnBatalSukuCadang"
-                        class="px-8 py-3.5 bg-white border border-gray-200 text-gray-500 rounded-xl font-bold text-[14px] hover:bg-gray-50">
-                        Batal
-                    </button>
-                </div>
+                <input type="hidden" id="inputSukuCadangJSON" name="suku_cadang" value="[]">
             </div>
-
-            <input type="hidden" id="inputSukuCadangJSON" name="suku_cadang" value="[]">
         </div>
-    </div>
 
-</div>
+    </div>
 @endsection
 
 @section('content')
     @include('layouts.form_wrapper_antrian', [
-        'backUrl'       => route('antrian-pengerjaan.index'),
+        'backUrl' => route('antrian-pengerjaan.index'),
         'submitBtnText' => 'Simpan Data',
-        'sectionTitle'  => 'Informasi Data Servis',
+        'sectionTitle' => 'Informasi Data Servis',
     ])
 
     <script>
         let isDirty = false;
 
         // ── Data dummy stok (TODO Backend: ganti dengan data dari API/Controller) ──
-        const dummyStokList = [
-            {
-                id            : 1,
-                nama          : 'Q8 Oils 5W40 Excel',
-                stok          : 2,
-                harga         : 'Rp 700.000',
-                jumlah_satuan : '1 pcs',
-                tanggal       : '01 Jan 2025',
-                supplier      : 'Milan Motors',
-                cabang        : 'Pelajar Pejuang',
+        const dummyStokList = [{
+                id: 1,
+                nama: 'Q8 Oils 5W40 Excel',
+                stok: 2,
+                harga: 'Rp 700.000',
+                jumlah_satuan: '1 pcs',
+                tanggal: '01 Jan 2025',
+                supplier: 'Milan Motors',
+                cabang: 'Pelajar Pejuang',
             },
             {
-                id            : 2,
-                nama          : 'Filter Oli BMW E46',
-                stok          : 5,
-                harga         : 'Rp 150.000',
-                jumlah_satuan : '1 pcs',
-                tanggal       : '15 Des 2024',
-                supplier      : 'AutoParts Indo',
-                cabang        : 'Pelajar Pejuang',
+                id: 2,
+                nama: 'Filter Oli BMW E46',
+                stok: 5,
+                harga: 'Rp 150.000',
+                jumlah_satuan: '1 pcs',
+                tanggal: '15 Des 2024',
+                supplier: 'AutoParts Indo',
+                cabang: 'Pelajar Pejuang',
             },
             {
-                id            : 3,
-                nama          : 'Busi NGK Iridium',
-                stok          : 8,
-                harga         : 'Rp 120.000',
-                jumlah_satuan : '1 pcs',
-                tanggal       : '20 Des 2024',
-                supplier      : 'NGK Official',
-                cabang        : 'Pelajar Pejuang',
+                id: 3,
+                nama: 'Busi NGK Iridium',
+                stok: 8,
+                harga: 'Rp 120.000',
+                jumlah_satuan: '1 pcs',
+                tanggal: '20 Des 2024',
+                supplier: 'NGK Official',
+                cabang: 'Pelajar Pejuang',
             },
             {
-                id            : 4,
-                nama          : 'Besi ingridium',
-                stok          : 8,
-                harga         : 'Rp 300.000',
-                jumlah_satuan : '1 pcs',
-                tanggal       : '26 Des 2024',
-                supplier      : 'NGK Official',
-                cabang        : 'Pelajar Pejuang',
+                id: 4,
+                nama: 'Besi ingridium',
+                stok: 8,
+                harga: 'Rp 300.000',
+                jumlah_satuan: '1 pcs',
+                tanggal: '26 Des 2024',
+                supplier: 'NGK Official',
+                cabang: 'Pelajar Pejuang',
             },
             {
-                id            : 5,
-                nama          : 'Oli Shell Helix',
-                stok          : 4,
-                harga         : 'Rp 120.000',
-                jumlah_satuan : '1 pcs',
-                tanggal       : '20 Jun 2024',
-                supplier      : 'Milan Motors',
-                cabang        : 'Pelajar Pejuang',
+                id: 5,
+                nama: 'Oli Shell Helix',
+                stok: 4,
+                harga: 'Rp 120.000',
+                jumlah_satuan: '1 pcs',
+                tanggal: '20 Jun 2024',
+                supplier: 'Milan Motors',
+                cabang: 'Pelajar Pejuang',
             },
         ];
 
         // ── State dropdown stok ───────────────────────────────────────────────────
-        let selectedStokId   = null;
+        let selectedStokId = null;
         let selectedStokData = null;
         let isStokDropdownOpen = false;
 
@@ -303,7 +302,8 @@
             );
 
             if (filteredList.length === 0) {
-                container.innerHTML = '<div class="p-4 text-center text-gray-400 text-[14px]">Stok tidak ditemukan...</div>';
+                container.innerHTML =
+                    '<div class="p-4 text-center text-gray-400 text-[14px]">Stok tidak ditemukan...</div>';
                 return;
             }
 
@@ -338,10 +338,10 @@
 
         // ── Pilih stok ────────────────────────────────────────────────────────────
         function selectStok(stok) {
-            selectedStokId   = stok.id;
+            selectedStokId = stok.id;
             selectedStokData = stok;
 
-            document.getElementById('inputStok').value      = stok.id;
+            document.getElementById('inputStok').value = stok.id;
             document.getElementById('inputStokLabel').value = stok.nama;
 
             const namaBarang = document.getElementById('inputNamaBarang');
@@ -410,9 +410,9 @@
 
         // ── Reset tampilan dropdown ke kondisi awal ───────────────────────────────
         function resetStokDropdown() {
-            selectedStokId   = null;
+            selectedStokId = null;
             selectedStokData = null;
-            document.getElementById('inputStok').value      = '';
+            document.getElementById('inputStok').value = '';
             document.getElementById('inputStokLabel').value = '';
 
             const contentContainer = document.getElementById('stokDropdownContent');
@@ -432,23 +432,25 @@
         // ── Suku Cadang State ─────────────────────────────────────────────────────
         let sukuCadangItems = [];
 
-        const btnTambah   = document.getElementById('btnTambahSukuCadang');
-        const formSC      = document.getElementById('formSukuCadang');
+        const btnTambah = document.getElementById('btnTambahSukuCadang');
+        const formSC = document.getElementById('formSukuCadang');
         const btnSimpanSC = document.getElementById('btnSimpanSukuCadang');
-        const btnBatalSC  = document.getElementById('btnBatalSukuCadang');
-        const listEl      = document.getElementById('sukuCadangList');
-        const hiddenJSON  = document.getElementById('inputSukuCadangJSON');
+        const btnBatalSC = document.getElementById('btnBatalSukuCadang');
+        const listEl = document.getElementById('sukuCadangList');
+        const hiddenJSON = document.getElementById('inputSukuCadangJSON');
 
         btnTambah.addEventListener('click', () => {
             formSC.classList.remove('hidden');
             btnTambah.classList.add('hidden');
 
             document.getElementById('inputNamaBarang').value = '';
-            document.getElementById('inputJumlah').value     = '';
+            document.getElementById('inputJumlah').value = '';
             resetStokDropdown();
 
             requestAnimationFrame(() => {
-                document.getElementById('inputNamaBarang')?.focus({ preventScroll: true });
+                document.getElementById('inputNamaBarang')?.focus({
+                    preventScroll: true
+                });
             });
         });
 
@@ -459,7 +461,7 @@
         });
 
         btnSimpanSC.addEventListener('click', () => {
-            const nama   = document.getElementById('inputNamaBarang').value.trim();
+            const nama = document.getElementById('inputNamaBarang').value.trim();
             const jumlah = document.getElementById('inputJumlah').value.trim();
 
             if (!nama || !jumlah) {
@@ -467,24 +469,28 @@
                 return;
             }
 
-            const now       = new Date();
-            const stokLabel = selectedStokData ? selectedStokData.nama     : '-';
-            const harga     = selectedStokData ? selectedStokData.harga    : '-';
-            const supplier  = selectedStokData ? selectedStokData.supplier : '-';
-            const cabang    = selectedStokData ? selectedStokData.cabang   : '-';
-            const stokJml   = selectedStokData ? selectedStokData.stok     : '-';
-            const tanggal   = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+            const now = new Date();
+            const stokLabel = selectedStokData ? selectedStokData.nama : '-';
+            const harga = selectedStokData ? selectedStokData.harga : '-';
+            const supplier = selectedStokData ? selectedStokData.supplier : '-';
+            const cabang = selectedStokData ? selectedStokData.cabang : '-';
+            const stokJml = selectedStokData ? selectedStokData.stok : '-';
+            const tanggal = now.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
 
             sukuCadangItems.push({
-                id        : Date.now(),
+                id: Date.now(),
                 nama,
-                deskripsi : stokLabel,
+                deskripsi: stokLabel,
                 harga,
-                jumlah    : jumlah + ' pcs',
+                jumlah: jumlah + ' pcs',
                 tanggal,
                 supplier,
                 cabang,
-                stok      : stokJml,
+                stok: stokJml,
             });
 
             renderSukuCadang();
@@ -508,7 +514,8 @@
             listEl.innerHTML = '';
             sukuCadangItems.forEach(item => {
                 const el = document.createElement('div');
-                el.className = 'flex items-center justify-between p-4 bg-[#F9FBFF] rounded-[12px] border border-[#E5E9F2]';
+                el.className =
+                    'flex items-center justify-between p-4 bg-[#F9FBFF] rounded-[12px] border border-[#E5E9F2]';
                 el.innerHTML = `
                     <div>
                         <p class="text-[13px] font-bold text-[#213F5C]">${escHtml(item.nama)}</p>
@@ -536,7 +543,7 @@
         }
 
         // ── Filter dropdown saat mengetik di inputNamaBarang ─────────────────────
-        document.getElementById('inputNamaBarang').addEventListener('input', function (e) {
+        document.getElementById('inputNamaBarang').addEventListener('input', function(e) {
             const keyword = e.target.value.trim();
             if (keyword.length > 0) {
                 renderStokOptions(keyword);
@@ -549,21 +556,63 @@
             }
         });
 
+        // ── Format nomor polisi Indonesia ─────────────────────────────
+        // ── Format nomor polisi Indonesia ─────────────────────────────
+        function formatPlatNomor(input) {
+            let value = input.value.toUpperCase();
+
+            // Hapus semua karakter selain huruf & angka
+            value = value.replace(/[^A-Z0-9]/g, '');
+
+            let depan = '';
+            let angka = '';
+            let belakang = '';
+
+            // Maks 2 huruf depan
+            const depanMatch = value.match(/^[A-Z]{0,2}/);
+            if (depanMatch) {
+                depan = depanMatch[0];
+            }
+
+            // Sisa setelah huruf depan
+            let sisa = value.substring(depan.length);
+
+            // Maks 4 angka
+            const angkaMatch = sisa.match(/^[0-9]{0,4}/);
+            if (angkaMatch) {
+                angka = angkaMatch[0];
+            }
+
+            // Sisa setelah angka
+            sisa = sisa.substring(angka.length);
+
+            // Maks 3 huruf belakang
+            const belakangMatch = sisa.match(/^[A-Z]{0,3}/);
+            if (belakangMatch) {
+                belakang = belakangMatch[0];
+            }
+
+            input.value = depan + angka + belakang;
+        }
+
         // ── Dirty flag ────────────────────────────────────────────────────────────
         document.querySelectorAll('input, select').forEach(el => {
             el.addEventListener('input', () => isDirty = true);
         });
 
         window.addEventListener('beforeunload', (e) => {
-            if (isDirty) { e.preventDefault(); e.returnValue = ''; }
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
         });
 
         // ── Submit — simpan ke localStorage ───────────────────────────────────────
         document.getElementById('submitBtnApi').addEventListener('click', async (e) => {
             e.preventDefault();
 
-            const nameVal    = document.getElementById('name').value.trim();
-            const phoneVal   = document.getElementById('phone').value.trim();
+            const nameVal = document.getElementById('name').value.trim();
+            const phoneVal = document.getElementById('phone').value.trim();
             const addressVal = document.getElementById('address').value.trim();
 
             if (!nameVal || !phoneVal || !addressVal) {
@@ -571,32 +620,41 @@
                 return;
             }
 
-            Swal.fire({ title: 'Menyimpan data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({
+                title: 'Menyimpan data...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
 
-            const list  = JSON.parse(localStorage.getItem('antrianList') || '[]');
+            const list = JSON.parse(localStorage.getItem('antrianList') || '[]');
             const newId = list.length > 0 ? Math.max(...list.map(i => i.id)) + 1 : 1;
 
             const now = new Date();
             const formattedDate = now.toLocaleDateString('id-ID', {
-                day: '2-digit', month: 'long', year: 'numeric',
-            }) + ', ' + now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+            }) + ', ' + now.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
 
             const userName = localStorage.getItem('user_name') || 'Admin';
 
             const newItem = {
-                id            : newId,
-                name          : nameVal,
-                phone         : phoneVal,
-                address       : addressVal,
-                car_model     : document.getElementById('car_model').value.trim()     || '-',
-                license_plate : document.getElementById('license_plate').value.trim() || '-',
-                engine_code   : document.getElementById('engine_code').value.trim()   || '-',
-                km_masuk      : document.getElementById('km_masuk').value.trim()      || '-',
-                status        : 'Pengecekan',
-                created_by    : userName,
-                created_at    : formattedDate,
-                updated_at    : formattedDate,
-                suku_cadang   : sukuCadangItems,
+                id: newId,
+                name: nameVal,
+                phone: phoneVal,
+                address: addressVal,
+                car_model: document.getElementById('car_model').value.trim() || '-',
+                license_plate: document.getElementById('license_plate').value.trim() || '-',
+                engine_code: document.getElementById('engine_code').value.trim() || '-',
+                km_masuk: document.getElementById('km_masuk').value.trim() || '-',
+                status: 'Pengecekan',
+                created_by: userName,
+                created_at: formattedDate,
+                updated_at: formattedDate,
+                suku_cadang: sukuCadangItems,
             };
 
             list.push(newItem);
@@ -604,14 +662,19 @@
 
             isDirty = false;
 
-            await Swal.fire({ icon: 'success', title: 'Berhasil!', timer: 2000, showConfirmButton: false });
+            await Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                timer: 2000,
+                showConfirmButton: false
+            });
             window.location.href = "{{ route('antrian-pengerjaan.index') }}";
         });
 
         // ── Enter key — FIX: jangan trigger submit saat user sedang mengetik di input ──
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                const tag      = document.activeElement?.tagName?.toLowerCase();
+                const tag = document.activeElement?.tagName?.toLowerCase();
                 const isTyping = ['input', 'textarea', 'select'].includes(tag);
                 if (isTyping) {
                     e.preventDefault();
