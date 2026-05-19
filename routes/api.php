@@ -39,6 +39,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route custom buat update status servis
     Route::put('/transactions/{id}/status', [ServiceTransactionController::class, 'updateStatus']);
 
+    // Endpoint data stok suku cadang untuk dropdown antrian pengerjaan
+    Route::get('/spareparts-for-antrian', [SparepartController::class, 'listForAntrian']);
+
+    // Endpoint data pelanggan + kendaraan untuk dropdown antrian pengerjaan
+    Route::get('/customers-for-antrian', [CustomerController::class, 'listForAntrian']);
+
     // Kategori Barang Export
     Route::get('/item-categories-export', [ItemCategoryController::class, 'exportExcel']);
     Route::get('/item-categories-export-pdf', [ItemCategoryController::class, 'exportPdf']);
