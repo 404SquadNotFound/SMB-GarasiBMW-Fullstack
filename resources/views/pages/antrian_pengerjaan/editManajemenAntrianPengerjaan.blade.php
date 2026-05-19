@@ -16,156 +16,186 @@
 @section('form_title', 'Edit Data Mobil Masuk')
 
 @section('form_fields')
-<div class="main-form-content">
+<div class="space-y-6">
 
     {{-- =========================================================
-         SECTION 1 : Informasi Pemilik Kendaraan
+         BOX 1 : Informasi Pemilik Kendaraan
     ========================================================= --}}
-    <div class="space-y-5">
-        <div class="flex items-center gap-2 pb-3 border-b border-[#F0F4FA]">
-            <svg class="w-4 h-4 text-[#1273EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            <h3 class="text-[14px] font-bold text-[#213F5C]">Informasi Pemilik Kendaraan</h3>
-        </div>
-        <div>
-            <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
-                Nama Lengkap <span class="text-red-500">*</span>
-            </label>
-            <input type="text" id="name" required placeholder="Masukkan nama lengkap"
-                class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[13px] text-[#213F5C] placeholder-gray-300">
-        </div>
-        <div>
-            <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
-                Nomor Telepon <span class="text-red-500">*</span>
-            </label>
-            <input type="text" id="phone" required placeholder="Masukkan nomor telepon"
-                class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[13px] text-[#213F5C] placeholder-gray-300">
-        </div>
-        <div>
-            <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
-                Alamat <span class="text-red-500">*</span>
-            </label>
-            <input type="text" id="address" required placeholder="Masukkan alamat lengkap"
-                class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[13px] text-[#213F5C] placeholder-gray-300">
-        </div>
-    </div>
-
-    {{-- =========================================================
-         SECTION 2 : Informasi Mobil Pelanggan
-    ========================================================= --}}
-    <div class="space-y-5 pt-2">
-        <div class="flex items-center gap-2 pb-3 border-b border-[#F0F4FA]">
-            <svg class="w-4 h-4 text-[#1273EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M13 16H6l-2-6h15l-1 4M3 11l1-4h14" />
-            </svg>
-            <h3 class="text-[14px] font-bold text-[#213F5C]">Informasi Mobil Pelanggan</h3>
-        </div>
-        <div>
-            <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Mobil</label>
-            <input type="text" id="car_model" placeholder="Masukkan model mobil"
-                class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[13px] text-[#213F5C] placeholder-gray-300">
-        </div>
-        <div>
-            <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Nomor Polisi</label>
-            <input type="text" id="license_plate" placeholder="Masukkan nomor polisi"
-                class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[13px] text-[#213F5C] placeholder-gray-300">
-        </div>
-        <div>
-            <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kode Mesin</label>
-            <input type="text" id="engine_code" placeholder="Masukkan kode mesin"
-                class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[13px] text-[#213F5C] placeholder-gray-300">
-        </div>
-        <div>
-            <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Km Masuk Mobil</label>
-            <input type="text" id="km_masuk" placeholder="Masukkan kilometer"
-                class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[13px] text-[#213F5C] placeholder-gray-300">
-        </div>
-    </div>
-
-    {{-- =========================================================
-         SECTION 3 : Penggunaan Suku Cadang
-    ========================================================= --}}
-    <div class="space-y-4 pt-2">
-        <div class="flex items-center gap-2 pb-3 border-b border-[#F0F4FA]">
-            <svg class="w-4 h-4 text-[#1273EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <h3 class="text-[14px] font-bold text-[#213F5C]">Penggunaan Suku Cadang</h3>
+    <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
+        <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
+            <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#1273EB]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </div>
+            <h2 class="text-[16px] font-bold text-[#213F5C]">Informasi Pemilik Kendaraan</h2>
         </div>
 
-        {{-- List item suku cadang yang sudah ada --}}
-        <div id="sukuCadangList" class="space-y-3"></div>
-
-        {{-- Form inline tambah suku cadang (hidden by default) --}}
-        <div id="formSukuCadang" class="hidden border border-[#E5E9F2] rounded-[14px] p-5 bg-[#F9FBFF] space-y-4">
+        <div class="p-8 space-y-6">
             <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Nama Barang</label>
-                <input type="text" id="inputNamaBarang" placeholder="Contoh: Filter Oli BMW"
-                    class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[13px] text-[#213F5C] placeholder-gray-300">
+                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
+                    Nama Lengkap <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="name" required placeholder="Masukkan nama lengkap"
+                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
             </div>
 
-            {{-- Custom Dropdown Stok --}}
             <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Stok</label>
-                <div class="relative" id="stokDropdownWrapper">
-                    <button type="button" id="stokDropdownTrigger"
-                        class="w-full bg-white border border-[#E5E9F2] rounded-xl text-left transition-all focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 outline-none overflow-hidden"
-                        onclick="toggleStokDropdown()">
-                        <div id="stokDropdownContent" class="flex items-center justify-between min-h-[58px]">
-                            <span id="stokDropdownLabel" class="px-5 py-3.5 text-[13px] text-gray-400">Pilih Stok Yang Ingin Digunakan</span>
-                            <div class="px-4">
-                                <svg id="stokDropdownChevron" class="w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                                </svg>
+                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
+                    Nomor Telepon <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="phone" required placeholder="Masukkan nomor telepon"
+                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+            </div>
+
+            <div>
+                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
+                    Alamat <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="address" required placeholder="Masukkan alamat lengkap"
+                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+            </div>
+        </div>
+    </div>
+
+    {{-- =========================================================
+         BOX 2 : Informasi Mobil Pelanggan
+    ========================================================= --}}
+    <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
+        <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
+            <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 16H6l-2-6h15l-1 4M3 11l1-4h14" />
+                </svg>
+            </div>
+            <h2 class="text-[16px] font-bold text-[#213F5C]">Informasi Mobil Pelanggan</h2>
+        </div>
+
+        <div class="p-8 space-y-6">
+            <div>
+                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Mobil</label>
+                <input type="text" id="car_model" placeholder="Masukkan model mobil"
+                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+            </div>
+
+            <div>
+                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Nomor Polisi</label>
+                <input type="text" id="license_plate" placeholder="Masukkan nomor polisi"
+                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+            </div>
+
+            <div>
+                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kode Mesin</label>
+                <input type="text" id="engine_code" placeholder="Masukkan kode mesin"
+                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+            </div>
+
+            <div>
+                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Km Masuk Mobil</label>
+                <input type="text" id="km_masuk" placeholder="Masukkan kilometer"
+                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+            </div>
+        </div>
+    </div>
+
+    {{-- =========================================================
+         BOX 3 : Penggunaan Suku Cadang
+    ========================================================= --}}
+    <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
+        <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
+            <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </div>
+            <h2 class="text-[16px] font-bold text-[#213F5C]">Penggunaan Suku Cadang</h2>
+        </div>
+
+        <div class="p-8 space-y-6">
+
+            {{-- List item suku cadang yang sudah ada --}}
+            <div id="sukuCadangList" class="space-y-4"></div>
+
+            {{-- Tombol Tambah Suku Cadang --}}
+            <button type="button" id="btnTambahSukuCadang"
+                class="w-full py-4 bg-[#1273EB] text-white rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-blue-100 hover:bg-[#0E59B8] transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path d="M12 4.5v15m7.5-7.5h-15"></path>
+                </svg>
+                Tambah Suku Cadang
+            </button>
+
+            {{-- Form inline tambah suku cadang (hidden by default) --}}
+            <div id="formSukuCadang" class="hidden bg-[#F8FAFF] border border-[#D1E4FF] rounded-3xl p-8 space-y-6">
+
+                <h3 class="text-[14px] font-bold text-[#213F5C]">
+                    Tambahkan Penggunaan Suku Cadang
+                </h3>
+
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Nama Barang</label>
+                        <input type="text" id="inputNamaBarang" placeholder="Contoh: Filter Oli BMW"
+                            class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] text-[14px] text-[#213F5C]">
+                    </div>
+
+                    {{-- Custom Dropdown Stok --}}
+                    <div>
+                        <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Stok</label>
+                        <div class="relative" id="stokDropdownWrapper">
+                            <button type="button" id="stokDropdownTrigger"
+                                class="w-full bg-white border border-[#E5E9F2] rounded-xl text-left transition-all focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 outline-none overflow-hidden"
+                                onclick="toggleStokDropdown()">
+                                <div id="stokDropdownContent" class="flex items-center justify-between min-h-[58px]">
+                                    <span id="stokDropdownLabel" class="px-5 py-3.5 text-[13px] text-gray-400">Pilih Stok Yang Ingin Digunakan</span>
+                                    <div class="px-4">
+                                        <svg id="stokDropdownChevron" class="w-4 h-4 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            </button>
+                            <div id="stokDropdownList"
+                                class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
+                                <div id="stokDropdownItems" class="max-h-[380px] overflow-y-auto custom-scrollbar">
+                                    {{-- Diisi oleh JS --}}
+                                </div>
                             </div>
                         </div>
-                    </button>
-                    <div id="stokDropdownList"
-                        class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
-                        <div id="stokDropdownItems" class="max-h-[380px] overflow-y-auto custom-scrollbar">
-                            {{-- Diisi oleh JS --}}
-                        </div>
+                        <input type="hidden" id="inputStok" value="">
+                        <input type="hidden" id="inputStokLabel" value="">
+                    </div>
+
+                    <div>
+                        <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Jumlah Stok Yang Digunakan</label>
+                        <input type="number" id="inputJumlah" placeholder="Contoh: 1" min="1"
+                            class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] text-[14px] text-[#213F5C]">
                     </div>
                 </div>
-                <input type="hidden" id="inputStok" value="">
-                <input type="hidden" id="inputStokLabel" value="">
+
+                <div class="flex gap-3 pt-2">
+                    <button type="button" id="btnSimpanSukuCadang"
+                        class="flex-1 py-3.5 bg-[#1273EB] text-white rounded-xl font-bold text-[14px] hover:bg-[#0E59B8] transition-all">
+                        Simpan
+                    </button>
+                    <button type="button" id="btnBatalSukuCadang"
+                        class="px-8 py-3.5 bg-white border border-gray-200 text-gray-500 rounded-xl font-bold text-[14px] hover:bg-gray-50 transition-all">
+                        Batal
+                    </button>
+                </div>
             </div>
 
-            <div>
-                <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Jumlah Stok Yang Digunakan</label>
-                <input type="number" id="inputJumlah" placeholder="Contoh: 1" min="1"
-                    class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[13px] text-[#213F5C] placeholder-gray-300">
-            </div>
-            <div class="flex gap-3 pt-1">
-                <button type="button" id="btnSimpanSukuCadang"
-                    class="flex-1 py-3 bg-[#1273EB] text-white rounded-xl font-bold text-[13px] hover:bg-[#0E59B8] transition-all">
-                    Simpan
-                </button>
-                <button type="button" id="btnBatalSukuCadang"
-                    class="px-6 py-3 bg-white border border-[#E5E9F2] text-[#213F5C] rounded-xl font-bold text-[13px] hover:bg-gray-50 transition-all">
-                    Batal
-                </button>
-            </div>
+            <input type="hidden" id="inputSukuCadangJSON" name="suku_cadang" value="[]">
         </div>
-
-        {{-- Tombol Tambah Suku Cadang --}}
-        <button type="button" id="btnTambahSukuCadang"
-            class="w-full flex items-center justify-center gap-2 py-3.5 bg-[#1273EB] text-white rounded-xl font-bold text-[14px] hover:bg-[#0E59B8] transition-all">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-            </svg>
-            Tambah Suku Cadang
-        </button>
-
-        <input type="hidden" id="inputSukuCadangJSON" name="suku_cadang" value="[]">
     </div>
+
 </div>
 @endsection
 
@@ -569,7 +599,7 @@
             if (backBtn) {
                 const detailUrl = "{{ route('antrian-pengerjaan.show', ':id') }}".replace(':id', id);
                 backBtn.setAttribute('href', detailUrl);
-                
+
                 backBtn.addEventListener('click', (ev) => {
                     ev.preventDefault();
                     if (isDirty) {
