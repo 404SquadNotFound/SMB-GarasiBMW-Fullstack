@@ -195,4 +195,44 @@ class CustomerController extends Controller
     {
         return $customerService->downloadPdf();
     }
+
+    /**
+     * List pelanggan + kendaraan mereka untuk dropdown di antrian pengerjaan
+     */
+    public function listForAntrian(Request $request)
+    {
+        $query = Customer::with(['vehicles']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('phone_number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $customers = $query->orderBy('name')->limit(30)->get()->map(function ($c) {
+            return [
+                'id'           => $c->customer_id,
+                'nama'         => $c->name,
+                'telepon'      => $c->phone_number,
+                'alamat'       => $c->address,
+                'vehicles'     => $c->vehicles->map(function ($v) {
+                    return [
+                        'id'            => $v->vehicles_id,
+                        'model'         => $v->model,
+                        'license_plate' => $v->license_plate,
+                        'engine_code'   => $v->engine_code,
+                        'odometer'      => $v->odometer,
+                        'label'         => $v->model . ' — ' . $v->license_plate,
+                    ];
+                })->values(),
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $customers,
+        ]);
+    }
 }

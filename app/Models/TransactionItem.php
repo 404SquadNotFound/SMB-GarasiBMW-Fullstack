@@ -11,6 +11,12 @@ class TransactionItem extends Model
 
     protected $primaryKey = 'item_id';
     protected $guarded = [];
+    protected $appends = ['quantity'];
+
+    public function getQuantityAttribute(): int
+    {
+        return $this->qty ?? 0;
+    }
 
     public function transaction()
     {

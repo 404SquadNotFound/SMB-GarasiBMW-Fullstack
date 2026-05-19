@@ -234,4 +234,32 @@ class SparepartController extends Controller
             ]
         );
     }
+
+    /**
+     * List suku cadang untuk dropdown di antrian pengerjaan
+     */
+    public function listForAntrian()
+    {
+        $spareparts = Sparepart::with(['supplier'])
+            ->where('quantity', '>', 0)
+            ->orderBy('name')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id'            => $item->sparepart_id,
+                    'nama'          => $item->name,
+                    'stok'          => $item->quantity,
+                    'harga'         => 'Rp ' . number_format($item->selling_price, 0, ',', '.'),
+                    'selling_price' => $item->selling_price,
+                    'jumlah_satuan' => '1 pcs',
+                    'tanggal'       => $item->date ? \Carbon\Carbon::parse($item->date)->format('d M Y') : '-',
+                    'supplier'      => $item->supplier?->name ?? '-',
+                ];
+            });
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $spareparts,
+        ]);
+    }
 }
