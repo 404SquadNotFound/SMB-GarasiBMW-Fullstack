@@ -22,13 +22,13 @@
 
 @section('content')
     @include('layouts.action_bar', [
-        'placeholder'    => 'Cari Antrian Pengerjaan...',
-        'addUrl'         => route('antrian-pengerjaan.create'),
-        'btnText'        => 'Tambah Antrian',
+        'placeholder' => 'Cari Antrian Pengerjaan...',
+        'addUrl' => route('antrian-pengerjaan.create'),
+        'btnText' => 'Tambah Antrian',
     ])
     @include('layouts.table_wrapper', [
-        'from'  => 1,
-        'to'    => 3,
+        'from' => 1,
+        'to' => 3,
         'total' => 3,
     ])
 
@@ -37,61 +37,58 @@
         (function initDummyData() {
             const existing = localStorage.getItem('antrianList');
             if (!existing) {
-                const dummy = [
-                    {
-                        id            : 1,
-                        name          : 'Edsel Septa Haryanto',
-                        phone         : '085155030650',
-                        license_plate : 'B 1040 JAW',
-                        car_model     : 'BMW E46 318i',
-                        status        : 'Pengecekan',
-                        address       : 'Komplek Taman Bumi Prima Blok O no 8, Kecamatan Cibabat, Kelurahan Cimahi Utara, Kota Cimahi',
-                        engine_code   : 'N42',
-                        km_masuk      : '180.000 Km',
-                        created_by    : 'Edsel Septa Haryanto',
-                        created_at    : '27 Januari 2025, 08:00',
-                        updated_at    : '27 Januari 2025, 09:00',
-                        suku_cadang   : [
-                            {
-                                id       : 1,
-                                nama     : 'Q8 Oils 5W40 excel 5 liter',
-                                deskripsi: 'oli mesin bmw',
-                                harga    : 'Rp 700.000',
-                                jumlah   : '1 pcs',
-                                tanggal  : '01 Januari 2025',
-                                supplier : 'Milan Motors',
-                            }
-                        ],
+                const dummy = [{
+                        id: 1,
+                        name: 'Edsel Septa Haryanto',
+                        phone: '085155030650',
+                        license_plate: 'B 1040 JAW',
+                        car_model: 'BMW E46 318i',
+                        status: 'Pengecekan',
+                        address: 'Komplek Taman Bumi Prima Blok O no 8, Kecamatan Cibabat, Kelurahan Cimahi Utara, Kota Cimahi',
+                        engine_code: 'N42',
+                        km_masuk: '180.000 Km',
+                        created_by: 'Edsel Septa Haryanto',
+                        created_at: '27 Januari 2025, 08:00',
+                        updated_at: '27 Januari 2025, 09:00',
+                        suku_cadang: [{
+                            id: 1,
+                            nama: 'Q8 Oils 5W40 excel 5 liter',
+                            deskripsi: 'oli mesin bmw',
+                            harga: 'Rp 700.000',
+                            jumlah: '1 pcs',
+                            tanggal: '01 Januari 2025',
+                            supplier: 'Milan Motors',
+                        }],
                     },
                     {
-                        id            : 2,
-                        name          : 'Abdul Aziz Saepurohmat',
-                        phone         : '081250353492',
-                        license_plate : 'D 1015 PRT',
-                        car_model     : 'BMW M3 GTR',
-                        status        : 'Dalam Proses',
-                        address       : 'Jl. Sudirman No. 45, Jakarta Selatan',
-                        engine_code   : 'S54',
-                        km_masuk      : '95.000 Km',
-                        created_by    : 'Abdul Aziz Saepurohmat',
-                        created_at    : '28 Januari 2025, 10:00',
-                        updated_at    : '28 Januari 2025, 11:00',
-                        suku_cadang   : [],
+                        id: 2,
+                        name: 'Abdul Aziz Saepurohmat',
+                        phone: '081250353492',
+                        license_plate: 'D 1015 PRT',
+                        car_model: 'BMW M3 GTR',
+                        status: 'Dalam Proses',
+                        address: 'Jl. Sudirman No. 45, Jakarta Selatan',
+                        engine_code: 'S54',
+                        km_masuk: '95.000 Km',
+                        created_by: 'Abdul Aziz Saepurohmat',
+                        created_at: '28 Januari 2025, 10:00',
+                        updated_at: '28 Januari 2025, 11:00',
+                        suku_cadang: [],
                     },
                     {
-                        id            : 3,
-                        name          : 'Reza Indra Maulana',
-                        phone         : '081345304293',
-                        license_plate : 'H 5090 TI',
-                        car_model     : 'BMW M Hybrid V8',
-                        status        : 'Selesai',
-                        address       : 'Jl. Pahlawan No. 12, Semarang',
-                        engine_code   : 'P63',
-                        km_masuk      : '50.000 Km',
-                        created_by    : 'Reza Indra Maulana',
-                        created_at    : '29 Januari 2025, 13:00',
-                        updated_at    : '29 Januari 2025, 14:00',
-                        suku_cadang   : [],
+                        id: 3,
+                        name: 'Reza Indra Maulana',
+                        phone: '081345304293',
+                        license_plate: 'H 5090 TI',
+                        car_model: 'BMW M Hybrid V8',
+                        status: 'Selesai',
+                        address: 'Jl. Pahlawan No. 12, Semarang',
+                        engine_code: 'P63',
+                        km_masuk: '50.000 Km',
+                        created_by: 'Reza Indra Maulana',
+                        created_at: '29 Januari 2025, 13:00',
+                        updated_at: '29 Januari 2025, 14:00',
+                        suku_cadang: [],
                     },
                 ];
                 localStorage.setItem('antrianList', JSON.stringify(dummy));
@@ -100,21 +97,21 @@
 
         // ── Render tabel dari localStorage ───────────────────────────────────────
         function renderTable(filterText) {
-            const list      = JSON.parse(localStorage.getItem('antrianList') || '[]');
-            const tbody     = document.querySelector('tbody');
-            const emptyRow  = document.getElementById('emptyRow');
+            const list = JSON.parse(localStorage.getItem('antrianList') || '[]');
+            const tbody = document.querySelector('tbody');
+            const emptyRow = document.getElementById('emptyRow');
 
             // Hapus semua baris kecuali emptyRow
             Array.from(tbody.querySelectorAll('tr:not(#emptyRow)')).forEach(r => r.remove());
 
-            const filtered = filterText
-                ? list.filter(item =>
+            const filtered = filterText ?
+                list.filter(item =>
                     item.name.toLowerCase().includes(filterText.toLowerCase()) ||
                     item.phone.includes(filterText) ||
                     item.license_plate.toLowerCase().includes(filterText.toLowerCase()) ||
                     item.car_model.toLowerCase().includes(filterText.toLowerCase())
-                  )
-                : list;
+                ) :
+                list;
 
             if (filtered.length === 0) {
                 emptyRow.classList.remove('hidden');
@@ -124,14 +121,30 @@
             emptyRow.classList.add('hidden');
 
             const statusConfigMap = {
-                'Pengecekan'   : { bg: 'bg-[#FFF8EC]',  text: 'text-[#F59E0B]',  border: 'border-[#FDE68A]'  },
-                'Dalam Proses' : { bg: 'bg-[#EAF2FF]',  text: 'text-[#1273EB]',  border: 'border-[#B1D3FF]'  },
-                'Selesai'      : { bg: 'bg-[#EDFBF3]',  text: 'text-[#16A34A]',  border: 'border-[#A7F3D0]'  },
+                'Pengecekan': {
+                    bg: 'bg-[#FFF8EC]',
+                    text: 'text-[#F59E0B]',
+                    border: 'border-[#FDE68A]'
+                },
+                'Dalam Proses': {
+                    bg: 'bg-[#EAF2FF]',
+                    text: 'text-[#1273EB]',
+                    border: 'border-[#B1D3FF]'
+                },
+                'Selesai': {
+                    bg: 'bg-[#EDFBF3]',
+                    text: 'text-[#16A34A]',
+                    border: 'border-[#A7F3D0]'
+                },
             };
 
             filtered.forEach(item => {
-                const cfg = statusConfigMap[item.status] || { bg: 'bg-[#F5F5F5]', text: 'text-[#6B7280]', border: 'border-[#E5E7EB]' };
-                const tr  = document.createElement('tr');
+                const cfg = statusConfigMap[item.status] || {
+                    bg: 'bg-[#F5F5F5]',
+                    text: 'text-[#6B7280]',
+                    border: 'border-[#E5E7EB]'
+                };
+                const tr = document.createElement('tr');
                 tr.className = 'hover:bg-[#F9FCFF] transition-colors group';
                 tr.innerHTML = `
                     <td class="px-6 py-[18px] font-bold text-[#213F5C]">${escHtml(item.name)}</td>
@@ -168,12 +181,12 @@
         }
 
         function updatePaginationInfo(total) {
-            // Update elemen showing-info jika ada di layout
-            const fromEl  = document.querySelector('[data-from]');
-            const toEl    = document.querySelector('[data-to]');
-            const totalEl = document.querySelector('[data-total]');
-            if (fromEl)  fromEl.textContent = total > 0 ? 1 : 0;
-            if (toEl)    toEl.textContent   = total;
+            const fromEl = document.getElementById('paginationFrom');
+            const toEl = document.getElementById('paginationTo');
+            const totalEl = document.getElementById('paginationTotal');
+
+            if (fromEl) fromEl.textContent = total > 0 ? 1 : 0;
+            if (toEl) toEl.textContent = total;
             if (totalEl) totalEl.textContent = total;
         }
 

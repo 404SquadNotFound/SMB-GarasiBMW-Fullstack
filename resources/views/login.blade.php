@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | SMBGarasiBMW</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ asset('assets/login-assets/login-logo.png') }}">
     <link rel="stylesheet" href="{{ asset('css/login.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
@@ -103,7 +104,7 @@
                         timer: 1500
                     }).then(() => {
                         // Lempar ke halaman dashboard frontend
-                        window.location.href = '/jenis-mesin';
+                        window.location.href = '/beranda';
                     });
 
                 } else {

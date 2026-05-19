@@ -3,11 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Http\Services\EmployeeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class EmployeeController extends Controller
 {
+    protected $employeeService;
+
+    public function __construct(EmployeeService $employeeService)
+    {
+        $this->employeeService = $employeeService;
+    }
+
     public function index(Request $request)
     {
         $query = Employee::query();
@@ -154,5 +162,15 @@ class EmployeeController extends Controller
                 'statuses' => $statuses
             ]
         ]);
+    }
+
+    public function exportExcel()
+    {
+        return $this->employeeService->downloadExcel();
+    }
+
+    public function exportPdf()
+    {
+        return $this->employeeService->downloadPdf();
     }
 }

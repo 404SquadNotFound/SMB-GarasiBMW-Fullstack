@@ -64,7 +64,7 @@ class SparepartController extends Controller
 
     public function show($id)
     {
-        $sparepart = Sparepart::with(['category', 'supplier', 'carType'])->find($id);
+        $sparepart = Sparepart::with(['category', 'supplier', 'carType', 'stocks.supplier'])->find($id);
 
         if (!$sparepart) {
             return response()->json([
@@ -85,7 +85,6 @@ class SparepartController extends Controller
             'item_category_id' => 'required|exists:item_categories,category_id',
             'supplier_id' => 'nullable|exists:suppliers,supplier_id',
             'car_type_id' => 'nullable|exists:car_types,car_type_id',
-            'item_code' => 'required|string|unique:spareparts,item_code',
             'name' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'cost_off_sell' => 'required|numeric',
@@ -94,6 +93,40 @@ class SparepartController extends Controller
             'date' => 'required|date',
         ]);
 
+        $categoryName = strtolower($request->category);
+        $prefix = 'item';
+        
+        if (str_contains($categoryName, 'oli') || str_contains($categoryName, 'cairan')) {
+            $prefix = 'oil';
+        } elseif (str_contains($categoryName, 'pengereman') || str_contains($categoryName, 'brake')) {
+            $prefix = 'brake';
+        } elseif (str_contains($categoryName, 'mesin') || str_contains($categoryName, 'engine')) {
+            $prefix = 'eng';
+        } elseif (str_contains($categoryName, 'kaki') || str_contains($categoryName, 'suspension')) {
+            $prefix = 'susp';
+        } elseif (str_contains($categoryName, 'elektrikal') || str_contains($categoryName, 'electrical')) {
+            $prefix = 'elec';
+        } else {
+            $words = explode(' ', $categoryName);
+            if (count($words) > 0) {
+                $prefix = preg_replace('/[^a-z]/', '', $words[0]);
+                if (empty($prefix)) {
+                    $prefix = 'item';
+                }
+            }
+        }
+
+        $latestParts = Sparepart::where('item_code', 'LIKE', $prefix . '-%')->pluck('item_code');
+        $maxNumber = 0;
+        foreach ($latestParts as $code) {
+            $parts = explode('-', $code);
+            $number = (int)end($parts);
+            if ($number > $maxNumber) {
+                $maxNumber = $number;
+            }
+        }
+        
+        $validated['item_code'] = $prefix . '-' . ($maxNumber + 1);
         $validated['created_by'] = $request->user()->employees_id ?? 1;
 
         $sparepart = Sparepart::create($validated);

@@ -51,7 +51,7 @@
         'placeholder' => 'Cari Gaji Karyawan...',
         'searchUrl' => '#',
         'filterModalId' => 'modalFilterPayroll',
-        'exportExcelUrl' => route('payroll.export'),
+        'exportExcelUrl' => '#',
         'exportPdfUrl' => '#',
         'addUrl' => route('payroll.create'),
         'btnText' => 'Tambah Gaji Karyawan'

@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Detail Suku Cadang')
 @section('title_header', 'Master Data | Suku Cadang')
@@ -22,6 +22,46 @@
     </div>
 
     <script>
+        // ── Helper: build tabel entri stok ──────────────────────────
+        function buildStockTable(stocks, formatRupiah) {
+            if (!stocks || stocks.length === 0) {
+                return '<div class="text-center py-8 text-gray-400 text-[13px] italic">Belum ada entri stok tersimpan.</div>';
+            }
+
+            const rows = stocks.map((st, i) => {
+                const supName = (st.supplier && st.supplier.name)
+                    ? st.supplier.name
+                    : (st.supplier_id ? 'Supplier #' + st.supplier_id : '-');
+                const tgl = st.date
+                    ? new Date(st.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+                    : '-';
+                return '<tr class="border-b border-[#F0F4FA] hover:bg-[#F9FBFF] transition-colors">'
+                    + '<td class="py-3.5 px-4 text-[13px] font-bold text-[#213F5C]">#' + (i + 1) + '</td>'
+                    + '<td class="py-3.5 px-4 text-[13px] text-[#213F5C]">' + formatRupiah(st.cost_off_sell) + '</td>'
+                    + '<td class="py-3.5 px-4 text-[13px] font-bold text-[#1273EB]">' + formatRupiah(st.selling_price) + '</td>'
+                    + '<td class="py-3.5 px-4 text-[13px] font-bold text-[#213F5C]">' + st.quantity + ' pcs</td>'
+                    + '<td class="py-3.5 px-4 text-[13px] text-gray-500">' + supName + '</td>'
+                    + '<td class="py-3.5 px-4 text-[13px] text-gray-500">' + tgl + '</td>'
+                    + '</tr>';
+            }).join('');
+
+            return '<div class="overflow-x-auto rounded-xl border border-[#E5E9F2]">'
+                + '<table class="w-full">'
+                + '<thead>'
+                + '<tr class="bg-[#F4F7FE]">'
+                + '<th class="py-3 px-4 text-left text-[12px] font-bold text-gray-400 uppercase tracking-wider">#</th>'
+                + '<th class="py-3 px-4 text-left text-[12px] font-bold text-gray-400 uppercase tracking-wider">HPP</th>'
+                + '<th class="py-3 px-4 text-left text-[12px] font-bold text-gray-400 uppercase tracking-wider">Harga Jual</th>'
+                + '<th class="py-3 px-4 text-left text-[12px] font-bold text-gray-400 uppercase tracking-wider">Jumlah</th>'
+                + '<th class="py-3 px-4 text-left text-[12px] font-bold text-gray-400 uppercase tracking-wider">Supplier</th>'
+                + '<th class="py-3 px-4 text-left text-[12px] font-bold text-gray-400 uppercase tracking-wider">Tanggal Masuk</th>'
+                + '</tr>'
+                + '</thead>'
+                + '<tbody>' + rows + '</tbody>'
+                + '</table>'
+                + '</div>';
+        }
+
         async function fetchSparePartDetail() {
             const token = localStorage.getItem('access_token');
             const pathArray = window.location.pathname.split('/');
@@ -46,92 +86,54 @@
                             ? 'Rp ' + Number(num).toLocaleString('id-ID')
                             : '-';
 
-                    const detailHtml = `
-                        {{-- Seksi: Informasi Suku Cadang --}}
-                        <div class="bg-white border border-[#E5E9F2] rounded-2xl p-6">
-                            <div class="flex items-center gap-2 mb-5">
-                                <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
-                                </svg>
-                                <h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Suku Cadang</h3>
-                            </div>
-                            <div class="space-y-3">
-                                <div class="flex items-center">
-                                    <p class="w-40 text-[13px] text-gray-400">Kode Barang</p>
-                                    <p class="text-[13px] font-semibold text-[#213F5C]">${item.item_code || '-'}</p>
-                                </div>
-                                <div class="flex items-center">
-                                    <p class="w-40 text-[13px] text-gray-400">Nama Barang</p>
-                                    <p class="text-[13px] font-semibold text-[#213F5C]">${item.name || '-'}</p>
-                                </div>
-                                <div class="flex items-center">
-                                    <p class="w-40 text-[13px] text-gray-400">Kategori</p>
-                                    <p class="text-[13px] font-semibold text-[#213F5C]">${item.category?.name ?? item.category ?? '-'}</p>
-                                </div>
-                            </div>
-                        </div>
+                    const catName = (item.category && typeof item.category === 'object')
+                        ? (item.category.name ?? '-')
+                        : (item.category ?? '-');
 
-                        {{-- Seksi: Informasi Mobil Suku Cadang --}}
-                        <div class="bg-white border border-[#E5E9F2] rounded-2xl p-6">
-                            <div class="flex items-center gap-2 mb-5">
-                                <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M8 17H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3M8 17l4 4m0 0l4-4m-4 4V11" />
-                                </svg>
-                                <h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Mobil Suku Cadang</h3>
-                            </div>
-                            <div class="space-y-3">
-                                <div class="flex items-center">
-                                    <p class="w-40 text-[13px] text-gray-400">Tipe Mobil</p>
-                                    <p class="text-[13px] font-semibold text-[#213F5C]">${item.car_type?.name ? (item.car_type.chassis_number + ' - ' + item.car_type.name) : '-'}</p>
-                                </div>
-                                <div class="flex items-center">
-                                    <p class="w-40 text-[13px] text-gray-400">Kode Mesin</p>
-                                    <p class="text-[13px] font-semibold text-[#213F5C]">${item.car_type?.engine_code || '-'}</p>
-                                </div>
-                            </div>
-                        </div>
+                    const carInfo = item.car_type
+                        ? (item.car_type.chassis_number + ' - ' + item.car_type.name)
+                        : '-';
+                    const engineInfo = item.car_type?.engine_code || '-';
 
-                        {{-- Seksi: Harga dan Stok --}}
-                        <div class="bg-white border border-[#E5E9F2] rounded-2xl p-6">
-                            <div class="flex items-center gap-2 mb-5">
-                                <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M8 17H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3M8 17l4 4m0 0l4-4m-4 4V11" />
-                                </svg>
-                                <h3 class="text-[15px] font-bold text-[#213F5C]">Harga dan Stok</h3>
-                            </div>
+                    const totalStok = item.quantity ?? 0;
 
-                            {{-- Card ringkasan harga --}}
-                            <div class="bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl p-5 flex justify-between items-start">
-                                <div class="space-y-1.5">
-                                    <p class="text-[13px] text-gray-400">
-                                        HPP: <span class="font-bold text-[#213F5C] text-[15px]">${formatRupiah(item.cost_off_sell)}</span>
-                                    </p>
-                                    <p class="text-[13px] text-gray-400">
-                                        Harga Jual: <span class="font-bold text-[#1273EB] text-[15px]">${formatRupiah(item.selling_price)}</span>
-                                    </p>
-                                    <p class="text-[13px] text-gray-400">
-                                        Stok: <span class="font-bold text-[#213F5C] text-[15px]">${item.quantity ?? '-'} Barang</span>
-                                    </p>
-                                </div>
-                                <div class="text-right space-y-1.5">
-                                    <p class="text-[13px] text-gray-400">
-                                        Tanggal: <span class="font-semibold text-[#213F5C]">${item.date
-                                            ? new Date(item.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-                                            : '-'
-                                        }</span>
-                                    </p>
-                                    <p class="text-[13px] text-gray-400">
-                                        Supplier: <span class="font-semibold text-[#213F5C]">${item.supplier?.name || item.supplier_id || '-'}</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+                    container.innerHTML =
+                        // ── Informasi Suku Cadang ──────────────────────────────
+                        '<div class="bg-white border border-[#E5E9F2] rounded-2xl p-6">'
+                        + '<div class="flex items-center gap-2 mb-5">'
+                        + '<svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z"/></svg>'
+                        + '<h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Suku Cadang</h3>'
+                        + '</div>'
+                        + '<div class="space-y-3">'
+                        + '<div class="flex items-center"><p class="w-40 text-[13px] text-gray-400">Kode Barang</p><p class="text-[13px] font-semibold text-[#213F5C]">' + (item.item_code || '-') + '</p></div>'
+                        + '<div class="flex items-center"><p class="w-40 text-[13px] text-gray-400">Nama Barang</p><p class="text-[13px] font-semibold text-[#213F5C]">' + (item.name || '-') + '</p></div>'
+                        + '<div class="flex items-center"><p class="w-40 text-[13px] text-gray-400">Kategori</p><p class="text-[13px] font-semibold text-[#213F5C]">' + catName + '</p></div>'
+                        + '</div>'
+                        + '</div>'
 
-                    container.innerHTML = detailHtml;
+                        // ── Informasi Mobil ────────────────────────────────────
+                        + '<div class="bg-white border border-[#E5E9F2] rounded-2xl p-6">'
+                        + '<div class="flex items-center gap-2 mb-5">'
+                        + '<svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 17H5a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3M8 17l4 4m0 0l4-4m-4 4V11"/></svg>'
+                        + '<h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Mobil Suku Cadang</h3>'
+                        + '</div>'
+                        + '<div class="space-y-3">'
+                        + '<div class="flex items-center"><p class="w-40 text-[13px] text-gray-400">Tipe Mobil</p><p class="text-[13px] font-semibold text-[#213F5C]">' + carInfo + '</p></div>'
+                        + '<div class="flex items-center"><p class="w-40 text-[13px] text-gray-400">Kode Mesin</p><p class="text-[13px] font-semibold text-[#213F5C]">' + engineInfo + '</p></div>'
+                        + '</div>'
+                        + '</div>'
+
+                        // ── Stok & Harga (semua entri) ─────────────────────────
+                        + '<div class="bg-white border border-[#E5E9F2] rounded-2xl p-6">'
+                        + '<div class="flex items-center justify-between mb-5">'
+                        + '<div class="flex items-center gap-2">'
+                        + '<svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>'
+                        + '<h3 class="text-[15px] font-bold text-[#213F5C]">Stok &amp; Harga</h3>'
+                        + '</div>'
+                        + '<span class="text-[12px] font-bold text-white bg-[#1273EB] px-3 py-1 rounded-full">Total: ' + totalStok + ' pcs</span>'
+                        + '</div>'
+                        + buildStockTable(item.stocks ?? [], formatRupiah)
+                        + '</div>';
 
                     // Update timestamp di Quick Info sidebar
                     const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
@@ -145,11 +147,11 @@
                     }
 
                 } else {
-                    container.innerHTML = `<p class="text-red-500">Gagal memuat data: ${result.message}</p>`;
+                    container.innerHTML = '<p class="text-red-500">Gagal memuat data: ' + result.message + '</p>';
                 }
             } catch (error) {
                 console.error(error);
-                container.innerHTML = `<p class="text-red-500">Terjadi kesalahan koneksi ke server.</p>`;
+                container.innerHTML = '<p class="text-red-500">Terjadi kesalahan koneksi ke server.</p>';
             }
         }
 

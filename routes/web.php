@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\SupplierController;
@@ -13,9 +14,12 @@ Route::get('/', function () {
     return view('login');
 })->name('login');
 
+// Route Beranda
+Route::get('/beranda', function () {
+    return view('pages.beranda');
+})->name('beranda.index');
+
 // Route Master Data -> Pelanggan
-
-
 Route::get('/pelanggan', function () {
     return view('pages.pelanggan.pelanggan');
 })->name('pelanggan.index');
@@ -125,6 +129,8 @@ Route::get('/manajemen-pegawai/edit/{id}', function ($id) {
 Route::get('/manajemen-pegawai/delete/{id}', function ($id) {
     return view('pages.manajemen_pegawai.data_manajemenPegawai');
 })->name('manajemen-pegawai.delete');
+Route::get('/manajemen-pegawai/export', [EmployeeController::class, 'exportExcel'])->name('manajemen-pegawai.export');
+Route::get('/manajemen-pegawai/export/pdf', [EmployeeController::class, 'exportPdf'])->name('manajemen-pegawai.export.pdf');
 
 // Route Kepegawaian -> Laporan Absensi
 Route::get('/laporan-absensi', function () {
@@ -165,8 +171,6 @@ Route::get('/payroll/delete/{id}', function ($id) {
     return view('pages.payroll.payroll');
 })->name('payroll.delete');
 
-
-// Route Layanan Servis -> Penerimaan Servis
 // Route Layanan Servis -> Antrian Pengerjaan 
 Route::get('/manajemen-servis', function () {
     return view('pages.manajemen_servis_mobil.manajemenServisMobil');
@@ -185,7 +189,15 @@ Route::get('/manajemen-servis/delete/{id}', function ($id) {
 })->name('manajemen-servis.delete');
 
 // Route Layanan Servis -> Riwayat Transaksi
-// Masih belum ada
+Route::get('/riwayat-transaksi', function () {
+    return view('pages.riwayat_transaksi.riwayatTransaksi');
+})->name('riwayat-transaksi.index');
+Route::get('/riwayat-transaksi/detail/{id}', function ($id) {
+    return view('pages.riwayat_transaksi.detailRiwayatTransaksi');
+})->name('riwayat-transaksi.show');
+Route::get('/riwayat-transaksi/delete/{id}', function ($id) {
+    return view('pages.riwayat_transaksi.riwayatTransaksi');
+})->name('riwayat-transaksi.delete');
 
 // Route Manajemen Stok -> Data Suku Cadang
 Route::get('/suku-cadang', function () {
