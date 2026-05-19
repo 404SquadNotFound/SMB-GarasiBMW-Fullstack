@@ -32,7 +32,7 @@ class ServiceTransactionTest extends TestCase
     {
         $customer = Customer::factory()->create();
         $vehicle = Vehicle::factory()->create(['customer_id' => $customer->customer_id]);
-        $sparepart = Sparepart::factory()->create(['selling_price' => 100000]);
+        $sparepart = Sparepart::factory()->create(['selling_price' => 100000, 'quantity' => 10]);
 
         $response = $this->actingAs($this->user)->postJson('/api/transactions', [
             'customer_id' => $customer->customer_id,
@@ -51,7 +51,7 @@ class ServiceTransactionTest extends TestCase
 
         $this->assertDatabaseHas('service_transactions', [
             'vehicle_id' => $vehicle->vehicles_id,
-            'km_masuk' => '10000',
+            'odometer' => 10000,
         ]);
 
         $transaction = ServiceTransaction::where('vehicle_id', $vehicle->vehicles_id)->first();
@@ -63,6 +63,9 @@ class ServiceTransactionTest extends TestCase
             'price' => 100000,
             'subtotal' => 200000,
         ]);
+        
+        // Assert stock is decremented
+        $this->assertEquals(8, $sparepart->fresh()->quantity);
     }
 
     public function test_can_update_service_transaction()
@@ -71,16 +74,26 @@ class ServiceTransactionTest extends TestCase
         $vehicle = Vehicle::factory()->create(['customer_id' => $customer->customer_id]);
         
         $transaction = ServiceTransaction::create([
-            'transaction_id' => 'TRX-' . time(),
             'vehicle_id' => $vehicle->vehicles_id,
-            'transaction_date' => now(),
-            'km_masuk' => '5000',
-            'status' => 'Pending',
-            'total_amount' => 0,
+            'invoice_number' => 'INV-TEST-001',
+            'branch' => 'PELAJAR_PEJUANG',
+            'odometer' => 5000,
+            'status_service' => 'pengecekan',
+            'status_payment' => 'unpaid',
             'created_by' => $this->user->employees_id,
         ]);
 
-        $sparepart = Sparepart::factory()->create(['selling_price' => 50000]);
+        $oldSparepart = Sparepart::factory()->create(['selling_price' => 50000, 'quantity' => 5]);
+        $transaction->items()->create([
+            'spare_part_id' => $oldSparepart->sparepart_id,
+            'item_name' => 'Old Part',
+            'item_type' => 'Parts',
+            'qty' => 2,
+            'price' => 50000,
+            'subtotal' => 100000,
+        ]);
+
+        $newSparepart = Sparepart::factory()->create(['selling_price' => 60000, 'quantity' => 10]);
 
         $response = $this->actingAs($this->user)->putJson("/api/transactions/{$transaction->transaction_id}", [
             'customer_id' => $customer->customer_id,
@@ -88,8 +101,8 @@ class ServiceTransactionTest extends TestCase
             'km_masuk' => '6000',
             'items' => [
                 [
-                    'sparepart_id' => $sparepart->sparepart_id,
-                    'quantity' => 1,
+                    'sparepart_id' => $newSparepart->sparepart_id,
+                    'quantity' => 3,
                 ]
             ]
         ]);
@@ -99,14 +112,59 @@ class ServiceTransactionTest extends TestCase
 
         $this->assertDatabaseHas('service_transactions', [
             'transaction_id' => $transaction->transaction_id,
-            'km_masuk' => '6000',
+            'odometer' => 6000,
         ]);
         
         $this->assertDatabaseHas('transaction_items', [
             'transaction_id' => $transaction->transaction_id,
-            'spare_part_id' => $sparepart->sparepart_id,
-            'qty' => 1,
-            'price' => 50000,
+            'spare_part_id' => $newSparepart->sparepart_id,
+            'qty' => 3,
+            'price' => 60000,
         ]);
+        
+        $this->assertDatabaseMissing('transaction_items', [
+            'transaction_id' => $transaction->transaction_id,
+            'spare_part_id' => $oldSparepart->sparepart_id,
+        ]);
+
+        // Old stock restored
+        $this->assertEquals(7, $oldSparepart->fresh()->quantity);
+        
+        // New stock decremented
+        $this->assertEquals(7, $newSparepart->fresh()->quantity);
+    }
+    
+    public function test_can_delete_service_transaction_and_restore_stock()
+    {
+        $vehicle = Vehicle::factory()->create();
+        
+        $transaction = ServiceTransaction::create([
+            'vehicle_id' => $vehicle->vehicles_id,
+            'invoice_number' => 'INV-TEST-002',
+            'branch' => 'PELAJAR_PEJUANG',
+            'odometer' => 5000,
+            'status_service' => 'pengecekan',
+            'status_payment' => 'unpaid',
+            'created_by' => $this->user->employees_id,
+        ]);
+
+        $sparepart = Sparepart::factory()->create(['selling_price' => 50000, 'quantity' => 5]);
+        $transaction->items()->create([
+            'spare_part_id' => $sparepart->sparepart_id,
+            'item_name' => 'Test Part',
+            'item_type' => 'Parts',
+            'qty' => 2,
+            'price' => 50000,
+            'subtotal' => 100000,
+        ]);
+        
+        $response = $this->actingAs($this->user)->deleteJson("/api/transactions/{$transaction->transaction_id}");
+        $response->assertStatus(200);
+        
+        $this->assertDatabaseMissing('service_transactions', [
+            'transaction_id' => $transaction->transaction_id,
+        ]);
+        
+        $this->assertEquals(7, $sparepart->fresh()->quantity);
     }
 }
