@@ -1,15 +1,19 @@
 {{-- resources/views/layouts/partials/action_bar.blade.php --}}
 
 <div class="flex items-center justify-between mb-5">
-    <div class="relative w-[340px]">
-        <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#627D98]" fill="none" stroke="currentColor"
-            stroke-width="2" viewBox="0 0 24 24">
-            <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-        <input type="text" id="searchInput" name="search" value="{{ request('search') }}"
-            placeholder="{{ $placeholder ?? 'Cari data...' }}"
-            class="w-full pl-10 pr-4 py-3 bg-white border border-[#D9E2EC] rounded-[10px] outline-none shadow-sm focus:border-bmw-blue focus:ring-1 focus:ring-bmw-blue/20 transition-all text-[14px]">
-    </div>
+    <div class="flex items-center w-[340px] bg-white border border-[#D9E2EC] rounded-[10px] pl-3.5 pr-4 py-3 shadow-sm focus-within:border-bmw-blue focus-within:ring-1 focus-within:ring-bmw-blue/20 transition-all">
+    <svg class="w-4 h-4 text-[#627D98] shrink-0" 
+         fill="none" 
+         viewBox="0 0 24 24" 
+         stroke-width="2" 
+         stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
+    </svg>
+    
+    <input type="text" id="searchInput" name="search" value="{{ request('search') }}"
+        placeholder="{{ $placeholder ?? 'Cari data...' }}"
+        class="w-full ml-2.5 bg-transparent outline-none text-[14px] leading-none text-slate-700">
+</div>
 
     <div class="flex items-center gap-2.5">
         <button type="button" onclick="toggleModal('{{ $filterModalId ?? 'modalFilter' }}')"
