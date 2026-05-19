@@ -33,7 +33,7 @@
                 </div>
                 <div>
                     <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Nomor Telepon <span class="text-red-500">*</span></label>
-                    <input type="text" x-model="formData.phone_number" placeholder="Masukkan nomor telepon"
+                    <input type="text" x-model="formData.phone_number" maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Masukkan nomor telepon"
                         class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl focus:border-[#1273EB] transition-all outline-none text-[#213F5C] font-semibold text-[14px]">
                 </div>
                 <div>
@@ -108,21 +108,34 @@
                             <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Kode Transmisi</label>
                             <input type="text" x-model="tempCar.transmission" placeholder="A4Q" class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px]">
                         </div>
-                        <div>
-                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Tahun Mobil</label>
-                            <input type="number" x-model="tempCar.year" placeholder="1945" class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px]">
-                        </div>
+                       <div>
+    <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Tahun Mobil</label>
+    <input type="number" 
+           min="1928" 
+           max="2026"
+           x-model.number="tempCar.year" 
+           x-on:keydown="if(['-', 'e', 'E', '.'].includes($event.key)) $event.preventDefault()"
+           x-on:input="if ($el.value.length > 4) { $el.value = $el.value.slice(0, 4); tempCar.year = Number($el.value); }"
+           x-on:blur="if(tempCar.year && tempCar.year < 1928) tempCar.year = 1928"
+           placeholder="1945" 
+           class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px]">
+</div>
                         <div>
                             <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Nomor Polisi</label>
-                            <input type="text" x-model="tempCar.license_plate" placeholder="B 1040 JAW" class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px]">
+                            <input type="text" x-model="tempCar.license_plate" maxlength="9" placeholder="B 1040 JAW" class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px]">
                         </div>
                         <div>
                             <label class="block text-[13px] font-bold text-[#213F5C] mb-2">KM Masuk Bengkel</label>
-                            <input type="number" x-model="tempCar.km_reading" placeholder="6969" class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px]">
+                            <input type="number" 
+                                min="0" 
+                                x-model.number="tempCar.km_reading" 
+                                x-on:keydown="if(['-', 'e', 'E'].includes($event.key)) $event.preventDefault()"
+                                placeholder="6969" 
+                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px]">
                         </div>
                     </div>
                     <div class="flex gap-3 pt-4">
-                        <button type="button" @click="addCarToList" class="flex-1 py-3.5 bg-[#1273EB] text-white rounded-xl font-bold text-[14px] hover:bg-[#0E59B8]" x-text="editIndex !== null ? 'Simpan Perubahan' : 'Simpan'"></button>
+                        <button type="button" @click="addCarToList" class="flex-1 py-3.5 bg-[#1273EB] text-white rounded-xl font-bold text-[14px] hover:bg-[#0E59B8]" x-text="editIndex !== null ? 'Simpan Perubahan' : 'Simpan'">Simpan</button>
                         <button type="button" @click="closeForm()" class="px-8 py-3.5 bg-white border border-gray-200 text-gray-500 rounded-xl font-bold text-[14px] hover:bg-gray-50">Batal</button>
                     </div>
                 </div>

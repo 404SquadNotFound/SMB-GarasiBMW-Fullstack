@@ -45,7 +45,7 @@
                         Nomor Telepon <span class="text-red-500">*</span>
                     </label>
 
-                    <input type="text" id="phone" required inputmode="numeric" maxlength="12"
+                    <input type="text" id="phone" required inputmode="numeric" maxlength="15"
                         oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Masukkan nomor telepon"
                         class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
                 </div>
