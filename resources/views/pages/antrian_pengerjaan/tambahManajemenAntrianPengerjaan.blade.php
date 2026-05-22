@@ -19,7 +19,7 @@
 
         {{-- =========================================================
          BOX 1 : Informasi Pemilik Kendaraan
-    ========================================================= --}}
+        ========================================================= --}}
         <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm">
             <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
                 <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#1273EB]">
@@ -60,7 +60,7 @@
 
         {{-- =========================================================
          BOX 2 : Informasi Mobil Pelanggan
-    ========================================================= --}}
+        ========================================================= --}}
         <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm">
             <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
                 <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
@@ -112,8 +112,8 @@
         </div>
 
         {{-- =========================================================
-         BOX 3 : Penggunaan Suku Cadang
-    ========================================================= --}}
+         BOX 3 : Penggunaan Suku Cadang (semua user)
+        ========================================================= --}}
         <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm">
             <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
                 <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
@@ -149,14 +149,22 @@
                     </h3>
 
                     <div class="space-y-5">
-                        {{-- Dropdown stok (sekarang merangkap pencarian suku cadang) --}}
+                        {{-- Nama Barang (input manual) --}}
                         <div>
-                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Pilih Suku Cadang (Stok)</label>
+                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Nama Barang</label>
+                            <input type="text" id="inputNamaBarang" placeholder="Contoh: Filter Oli BMW"
+                                autocomplete="off"
+                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+                        </div>
+
+                        {{-- Dropdown stok --}}
+                        <div>
+                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Stok</label>
                             <div class="relative" id="stokDropdownWrapper">
                                 <div class="relative">
-                                    <input type="text" id="stokSearch" placeholder="Ketik atau pilih suku cadang..."
+                                    <input type="text" id="stokSearch" placeholder="Pilih Stok Yang Ingin Digunakan"
                                         autocomplete="off"
-                                        class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] text-[14px] text-[#213F5C] pr-10">
+                                        class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300 pr-10">
                                     <span id="stokSearchClear" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-red-400 text-lg leading-none" onclick="clearStok()">×</span>
                                 </div>
                                 <div id="stokDropdownList" class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
@@ -164,19 +172,17 @@
                                 </div>
                             </div>
 
-
                             <input type="hidden" id="inputStok" value="">
                             <input type="hidden" id="inputStokLabel" value="">
-                            <input type="hidden" id="inputNamaBarang" value="">
                         </div>
 
+                        {{-- Jumlah --}}
                         <div>
                             <label class="block text-[13px] font-bold text-[#213F5C] mb-2">
                                 Jumlah Stok Yang Digunakan
                             </label>
-
-                            <input type="number" id="inputJumlah" placeholder="Contoh: 1" min="1"
-                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] text-[14px] text-[#213F5C]">
+                            <input type="number" id="inputJumlah" placeholder="Contoh : 1" min="1"
+                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
                         </div>
                     </div>
 
@@ -185,7 +191,6 @@
                             class="flex-1 py-3.5 bg-[#1273EB] text-white rounded-xl font-bold text-[14px] hover:bg-[#0E59B8]">
                             Simpan
                         </button>
-
                         <button type="button" id="btnBatalSukuCadang"
                             class="px-8 py-3.5 bg-white border border-gray-200 text-gray-500 rounded-xl font-bold text-[14px] hover:bg-gray-50">
                             Batal
@@ -212,16 +217,14 @@
         const token = localStorage.getItem('access_token');
 
         // ── State utama ───────────────────────────────────────────────────────────
-        let selectedCustomer = null;  // {id, nama, telepon, alamat, vehicles[]}
-        let selectedVehicle  = null;  // {id, model, license_plate, engine_code, odometer}
+        let selectedCustomer = null;
+        let selectedVehicle  = null;
         let stokList         = [];
         let sukuCadangItems  = [];
         let selectedStokId   = null;
         let selectedStokData = null;
-        let isStokDropdownOpen  = false;
-        let isVehicleDropOpen   = false;
-        let customerDebounce    = null;
-        let currentVehicles     = [];
+        let customerDebounce = null;
+        let currentVehicles  = [];
 
         function escHtml(str) {
             const d = document.createElement('div');
@@ -250,7 +253,7 @@
             const container = document.getElementById('customerDropdownItems');
             const dropdown  = document.getElementById('customerDropdownList');
             container.innerHTML = '';
-            
+
             if (list.length === 0) {
                 container.innerHTML = '<div class="p-4 text-center text-[13px] text-gray-400">Pelanggan tidak ditemukan</div>';
             } else {
@@ -290,7 +293,7 @@
             document.getElementById('customerSearchClear').classList.add('hidden');
             document.getElementById('customerInfoBox').classList.add('hidden');
             document.getElementById('customerDropdownList').classList.add('hidden');
-            
+
             clearVehicle();
             document.getElementById('vehicleEmptyHint').classList.remove('hidden');
             document.getElementById('vehicleDropdownWrapper').classList.add('hidden');
@@ -309,17 +312,17 @@
             customerSearchEl.addEventListener('input', function() {
                 const kw = this.value.trim().toLowerCase();
                 document.getElementById('customerDropdownList').classList.remove('hidden');
-                
+
                 if (kw.length === 0) {
                     renderCustomerDropdown(customersData);
                     return;
                 }
-                
-                const filtered = customersData.filter(c => 
-                    c.nama.toLowerCase().includes(kw) || 
+
+                const filtered = customersData.filter(c =>
+                    c.nama.toLowerCase().includes(kw) ||
                     c.telepon.toLowerCase().includes(kw)
                 );
-                
+
                 if (filtered.length > 0) {
                     renderCustomerDropdown(filtered);
                 } else {
@@ -331,7 +334,7 @@
                 }
             });
         }
-        
+
         document.addEventListener('click', (e) => {
             if (!document.getElementById('customerDropdownWrapper')?.contains(e.target)) {
                 document.getElementById('customerDropdownList')?.classList.add('hidden');
@@ -351,18 +354,18 @@
             currentVehicles = vehicles;
             const hint    = document.getElementById('vehicleEmptyHint');
             const wrapper = document.getElementById('vehicleDropdownWrapper');
-            
+
             hint.classList.add('hidden');
             wrapper.classList.remove('hidden');
-            
+
             renderVehicleDropdown(vehicles);
         }
 
         function renderVehicleDropdown(list) {
             const container = document.getElementById('vehicleDropdownItems');
-            const dropdown = document.getElementById('vehicleDropdownList');
+            const dropdown  = document.getElementById('vehicleDropdownList');
             container.innerHTML = '';
-            
+
             if (list.length === 0) {
                 container.innerHTML = '<div class="p-4 text-center text-[13px] text-gray-400">Tidak ada kendaraan ditemukan</div>';
             } else {
@@ -385,18 +388,18 @@
                 renderVehicleDropdown(currentVehicles);
                 document.getElementById('vehicleDropdownList').classList.remove('hidden');
             });
-            
+
             vehicleSearchEl.addEventListener('input', function() {
                 const kw = this.value.trim().toLowerCase();
                 document.getElementById('vehicleDropdownList').classList.remove('hidden');
-                
+
                 if (kw.length === 0) {
                     renderVehicleDropdown(currentVehicles);
                     return;
                 }
-                
-                const filtered = currentVehicles.filter(v => 
-                    (v.model || '').toLowerCase().includes(kw) || 
+
+                const filtered = currentVehicles.filter(v =>
+                    (v.model || '').toLowerCase().includes(kw) ||
                     (v.license_plate || '').toLowerCase().includes(kw)
                 );
                 renderVehicleDropdown(filtered);
@@ -407,9 +410,9 @@
             selectedVehicle = null;
             document.getElementById('selectedVehicleId').value = '';
             const vs = document.getElementById('vehicleSearch');
-            if(vs) vs.value = '';
+            if (vs) vs.value = '';
             const vc = document.getElementById('vehicleSearchClear');
-            if(vc) vc.classList.add('hidden');
+            if (vc) vc.classList.add('hidden');
             document.getElementById('vehicleInfoBox').classList.add('hidden');
             document.getElementById('vehicleDropdownList').classList.add('hidden');
             renderVehicleDropdown(currentVehicles);
@@ -417,18 +420,18 @@
 
         function selectVehicle(v) {
             selectedVehicle = v;
-            document.getElementById('selectedVehicleId').value        = v.id;
+            document.getElementById('selectedVehicleId').value       = v.id;
             const vs = document.getElementById('vehicleSearch');
-            if(vs) vs.value = `${v.model} - ${v.license_plate}`;
+            if (vs) vs.value = `${v.model} - ${v.license_plate}`;
             const vc = document.getElementById('vehicleSearchClear');
-            if(vc) vc.classList.remove('hidden');
-            
-            document.getElementById('vehicleInfoModel').textContent   = v.model;
-            document.getElementById('vehicleInfoPlate').textContent   = '🚗 ' + v.license_plate;
-            document.getElementById('vehicleInfoEngine').textContent  = v.engine_code ? '⚙️ ' + v.engine_code : '';
+            if (vc) vc.classList.remove('hidden');
+
+            document.getElementById('vehicleInfoModel').textContent  = v.model;
+            document.getElementById('vehicleInfoPlate').textContent  = '🚗 ' + v.license_plate;
+            document.getElementById('vehicleInfoEngine').textContent = v.engine_code ? '⚙️ ' + v.engine_code : '';
             document.getElementById('vehicleInfoBox').classList.remove('hidden');
             document.getElementById('vehicleDropdownList').classList.add('hidden');
-            
+
             const kmEl = document.getElementById('km_masuk');
             if (kmEl && !kmEl.value) {
                 kmEl.value = v.odometer ? v.odometer + ' Km' : '';
@@ -442,7 +445,9 @@
         // ═══════════════════════════════════════════════════════════════
         async function loadStokList() {
             try {
-                const res = await fetch('/api/spareparts-for-antrian', { headers: { 'Authorization': `Bearer ${token}` } });
+                const res = await fetch('/api/spareparts-for-antrian', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 const result = await res.json();
                 if (res.ok && result.data) stokList = result.data;
             } catch (e) { console.error('Gagal load stok:', e); }
@@ -450,9 +455,9 @@
 
         function renderStokOptions(keyword = '') {
             const container = document.getElementById('stokDropdownItems');
-            const dropdown = document.getElementById('stokDropdownList');
+            const dropdown  = document.getElementById('stokDropdownList');
             container.innerHTML = '';
-            
+
             const filteredList = stokList.filter(stok =>
                 stok.nama.toLowerCase().includes(keyword.toLowerCase()) ||
                 stok.stok.toString().includes(keyword)
@@ -496,7 +501,7 @@
         }
 
         function clearStok() {
-            selectedStokId = null;
+            selectedStokId   = null;
             selectedStokData = null;
             document.getElementById('inputStok').value = '';
             const ss = document.getElementById('stokSearch');
@@ -508,19 +513,19 @@
         }
 
         function selectStok(stok) {
-            selectedStokId = stok.id;
+            selectedStokId   = stok.id;
             selectedStokData = stok;
             document.getElementById('inputStok').value = stok.id;
-            
+
             const ss = document.getElementById('stokSearch');
             if (ss) ss.value = `${stok.nama} - ${stok.harga} (Sisa: ${stok.stok})`;
-            
+
             const sc = document.getElementById('stokSearchClear');
             if (sc) sc.classList.remove('hidden');
 
             const namaBarang = document.getElementById('inputNamaBarang');
             if (namaBarang) namaBarang.value = stok.nama;
-            
+
             document.getElementById('stokDropdownList').classList.add('hidden');
         }
 
@@ -528,26 +533,23 @@
             clearStok();
         }
 
-        const btnTambah  = document.getElementById('btnTambahSukuCadang');
-        const formSC     = document.getElementById('formSukuCadang');
-        const btnSimpanSC= document.getElementById('btnSimpanSukuCadang');
-        const btnBatalSC = document.getElementById('btnBatalSukuCadang');
-        const listEl     = document.getElementById('sukuCadangList');
-        const hiddenJSON = document.getElementById('inputSukuCadangJSON');
+        // ═══════════════════════════════════════════════════════════════
+        // SUKU CADANG FORM LOGIC
+        // ═══════════════════════════════════════════════════════════════
+        const btnTambah   = document.getElementById('btnTambahSukuCadang');
+        const formSC      = document.getElementById('formSukuCadang');
+        const btnSimpanSC = document.getElementById('btnSimpanSukuCadang');
+        const btnBatalSC  = document.getElementById('btnBatalSukuCadang');
+        const listEl      = document.getElementById('sukuCadangList');
+        const hiddenJSON  = document.getElementById('inputSukuCadangJSON');
 
         btnTambah.addEventListener('click', () => {
             formSC.classList.remove('hidden');
             btnTambah.classList.add('hidden');
-
             document.getElementById('inputNamaBarang').value = '';
-            document.getElementById('inputJumlah').value = '';
+            document.getElementById('inputJumlah').value     = '';
             resetStokDropdown();
-
-            requestAnimationFrame(() => {
-                document.getElementById('inputNamaBarang')?.focus({
-                    preventScroll: true
-                });
-            });
+            requestAnimationFrame(() => document.getElementById('inputNamaBarang')?.focus({ preventScroll: true }));
         });
 
         btnBatalSC.addEventListener('click', () => {
@@ -557,23 +559,29 @@
         });
 
         btnSimpanSC.addEventListener('click', () => {
+            const namaBarang = document.getElementById('inputNamaBarang').value.trim();
+
+            if (!namaBarang) {
+                Swal.fire('Oops!', 'Nama barang tidak boleh kosong!', 'warning');
+                return;
+            }
             if (!selectedStokData) {
-                Swal.fire('Oops!', 'Pilih suku cadang dari dropdown!', 'warning');
+                Swal.fire('Oops!', 'Pilih stok yang ingin digunakan!', 'warning');
                 return;
             }
 
             const jumlah = parseInt(document.getElementById('inputJumlah').value.trim()) || 1;
 
             sukuCadangItems.push({
-                id          : Date.now(),
-                sparepart_id: selectedStokData.id,
-                nama        : selectedStokData.nama,
-                deskripsi   : selectedStokData.nama,
-                harga       : selectedStokData.harga,
-                jumlah      : jumlah + ' pcs',
-                tanggal     : selectedStokData.tanggal,
-                supplier    : selectedStokData.supplier,
-                stok        : selectedStokData.stok,
+                id           : Date.now(),
+                sparepart_id : selectedStokData.id,
+                nama         : namaBarang,
+                deskripsi    : selectedStokData.nama,
+                harga        : selectedStokData.harga,
+                jumlah       : jumlah + ' pcs',
+                tanggal      : selectedStokData.tanggal,
+                supplier     : selectedStokData.supplier,
+                stok         : selectedStokData.stok,
             });
 
             renderSukuCadang();
@@ -597,8 +605,7 @@
             listEl.innerHTML = '';
             sukuCadangItems.forEach(item => {
                 const el = document.createElement('div');
-                el.className =
-                    'flex items-center justify-between p-4 bg-[#F9FBFF] rounded-[12px] border border-[#E5E9F2]';
+                el.className = 'flex items-center justify-between p-4 bg-[#F9FBFF] rounded-[12px] border border-[#E5E9F2]';
                 el.innerHTML = `
                     <div>
                         <p class="text-[13px] font-bold text-[#213F5C]">${escHtml(item.nama)}</p>
@@ -617,49 +624,6 @@
                 `;
                 listEl.appendChild(el);
             });
-        }
-
-        function escHtml(str) {
-            const d = document.createElement('div');
-            d.appendChild(document.createTextNode(str || ''));
-            return d.innerHTML;
-        }
-
-        function formatPlatNomor(input) {
-            let value = input.value.toUpperCase();
-
-            // Hapus semua karakter selain huruf & angka
-            value = value.replace(/[^A-Z0-9]/g, '');
-
-            let depan = '';
-            let angka = '';
-            let belakang = '';
-
-            // Maks 2 huruf depan
-            const depanMatch = value.match(/^[A-Z]{0,2}/);
-            if (depanMatch) {
-                depan = depanMatch[0];
-            }
-
-            // Sisa setelah huruf depan
-            let sisa = value.substring(depan.length);
-
-            // Maks 4 angka
-            const angkaMatch = sisa.match(/^[0-9]{0,4}/);
-            if (angkaMatch) {
-                angka = angkaMatch[0];
-            }
-
-            // Sisa setelah angka
-            sisa = sisa.substring(angka.length);
-
-            // Maks 3 huruf belakang
-            const belakangMatch = sisa.match(/^[A-Z]{0,3}/);
-            if (belakangMatch) {
-                belakang = belakangMatch[0];
-            }
-
-            input.value = depan + angka + belakang;
         }
 
         // ── Dirty flag ────────────────────────────────────────────────────────────
@@ -691,7 +655,10 @@
 
             const items = sukuCadangItems
                 .filter(sc => sc.sparepart_id)
-                .map(sc => ({ sparepart_id: sc.sparepart_id, quantity: parseInt(sc.jumlah) || 1 }));
+                .map(sc => ({
+                    sparepart_id : sc.sparepart_id,
+                    quantity     : parseInt(sc.jumlah) || 1
+                }));
 
             const payload = {
                 customer_id : selectedCustomer.id,
@@ -702,9 +669,13 @@
 
             try {
                 const res = await fetch('/api/transactions', {
-                    method : 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
-                    body   : JSON.stringify(payload),
+                    method  : 'POST',
+                    headers : {
+                        'Content-Type'  : 'application/json',
+                        'Authorization' : `Bearer ${token}`,
+                        'Accept'        : 'application/json'
+                    },
+                    body: JSON.stringify(payload),
                 });
                 const result = await res.json();
                 if (res.ok && result.status === 'success') {
