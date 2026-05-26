@@ -49,7 +49,7 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 
         {{-- Menunggu --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
+        <a href="{{ route('antrian-pengerjaan.index') }}" class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4 hover:shadow-md hover:border-gray-200 transition-all cursor-pointer">
             <div class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -59,10 +59,10 @@
                 <p id="statMenunggu" class="text-[28px] font-bold text-[#213F5C]">0</p>
                 <p class="text-[13px] text-[#627D98] font-semibold">Menunggu</p>
             </div>
-        </div>
+        </a>
 
         {{-- Pengecekan --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
+        <a href="{{ route('antrian-pengerjaan.index') }}" class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4 hover:shadow-md hover:border-[#FDE68A] transition-all cursor-pointer">
             <div class="w-11 h-11 rounded-full bg-[#FFF4E5] flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5 text-[#F59E0B]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803 7.5 7.5 0 0015.803 15.803z"/>
@@ -72,10 +72,10 @@
                 <p id="statPengecekan" class="text-[28px] font-bold text-[#F59E0B]">0</p>
                 <p class="text-[13px] text-[#627D98] font-semibold">Pengecekan</p>
             </div>
-        </div>
+        </a>
 
         {{-- Dikerjakan --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
+        <a href="{{ route('antrian-pengerjaan.index') }}" class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4 hover:shadow-md hover:border-[#B1D3FF] transition-all cursor-pointer">
             <div class="w-11 h-11 rounded-full bg-[#EAF2FF] flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -86,10 +86,10 @@
                 <p id="statDikerjakan" class="text-[28px] font-bold text-[#1273EB]">0</p>
                 <p class="text-[13px] text-[#627D98] font-semibold">Dikerjakan</p>
             </div>
-        </div>
+        </a>
 
         {{-- Selesai --}}
-        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4">
+        <a href="{{ route('riwayat-transaksi.index') }}" class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-4 hover:shadow-md hover:border-[#A7F3D0] transition-all cursor-pointer">
             <div class="w-11 h-11 rounded-full bg-[#E8F5E9] flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5 text-[#22C55E]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -99,8 +99,74 @@
                 <p id="statSelesai" class="text-[28px] font-bold text-[#22C55E]">0</p>
                 <p class="text-[13px] text-[#627D98] font-semibold">Selesai</p>
             </div>
-        </div>
+        </a>
 
+    </div>
+
+    {{-- ===================== QUICK ACTIONS ===================== --}}
+    <div class="mb-2">
+        <p class="text-[16px] font-bold text-[#213F5C]">Akses Cepat</p>
+        <p class="text-[13px] text-[#627D98]">Navigasi langsung ke modul utama</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <a href="{{ route('antrian-pengerjaan.create') }}" class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-3 hover:shadow-md hover:border-[#B1D3FF] transition-all">
+            <div class="w-10 h-10 rounded-full bg-[#EAF2FF] flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-[13px] font-bold text-[#213F5C]">Tambah Antrian</p>
+                <p class="text-[11px] text-[#627D98]">Daftarkan mobil baru</p>
+            </div>
+        </a>
+        <a href="{{ route('pelanggan.index') }}" class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-3 hover:shadow-md hover:border-[#B1D3FF] transition-all">
+            <div class="w-10 h-10 rounded-full bg-[#F0EDFF] flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-[#7C3AED]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-[13px] font-bold text-[#213F5C]">Data Pelanggan</p>
+                <p class="text-[11px] text-[#627D98]">Kelola pelanggan</p>
+            </div>
+        </a>
+        <a href="{{ route('suku-cadang.index') }}" class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-3 hover:shadow-md hover:border-[#B1D3FF] transition-all">
+            <div class="w-10 h-10 rounded-full bg-[#FFF4E5] flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-[#F59E0B]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-[13px] font-bold text-[#213F5C]">Suku Cadang</p>
+                <p class="text-[11px] text-[#627D98]">Kelola stok barang</p>
+            </div>
+        </a>
+        <a href="{{ route('riwayat-transaksi.index') }}" class="bg-white rounded-2xl border border-gray-100 shadow-sm px-5 py-4 flex items-center gap-3 hover:shadow-md hover:border-[#B1D3FF] transition-all">
+            <div class="w-10 h-10 rounded-full bg-[#E8F5E9] flex items-center justify-center shrink-0">
+                <svg class="w-5 h-5 text-[#22C55E]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.25 2.25 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-[13px] font-bold text-[#213F5C]">Riwayat Transaksi</p>
+                <p class="text-[11px] text-[#627D98]">Lihat transaksi selesai</p>
+            </div>
+        </a>
+    </div>
+
+    {{-- ===================== TABLE SECTION HEADER ===================== --}}
+    <div class="flex items-center justify-between mb-4">
+        <div>
+            <p class="text-[16px] font-bold text-[#213F5C]">Antrian Pengerjaan Terkini</p>
+            <p class="text-[13px] text-[#627D98]">Data antrian dari sistem</p>
+        </div>
+        <a href="{{ route('antrian-pengerjaan.index') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-[#EAF2FF] text-[#1273EB] border border-[#B1D3FF] rounded-full text-[12px] font-bold hover:bg-[#D4E8FF] transition-all">
+            Lihat Semua Antrian
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/>
+            </svg>
+        </a>
     </div>
 
     {{-- TABLE WRAPPER --}}
@@ -116,6 +182,15 @@
             d.appendChild(document.createTextNode(str || ''));
             return d.innerHTML;
         }
+
+        /* ── Status config (sama seperti antrian pengerjaan) ── */
+        const statusConfigMap = {
+            'menunggu'    : { bg: 'bg-gray-100',   text: 'text-gray-500',   border: 'border-gray-200', label: 'Menunggu'   },
+            'pengecekan'  : { bg: 'bg-[#FFF8EC]',  text: 'text-[#F59E0B]',  border: 'border-[#FDE68A]', label: 'Pengecekan' },
+            'dikerjakan'  : { bg: 'bg-[#EAF2FF]',  text: 'text-[#1273EB]',  border: 'border-[#B1D3FF]', label: 'Dikerjakan' },
+            'selesai'     : { bg: 'bg-[#EDFBF3]',  text: 'text-[#16A34A]',  border: 'border-[#A7F3D0]', label: 'Selesai'    },
+            'dibatalkan'  : { bg: 'bg-[#FFF5F5]',  text: 'text-[#FF4D4D]',  border: 'border-[#FFE0E0]', label: 'Dibatalkan' },
+        };
 
         /* ── 1. Load Nama Pegawai ── */
         async function loadNamaPegawai() {
@@ -139,113 +214,119 @@
             }
         }
 
-        /* ── 2. Fetch dari localStorage (sama seperti antrian-pengerjaan) ── */
-async function fetchTransaksi(search = '') {
-    const tbody   = document.getElementById('berandaTableBody');
-    const fromEl  = document.getElementById('paginationFrom');
-    const toEl    = document.getElementById('paginationTo');
-    const totalEl = document.getElementById('paginationTotal');
+        /* ── 2. Fetch data dari API (real-time, nyambung ke antrian pengerjaan) ── */
+        async function fetchTransaksi(search = '', page = 1) {
+            const tbody   = document.getElementById('berandaTableBody');
+            const fromEl  = document.getElementById('paginationFrom');
+            const toEl    = document.getElementById('paginationTo');
+            const totalEl = document.getElementById('paginationTotal');
 
-    if (!tbody) return;
+            if (!tbody) return;
 
-    const list = JSON.parse(localStorage.getItem('antrianList') || '[]');
+            try {
+                const params = new URLSearchParams({ limit: 10, search, page });
+                const res = await fetch(`/api/transactions?${params}`, {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+                });
+                const result = await res.json();
 
-    const items = search
-        ? list.filter(item =>
-            item.name.toLowerCase().includes(search.toLowerCase()) ||
-            item.phone.includes(search) ||
-            item.license_plate.toLowerCase().includes(search.toLowerCase()) ||
-            item.car_model.toLowerCase().includes(search.toLowerCase())
-          )
-        : list;
+                if (!res.ok) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-red-500">Gagal load data: ${result.message ?? ''}</td></tr>`;
+                    return;
+                }
 
-    /* Update stat cards & banner */
-    updateStatCards(items, list.length);
+                const items = result.data ?? [];
 
-    tbody.innerHTML = '';
+                tbody.innerHTML = '';
 
-    if (items.length === 0) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="6" class="py-24 text-center">
-                    <div class="flex flex-col items-center justify-center opacity-60">
-                        <svg class="w-24 h-24 text-gray-200 mb-5" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="1.5">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                  d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375
-                                     a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3
-                                     0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504
-                                     1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0
-                                     00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048
-                                     -.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0
-                                     00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/>
-                        </svg>
-                        <h3 class="text-[16px] font-bold text-[#213F5C] mb-1">Antrian tidak ditemukan</h3>
-                        <p class="text-[13px] text-gray-400 font-medium">Belum ada data antrian untuk hari ini.</p>
-                    </div>
-                </td>
-            </tr>`;
-        if (fromEl)  fromEl.innerText = 0;
-        if (toEl)    toEl.innerText   = 0;
-        if (totalEl) totalEl.innerText = 0;
-        return;
-    }
+                if (items.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="py-24 text-center">
+                                <div class="flex flex-col items-center justify-center opacity-60">
+                                    <svg class="w-24 h-24 text-gray-200 mb-5" viewBox="0 0 24 24" fill="none"
+                                         stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                              d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375
+                                                 a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3
+                                                 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504
+                                                 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0
+                                                 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048
+                                                 -.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0
+                                                 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/>
+                                    </svg>
+                                    <h3 class="text-[16px] font-bold text-[#213F5C] mb-1">Antrian tidak ditemukan</h3>
+                                    <p class="text-[13px] text-gray-400 font-medium">Belum ada data antrian saat ini.</p>
+                                </div>
+                            </td>
+                        </tr>`;
+                    if (fromEl)  fromEl.innerText = 0;
+                    if (toEl)    toEl.innerText   = 0;
+                    if (totalEl) totalEl.innerText = 0;
+                    return;
+                }
 
-    const statusMap = {
-        'Menunggu'    : 'bg-gray-100 text-gray-500 border-gray-200',
-        'Pengecekan'  : 'bg-[#FFF8EC] text-[#F59E0B] border-[#FDE68A]',
-        'Dalam Proses': 'bg-[#EAF2FF] text-[#1273EB] border-[#B1D3FF]',
-        'Selesai'     : 'bg-[#EDFBF3] text-[#16A34A] border-[#A7F3D0]',
-    };
+                items.forEach(item => {
+                    const customer = item.vehicle?.customer ?? {};
+                    const vehicle  = item.vehicle ?? {};
+                    const status   = item.status_service ?? 'menunggu';
+                    const cfg      = statusConfigMap[status] ?? statusConfigMap['menunggu'];
 
-    items.forEach(item => {
-        const status   = item.status ?? 'Menunggu';
-        const badgeCls = statusMap[status] ?? 'bg-gray-100 text-gray-500 border-gray-200';
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-[#F9FCFF] transition-colors group';
+                    tr.innerHTML = `
+                        <td class="px-6 py-[18px] font-bold text-[#213F5C]">${escHtml(customer.name ?? '-')}</td>
+                        <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${escHtml(customer.phone_number ?? '-')}</td>
+                        <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${escHtml(vehicle.license_plate ?? '-')}</td>
+                        <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${escHtml(vehicle.model ?? '-')}</td>
+                        <td class="px-6 py-[18px] text-center">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-[12px] font-bold border ${cfg.bg} ${cfg.text} ${cfg.border}">
+                                ${escHtml(cfg.label)}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <a href="/antrian-pengerjaan/${item.transaction_id}"
+                               onclick="goToDetail(event, ${item.transaction_id})"
+                               class="inline-flex items-center gap-1.5 px-3.5 py-1.5
+                                      bg-[#EAF2FF] text-[#1273EB] border border-[#B1D3FF]
+                                      rounded-full text-[12px] font-bold hover:bg-[#D4E8FF] transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                Detail
+                            </a>
+                        </td>`;
+                    tbody.appendChild(tr);
+                });
 
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-[#F9FCFF] transition-colors group';
-        tr.innerHTML = `
-            <td class="px-6 py-[18px] font-bold text-[#213F5C]">${escHtml(item.name)}</td>
-            <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${escHtml(item.phone)}</td>
-            <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${escHtml(item.license_plate)}</td>
-            <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${escHtml(item.car_model)}</td>
-            <td class="px-6 py-[18px] text-center">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-[12px] font-bold border ${badgeCls}">
-                    ${escHtml(status)}
-                </span>
-            </td>
-            <td class="px-6 py-4 text-center">
-                <a href="/antrian-pengerjaan/${item.id}"
-                   onclick="goToDetail(event, ${item.id})"
-                   class="inline-flex items-center gap-1.5 px-3.5 py-1.5
-                          bg-[#EAF2FF] text-[#1273EB] border border-[#B1D3FF]
-                          rounded-full text-[12px] font-bold hover:bg-[#D4E8FF] transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    Detail
-                </a>
-            </td>`;
-        tbody.appendChild(tr);
-    });
+                renderPaginationControls(result, (p) => fetchTransaksi(search, p));
 
-    if (fromEl)  fromEl.innerText = items.length > 0 ? 1 : 0;
-    if (toEl)    toEl.innerText   = items.length;
-    if (totalEl) totalEl.innerText = list.length;
-}
+            } catch (e) {
+                console.error(e);
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-10 text-red-500">Gagal load data. Cek koneksi API!</td></tr>';
+            }
+        }
 
-        /* ── 3. Update Stat Cards & Banner ── */
-function updateStatCards(items, total) {
-    const set   = (id, val) => { const e = document.getElementById(id); if (e) e.innerText = val; };
-    const count = (label)   => items.filter(i => (i.status ?? '') === label).length;
-
-    set('bannerTotalKendaraan', total);
-    set('statMenunggu',   count('Menunggu'));
-    set('statPengecekan', count('Pengecekan'));
-    set('statDikerjakan', count('Dalam Proses'));
-    set('statSelesai',    count('Selesai'));
-}
+        /* ── 3. Load Status Summary dari API (akurat, semua data) ── */
+        async function loadStatusSummary() {
+            try {
+                const res = await fetch('/api/transactions/status-summary', {
+                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+                });
+                const result = await res.json();
+                if (res.ok && result.data) {
+                    const set = (id, val) => { const e = document.getElementById(id); if (e) e.innerText = val; };
+                    set('bannerTotalKendaraan', result.data.total ?? 0);
+                    set('statMenunggu',   result.data.menunggu   ?? 0);
+                    set('statPengecekan', result.data.pengecekan ?? 0);
+                    set('statDikerjakan', result.data.dikerjakan ?? 0);
+                    set('statSelesai',    result.data.selesai    ?? 0);
+                }
+            } catch (e) {
+                console.error('Failed to load status summary:', e);
+            }
+        }
 
         /* ── 4. Navigasi ke detail antrian ── */
         function goToDetail(e, id) {
@@ -257,13 +338,14 @@ function updateStatCards(items, total) {
         /* ── 5. Init ── */
         document.addEventListener('DOMContentLoaded', () => {
             loadNamaPegawai();
+            loadStatusSummary();
             fetchTransaksi();
 
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
                 searchInput.addEventListener('input', (e) => {
                     clearTimeout(searchTimeout);
-                    searchTimeout = setTimeout(() => fetchTransaksi(e.target.value), 500);
+                    searchTimeout = setTimeout(() => fetchTransaksi(e.target.value, 1), 500);
                 });
             }
         });

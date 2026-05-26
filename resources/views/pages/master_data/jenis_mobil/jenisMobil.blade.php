@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Jenis Mobil')
 @section('title_header', 'Master Data | Jenis Mobil')
@@ -72,14 +72,14 @@
             if (modal) modal.classList.toggle('hidden');
         }
 
-        async function fetchCarTypes(search = '', series = '', engine_id = '') {
+        async function fetchCarTypes(search = '', series = '', engine_id = '', page = 1) {
             const tbody = document.getElementById('carTableBody');
             const fromEl = document.getElementById('paginationFrom');
             const toEl = document.getElementById('paginationTo');
             const totalEl = document.getElementById('paginationTotal');
 
             try {
-                const res = await fetch(`/api/car-types?limit=10&search=${search}&series=${series}&engine_type_id=${engine_id}`, {
+                const res = await fetch(`/api/car-types?limit=10&search=${search}&series=${series}&engine_type_id=${engine_id}&page=${page}`, {
                     headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
                 });
                 const result = await res.json();
@@ -140,6 +140,7 @@
                     if(fromEl) fromEl.innerText = result.from || 0;
                     if(toEl) toEl.innerText = result.to || 0;
                     if(totalEl) totalEl.innerText = result.total || 0;
+                    renderPaginationControls(result, (p) => fetchCarTypes(search, series, engine_id, p));
                 }
             } catch (e) { 
                 console.error(e); 
@@ -178,12 +179,12 @@
             try {
                 const headers = { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' };
 
-                // 1. Load Mesin (Tetap)
-                const resEngine = await fetch('/api/engine-types', { headers });
+                // 1. Load Mesin (Semua data)
+                const resEngine = await fetch('/api/engine-types?limit=200', { headers });
                 const resultEngine = await resEngine.json();
                 if (resEngine.ok) {
                     const selectEngine = document.getElementById('filterEngineType');
-                    const engines = resultEngine.data.data || resultEngine.data; 
+                    const engines = resultEngine.data || [];
                     engines.forEach(e => {
                         const opt = document.createElement('option');
                         opt.value = e.engine_type_id;

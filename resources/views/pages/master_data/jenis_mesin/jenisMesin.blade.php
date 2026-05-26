@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Jenis Mesin')
 @section('title_header', 'Master Data | Jenis Mesin')
@@ -80,7 +80,7 @@
         }
 
         // 1. Fetch Data Utama
-        async function fetchEngineTypes(search = '', fuel = '', cylinders = '') {
+        async function fetchEngineTypes(search = '', fuel = '', cylinders = '', page = 1) {
             const tbody = document.getElementById('engineTableBody');
             const fromEl = document.getElementById('paginationFrom');
             const toEl = document.getElementById('paginationTo');
@@ -89,7 +89,7 @@
             if (!tbody) return;
 
             try {
-                const url = `/api/engine-types?limit=10&search=${search}&fuel_type=${fuel}&cylinders=${cylinders}`;
+                const url = `/api/engine-types?limit=10&search=${search}&fuel_type=${fuel}&cylinders=${cylinders}&page=${page}`;
                 const res = await fetch(url, {
                     headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
                 });
@@ -145,9 +145,10 @@
                             </tr>`;
                     });
 
-                    if(fromEl) fromEl.innerText = result.from || 0;
-                    if(toEl) toEl.innerText = result.to || 0;
+                    if(fromEl) fromEl.innerText = result.from || 0; 
+                    if(toEl) toEl.innerText = result.to || 0; 
                     if(totalEl) totalEl.innerText = result.total || 0;
+                    renderPaginationControls(result, (p) => fetchEngineTypes(search, fuel, cylinders, p));
                 }
             } catch (e) { 
                 console.error(e);

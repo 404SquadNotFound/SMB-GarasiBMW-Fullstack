@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Data Pelanggan')
 @section('title_header', 'Data Pelanggan')
@@ -39,21 +39,21 @@
         const token = localStorage.getItem('access_token');
         let timeout = null;
 
-        async function fetchCustomers(search = '') {
+        async function fetchCustomers(search = '', page = 1) {
             const tbody = document.getElementById('customerTableBody');
             const fromEl = document.getElementById('paginationFrom');
             const toEl = document.getElementById('paginationTo');
             const totalEl = document.getElementById('paginationTotal');
 
             try {
-                const res = await fetch(`/api/customers?limit=10&search=${search}`, {
+                const res = await fetch(`/api/customers?limit=10&search=${search}&page=${page}`, {
                     headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
                 });
                 const result = await res.json();
 
                 if (res.ok) {
                     tbody.innerHTML = '';
-                    const items = result.data.data || result.data || [];
+                    const items = result.data || [];
 
                     if (items.length === 0) {
                         tbody.innerHTML = `
@@ -68,6 +68,7 @@
                                     </div>
                                 </td>
                             </tr>`;
+                        renderPaginationControls({ from: 0, to: 0, total: 0, current_page: 1, last_page: 1 }, () => {});
                         return;
                     }
 
@@ -101,10 +102,7 @@
                             </tr>`;
                     });
 
-                    // Update Pagination Text (Footer)
-                    if(fromEl) fromEl.innerText = result.from || result.data.from || 0;
-                    if(toEl) toEl.innerText = result.to || result.data.to || 0;
-                    if(totalEl) totalEl.innerText = result.total || result.data.total || 0;
+                    renderPaginationControls(result, (p) => fetchCustomers(search, p));
                 }
             } catch (e) {
                 console.error(e);
@@ -116,7 +114,7 @@
         document.getElementById('searchInput').addEventListener('input', (e) => {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
-                fetchCustomers(e.target.value);
+                fetchCustomers(e.target.value, 1);
             }, 500);
         });
 

@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Kategori Sparepart')
 @section('title_header', 'Master Data | Kategori Sparepart')
@@ -34,7 +34,7 @@
         const token = localStorage.getItem('access_token');
 
         // 1. Fungsi Fetch Data Utama
-        async function fetchCategories(search = '') {
+        async function fetchCategories(search = '', page = 1) {
             const tbody = document.getElementById('categoryTableBody');
             const fromEl = document.getElementById('paginationFrom');
             const toEl = document.getElementById('paginationTo');
@@ -43,7 +43,7 @@
             if (!tbody) return;
 
             try {
-                const url = `/api/item-categories?limit=10&search=${search}`;
+                const url = `/api/item-categories?limit=10&search=${search}&page=${page}`;
                 const res = await fetch(url, {
                     headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
                 });
@@ -98,6 +98,7 @@
                     if(fromEl) fromEl.innerText = result.from || 0;
                     if(toEl) toEl.innerText = result.to || 0;
                     if(totalEl) totalEl.innerText = result.total || 0;
+                    renderPaginationControls(result, (p) => fetchCategories(search, p));
                 }
             } catch (e) { 
                 console.error(e);
@@ -109,7 +110,7 @@
         document.getElementById('searchInput').addEventListener('input', (e) => {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
-                fetchCategories(e.target.value);
+                fetchCategories(e.target.value, 1);
             }, 500);
         });
 

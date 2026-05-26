@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Manajemen Karyawan')
 @section('title_header', 'Manajemen Pegawai | Data Karyawan')
@@ -86,7 +86,7 @@
         }
 
         // 1. Fetch Data Utama
-        async function fetchEmployees(search = '', role = '', status = '') {
+        async function fetchEmployees(search = '', role = '', status = '', page = 1) {
             const tbody = document.getElementById('employeeTableBody');
             const fromEl = document.getElementById('paginationFrom');
             const toEl = document.getElementById('paginationTo');
@@ -95,7 +95,7 @@
             if (!tbody) return;
 
             try {
-                const url = `/api/employees?limit=10&search=${search}&role=${role}&status=${status}`;
+                const url = `/api/employees?limit=10&search=${search}&role=${role}&status=${status}&page=${page}`;
                 const res = await fetch(url, {
                     headers: {
                         'Accept': 'application/json',
@@ -160,6 +160,7 @@
                     if (fromEl) fromEl.innerText = result.from || 0;
                     if (toEl) toEl.innerText = result.to || 0;
                     if (totalEl) totalEl.innerText = result.total || 0;
+                    renderPaginationControls(result, (p) => fetchEmployees(search, role, status, p));
                 }
             } catch (e) {
                 console.error(e);

@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Edit Pelanggan')
 @section('title_header', 'Data Pelanggan')
@@ -88,12 +88,19 @@
                     <div class="flex flex-col space-y-5">
                         <div>
                             <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Model Mobil</label>
-                            <select x-model="tempCar.car_type_id" @change="updateAvailableEngines" class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px] font-semibold text-[#213F5C]">
-                                <option value="">-- Pilih Model BMW --</option>
-                                <template x-for="type in carTypes" :key="type.car_type_id">
-                                    <option :value="type.car_type_id" x-text="type.name"></option>
-                                </template>
-                            </select>
+                            <div class="relative">
+                                <input type="text" x-model="carSearch" @input="filterCarTypes" @focus="showCarDropdown = true"
+                                    placeholder="Ketik untuk cari model BMW..."
+                                    class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px] font-semibold text-[#213F5C] focus:border-[#1273EB]">
+                                <div x-show="showCarDropdown && filteredCarTypes.length > 0" x-cloak
+                                    class="absolute z-50 w-full mt-1 bg-white border border-[#E5E9F2] rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                                    <template x-for="type in filteredCarTypes" :key="type.car_type_id">
+                                        <div @click="selectCarType(type)"
+                                            class="px-5 py-3 text-[13px] font-semibold text-[#213F5C] hover:bg-[#EAF2FF] cursor-pointer border-b border-gray-50 last:border-0"
+                                            x-text="type.name"></div>
+                                    </template>
+                                </div>
+                            </div>
                         </div>
                         <div>
                             <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Kode Mesin</label>
@@ -147,6 +154,9 @@
                 tempCar: { car_type_id: '', engine_name: '', transmission: '', year: '', license_plate: '', km_reading: '' },
                 cars: [],
                 carTypes: [],
+                filteredCarTypes: [],
+                carSearch: '',
+                showCarDropdown: false,
                 availableEngines: [],
                 showForm: false,
                 editIndex: null,
@@ -155,12 +165,13 @@
 
                 async init() {
                     try {
-                        // 1. Load Car Types
-                        const resTypes = await fetch('/api/car-types', {
+                        // 1. Load Car Types (semua data)
+                        const resTypes = await fetch('/api/car-types?limit=200', {
                             headers: { 'Authorization': `Bearer ${this.token}`, 'Accept': 'application/json' }
                         });
                         const resultTypes = await resTypes.json();
-                        this.carTypes = resultTypes.data.data || resultTypes.data || [];
+                        this.carTypes = resultTypes.data || [];
+                        this.filteredCarTypes = this.carTypes;
 
                         // 2. Load Data Pelanggan Existing
                         const resCust = await fetch(`/api/customers/${this.id}`, {
@@ -191,6 +202,24 @@
                         e.preventDefault();
                         this.submitUpdateData();
                     };
+
+                    // Close dropdown when clicking outside
+                    document.addEventListener('click', (e) => {
+                        if (!e.target.closest('.relative')) this.showCarDropdown = false;
+                    });
+                },
+
+                filterCarTypes() {
+                    const q = this.carSearch.toLowerCase();
+                    this.filteredCarTypes = q ? this.carTypes.filter(t => t.name.toLowerCase().includes(q)) : this.carTypes;
+                    this.showCarDropdown = true;
+                },
+
+                selectCarType(type) {
+                    this.tempCar.car_type_id = type.car_type_id;
+                    this.carSearch = type.name;
+                    this.showCarDropdown = false;
+                    this.updateAvailableEngines();
                 },
 
                 updateAvailableEngines() {
@@ -202,14 +231,17 @@
                 openForm() {
                     this.editIndex = null;
                     this.tempCar = { car_type_id: '', engine_name: '', transmission: '', year: '', license_plate: '', km_reading: '' };
+                    this.carSearch = '';
+                    this.filteredCarTypes = this.carTypes;
                     this.showForm = true;
                 },
 
-                closeForm() { this.showForm = false; this.editIndex = null; },
+                closeForm() { this.showForm = false; this.editIndex = null; this.carSearch = ''; },
 
                 editCarFromList(index) {
                     this.editIndex = index;
                     this.tempCar = { ...this.cars[index] };
+                    this.carSearch = this.cars[index].car_name || '';
                     this.updateAvailableEngines();
                     this.showForm = true;
                 },

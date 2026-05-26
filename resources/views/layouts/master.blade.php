@@ -156,6 +156,96 @@
                 window.location.href = '/';
             }
         }
+
+        /**
+         * Global pagination helper.
+         * @param {object} result  - API paginated response (with current_page, last_page, from, to, total)
+         * @param {function} fetchFn - The fetch function to call when a page button is clicked, receives (page)
+         */
+        function renderPaginationControls(result, fetchFn) {
+            const container = document.getElementById('paginationControls');
+            const fromEl    = document.getElementById('paginationFrom');
+            const toEl      = document.getElementById('paginationTo');
+            const totalEl   = document.getElementById('paginationTotal');
+
+            if (fromEl)  fromEl.innerText  = result.from  ?? 0;
+            if (toEl)    toEl.innerText    = result.to    ?? 0;
+            if (totalEl) totalEl.innerText = result.total ?? 0;
+
+            if (!container) return;
+            container.innerHTML = '';
+
+            const currentPage = result.current_page ?? 1;
+            const lastPage    = result.last_page    ?? 1;
+
+            if (lastPage <= 1) return;
+
+            // Style helpers
+            const btnBase    = 'w-8 h-8 flex items-center justify-center rounded-lg text-[12px] font-bold transition-all';
+            const btnActive  = 'bg-[#1273EB] text-white shadow-sm';
+            const btnNormal  = 'bg-white border border-[#D9E2EC] text-[#627D98] hover:bg-[#EAF2FF] hover:text-[#1273EB]';
+            const btnDisabled= 'bg-[#F0F4F8] text-[#CBD5E1] cursor-not-allowed border border-[#E2E8F0]';
+
+            // Previous button
+            const prevBtn = document.createElement('button');
+            prevBtn.innerHTML = '‹';
+            prevBtn.className = `${btnBase} ${currentPage === 1 ? btnDisabled : btnNormal}`;
+            prevBtn.disabled  = currentPage === 1;
+            if (currentPage > 1) prevBtn.addEventListener('click', () => fetchFn(currentPage - 1));
+            container.appendChild(prevBtn);
+
+            // Page number buttons (show max 5 around current)
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage   = Math.min(lastPage, currentPage + 2);
+            if (endPage - startPage < 4) {
+                if (startPage === 1) endPage = Math.min(lastPage, startPage + 4);
+                else startPage = Math.max(1, endPage - 4);
+            }
+
+            if (startPage > 1) {
+                const first = document.createElement('button');
+                first.textContent = '1';
+                first.className = `${btnBase} ${btnNormal}`;
+                first.addEventListener('click', () => fetchFn(1));
+                container.appendChild(first);
+                if (startPage > 2) {
+                    const dots = document.createElement('span');
+                    dots.textContent = '…';
+                    dots.className = 'w-6 text-center text-[#627D98] text-[12px]';
+                    container.appendChild(dots);
+                }
+            }
+
+            for (let p = startPage; p <= endPage; p++) {
+                const btn = document.createElement('button');
+                btn.textContent = p;
+                btn.className = `${btnBase} ${p === currentPage ? btnActive : btnNormal}`;
+                if (p !== currentPage) btn.addEventListener('click', () => fetchFn(p));
+                container.appendChild(btn);
+            }
+
+            if (endPage < lastPage) {
+                if (endPage < lastPage - 1) {
+                    const dots = document.createElement('span');
+                    dots.textContent = '…';
+                    dots.className = 'w-6 text-center text-[#627D98] text-[12px]';
+                    container.appendChild(dots);
+                }
+                const last = document.createElement('button');
+                last.textContent = lastPage;
+                last.className = `${btnBase} ${btnNormal}`;
+                last.addEventListener('click', () => fetchFn(lastPage));
+                container.appendChild(last);
+            }
+
+            // Next button
+            const nextBtn = document.createElement('button');
+            nextBtn.innerHTML = '›';
+            nextBtn.className = `${btnBase} ${currentPage === lastPage ? btnDisabled : btnNormal}`;
+            nextBtn.disabled  = currentPage === lastPage;
+            if (currentPage < lastPage) nextBtn.addEventListener('click', () => fetchFn(currentPage + 1));
+            container.appendChild(nextBtn);
+        }
     </script>
 </body>
 

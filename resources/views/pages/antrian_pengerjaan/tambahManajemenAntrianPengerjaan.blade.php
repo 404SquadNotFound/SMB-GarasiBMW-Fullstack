@@ -149,20 +149,12 @@
                     </h3>
 
                     <div class="space-y-5">
-                        {{-- Nama Barang (input manual) --}}
+                        {{-- Dropdown stok / Suku Cadang --}}
                         <div>
-                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Nama Barang</label>
-                            <input type="text" id="inputNamaBarang" placeholder="Contoh: Filter Oli BMW"
-                                autocomplete="off"
-                                class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
-                        </div>
-
-                        {{-- Dropdown stok --}}
-                        <div>
-                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Stok</label>
+                            <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Cari Suku Cadang</label>
                             <div class="relative" id="stokDropdownWrapper">
                                 <div class="relative">
-                                    <input type="text" id="stokSearch" placeholder="Pilih Stok Yang Ingin Digunakan"
+                                    <input type="text" id="stokSearch" placeholder="Pilih suku cadang yang ingin digunakan..."
                                         autocomplete="off"
                                         class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300 pr-10">
                                     <span id="stokSearchClear" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-red-400 text-lg leading-none" onclick="clearStok()">×</span>
@@ -523,9 +515,6 @@
             const sc = document.getElementById('stokSearchClear');
             if (sc) sc.classList.remove('hidden');
 
-            const namaBarang = document.getElementById('inputNamaBarang');
-            if (namaBarang) namaBarang.value = stok.nama;
-
             document.getElementById('stokDropdownList').classList.add('hidden');
         }
 
@@ -546,10 +535,9 @@
         btnTambah.addEventListener('click', () => {
             formSC.classList.remove('hidden');
             btnTambah.classList.add('hidden');
-            document.getElementById('inputNamaBarang').value = '';
             document.getElementById('inputJumlah').value     = '';
             resetStokDropdown();
-            requestAnimationFrame(() => document.getElementById('inputNamaBarang')?.focus({ preventScroll: true }));
+            requestAnimationFrame(() => document.getElementById('stokSearch')?.focus({ preventScroll: true }));
         });
 
         btnBatalSC.addEventListener('click', () => {
@@ -559,16 +547,12 @@
         });
 
         btnSimpanSC.addEventListener('click', () => {
-            const namaBarang = document.getElementById('inputNamaBarang').value.trim();
-
-            if (!namaBarang) {
-                Swal.fire('Oops!', 'Nama barang tidak boleh kosong!', 'warning');
-                return;
-            }
             if (!selectedStokData) {
-                Swal.fire('Oops!', 'Pilih stok yang ingin digunakan!', 'warning');
+                Swal.fire('Oops!', 'Pilih suku cadang yang ingin digunakan!', 'warning');
                 return;
             }
+
+            const namaBarang = selectedStokData.nama;
 
             const jumlah = parseInt(document.getElementById('inputJumlah').value.trim()) || 1;
 

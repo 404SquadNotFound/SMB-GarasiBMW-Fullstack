@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Tambah Jenis Mobil')
 @section('title_header', 'Master Data | Jenis Mobil')
@@ -29,6 +29,8 @@
         </div>
         <div>
             <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Pilih Jenis Mesin (Bisa pilih banyak) *</label>
+            <input type="text" id="engineSearch" placeholder="Ketik untuk cari mesin..." 
+                class="w-full px-4 py-3 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] font-semibold text-[#213F5C] focus:border-[#1273EB] mb-2">
             <p class="text-[11px] text-gray-400 mb-2 font-medium italic">Tahan tombol <b>Ctrl (Windows)</b> atau <b>Cmd (Mac)</b> buat milih lebih dari satu mesin brok.</p>
             <select id="engine_ids" multiple class="w-full px-4 py-3 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none min-h-40 focus:border-[#1273EB] scrollbar-hide">
                 <option value="" disabled>-- Sedang memuat mesin... --</option>
@@ -62,30 +64,48 @@
         const token = localStorage.getItem('access_token');
         const engineSelect = document.getElementById('engine_ids');
 
-        // 1. Ambil data Jenis Mesin buat Dropdown (Cuma satu fungsi aja)
+        let allEngines = [];
+
+        // 1. Ambil SEMUA data Jenis Mesin buat Dropdown
         async function loadEngineTypes() {
             try {
-                const res = await fetch('/api/engine-types', {
+                const res = await fetch('/api/engine-types?limit=200', {
                     headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
                 });
                 const result = await res.json();
                 
                 if (res.ok) {
-                    engineSelect.innerHTML = ''; // Kosongin loading
-                    const engines = result.data.data || result.data; // Handle Laravel Paginate
-                    
-                    engines.forEach(engine => {
-                        const option = document.createElement('option');
-                        option.value = engine.engine_type_id;
-                        option.text = `${engine.name} (${engine.engine_cap}cc)`;
-                        engineSelect.appendChild(option);
-                    });
+                    allEngines = result.data || [];
+                    renderEngineOptions(allEngines);
                 }
             } catch (e) { 
                 console.error("Gagal muat mesin:", e);
                 engineSelect.innerHTML = '<option disabled class="text-red-500">Gagal memuat data mesin</option>';
             }
         }
+
+        function renderEngineOptions(engines) {
+            // Simpan selected values sebelum re-render
+            const selectedValues = Array.from(engineSelect.selectedOptions).map(o => o.value);
+            engineSelect.innerHTML = '';
+            engines.forEach(engine => {
+                const option = document.createElement('option');
+                option.value = engine.engine_type_id;
+                option.text = `${engine.name} (${engine.engine_cap}cc)`;
+                if (selectedValues.includes(String(engine.engine_type_id))) option.selected = true;
+                engineSelect.appendChild(option);
+            });
+        }
+
+        // Search/filter engine options
+        document.getElementById('engineSearch').addEventListener('input', (e) => {
+            const q = e.target.value.toLowerCase();
+            const filtered = q ? allEngines.filter(eng => 
+                eng.name.toLowerCase().includes(q) || 
+                String(eng.engine_cap).includes(q)
+            ) : allEngines;
+            renderEngineOptions(filtered);
+        });
 
         // 2. Proses Simpan
         document.getElementById('submitBtnApi').onclick = async (e) => {

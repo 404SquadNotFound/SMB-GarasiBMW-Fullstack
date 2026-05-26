@@ -54,7 +54,7 @@
         </div>
 
         {{-- BOX 2: INFORMASI MOBIL --}}
-        <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-hidden">
+        <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm overflow-visible">
             <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
                 <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -67,13 +67,20 @@
             <div class="p-8 space-y-4">
                 <div>
                     <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Tipe Mobil</label>
-                    <select x-model="formData.car_type_id" @change="onCarTypeChange()"
-                        class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] font-semibold text-[#213F5C]">
-                        <option value="">-- Semua Tipe Mobil --</option>
-                        <template x-for="car in carTypes" :key="car.car_type_id">
-                            <option :value="car.car_type_id" x-text="`${car.chassis_number} - ${car.name} (${car.series})`"></option>
-                        </template>
-                    </select>
+                    <div class="relative">
+                        <input type="text" x-model="carSearch" @input="filterCarTypes" @focus="showCarDropdown = true"
+                            placeholder="Ketik untuk cari tipe mobil..." 
+                            class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none text-[14px] font-semibold text-[#213F5C] focus:border-[#1273EB]">
+                        <div x-show="showCarDropdown && filteredCarTypes.length > 0" x-cloak
+                            class="absolute z-50 w-full mt-1 bg-white border border-[#E5E9F2] rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                            <div @click="selectCarType(null)" class="px-5 py-3 text-[13px] font-semibold text-gray-500 hover:bg-[#EAF2FF] cursor-pointer border-b border-gray-50">-- Semua Tipe Mobil --</div>
+                            <template x-for="car in filteredCarTypes" :key="car.car_type_id">
+                                <div @click="selectCarType(car)" 
+                                    class="px-5 py-3 text-[13px] font-semibold text-[#213F5C] hover:bg-[#EAF2FF] cursor-pointer border-b border-gray-50 last:border-0"
+                                    x-text="`${car.chassis_number} - ${car.name} (${car.series})`"></div>
+                            </template>
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kode Mesin</label>
@@ -208,6 +215,9 @@
                 suppliers: [],
                 categories: [],
                 carTypes: [],
+                filteredCarTypes: [],
+                carSearch: '',
+                showCarDropdown: false,
                 allEngines: [],
                 availableEngines: [],
                 showStockForm: false,
@@ -232,6 +242,7 @@
                         });
                         this.allEngines = [...engineSet].sort();
                         this.availableEngines = this.allEngines;
+                        this.filteredCarTypes = this.carTypes;
                     } catch (e) { console.error('Gagal fetch car-types', e); }
 
                     // Load suppliers
@@ -251,6 +262,31 @@
                     // Hook tombol simpan di sidebar
                     const btn = document.getElementById('submitBtnApi');
                     if (btn) btn.onclick = (e) => { e.preventDefault(); this.submitAllData(); };
+
+                    // Close dropdown when clicking outside
+                    document.addEventListener('click', (e) => {
+                        if (!e.target.closest('.relative')) this.showCarDropdown = false;
+                    });
+                },
+
+                filterCarTypes() {
+                    const q = this.carSearch.toLowerCase();
+                    this.filteredCarTypes = q ? this.carTypes.filter(t => 
+                        (t.chassis_number + ' ' + t.name + ' ' + t.series).toLowerCase().includes(q)
+                    ) : this.carTypes;
+                    this.showCarDropdown = true;
+                },
+
+                selectCarType(car) {
+                    if (car) {
+                        this.formData.car_type_id = car.car_type_id;
+                        this.carSearch = `${car.chassis_number} - ${car.name} (${car.series})`;
+                    } else {
+                        this.formData.car_type_id = '';
+                        this.carSearch = '';
+                    }
+                    this.showCarDropdown = false;
+                    this.onCarTypeChange();
                 },
 
                 onCarTypeChange() {

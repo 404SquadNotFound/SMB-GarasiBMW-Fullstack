@@ -522,9 +522,6 @@
             const sc = document.getElementById('stokSearchClear');
             if (sc) sc.classList.remove('hidden');
 
-            const namaBarang = document.getElementById('inputNamaBarang');
-            if (namaBarang) namaBarang.value = stok.nama;
-            
             document.getElementById('stokDropdownList').classList.add('hidden');
         }
 
@@ -543,11 +540,10 @@
         btnTambah.addEventListener('click', () => {
             formSC.classList.remove('hidden');
             btnTambah.classList.add('hidden');
-            document.getElementById('inputNamaBarang').value = '';
             document.getElementById('inputJumlah').value = '';
             resetStokDropdown();
             requestAnimationFrame(() => {
-                document.getElementById('inputNamaBarang')?.focus({ preventScroll: true });
+                document.getElementById('stokSearch')?.focus({ preventScroll: true });
             });
         });
 

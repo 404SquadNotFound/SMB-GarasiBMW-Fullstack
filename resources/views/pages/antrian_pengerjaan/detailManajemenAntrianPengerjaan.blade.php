@@ -70,7 +70,7 @@
             const result = await res.json();
 
             if (res.ok) {
-                document.getElementById('updatedAt').textContent = new Date().toLocaleString('id-ID');
+                document.getElementById('updatedAt').textContent = formatTanggal(new Date().toISOString());
                 Swal.fire({ icon: 'success', title: 'Status diperbarui!', text: `Status berhasil diubah ke "${newStatus}"`, timer: 1800, showConfirmButton: false });
             } else {
                 currentStatus = prevStatus;
@@ -130,7 +130,7 @@
 
     // ── Update tombol proses pembayaran ───────────────────────────────────────
     function updatePembayaranBtn(status) {
-        if (status === 'Selesai') {
+        if (status === 'selesai') {
             btnPembayaran.classList.remove('bg-gray-200', 'text-gray-400', 'cursor-not-allowed');
             btnPembayaran.classList.add('bg-[#16A34A]', 'text-white', 'hover:bg-[#15803D]', 'shadow-lg', 'shadow-green-100');
             btnPembayaran.disabled = false;
@@ -166,6 +166,15 @@
         return d.innerHTML;
     }
 
+    function formatTanggal(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) return dateStr;
+        const tgl = date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        const jam = date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        return `${tgl} pukul ${jam}`;
+    }
+
     // ── Render detail ke halaman ──────────────────────────────────────────────
     function renderDetail(t) {
         const customer = t.vehicle?.customer ?? {};
@@ -182,8 +191,8 @@
         const createdByName = t.creator?.name || 'Unknown';
         document.getElementById('createdByName').textContent    = createdByName;
         document.getElementById('createdByInitial').textContent = createdByName.charAt(0).toUpperCase();
-        document.getElementById('createdAt').textContent        = t.created_at || '-';
-        document.getElementById('updatedAt').textContent        = t.updated_at || '-';
+        document.getElementById('createdAt').textContent        = formatTanggal(t.created_at);
+        document.getElementById('updatedAt').textContent        = formatTanggal(t.updated_at);
 
         const editUrl = "{{ route('antrian-pengerjaan.edit', ':id') }}".replace(':id', t.transaction_id);
         const btnEdit = document.getElementById('btnEditData');

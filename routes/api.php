@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // Route custom buat update status servis
+    Route::get('/transactions/status-summary', [ServiceTransactionController::class, 'statusSummary']);
     Route::put('/transactions/{id}/status', [ServiceTransactionController::class, 'updateStatus']);
 
     // Endpoint data stok suku cadang untuk dropdown antrian pengerjaan
