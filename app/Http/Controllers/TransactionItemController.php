@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TransactionItem;
+use App\Http\Services\PdfNota;
 use App\Models\Sparepart;
 use Illuminate\Http\Request;
 
@@ -43,5 +44,11 @@ class TransactionItemController extends Controller
 
         $item->delete();
         return response()->json(['status' => 'success', 'message' => 'Item dihapus dan stok dikembalikan'], 200);
+    }
+
+    public function nota(Request $request, $id, PdfNota $pdfNota)
+    {
+        $copy = $request->query('copy', 'both');
+        return $pdfNota->generate($id, $copy);
     }
 }
