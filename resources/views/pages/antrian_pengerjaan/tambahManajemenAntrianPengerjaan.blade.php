@@ -176,9 +176,9 @@
                     <h2 class="text-[16px] font-bold text-[#213F5C]">Penggunaan Suku Cadang</h2>
                 </div>
 
-                <div class="p-8 space-y-6">
+                <div class="p-8 flex flex-col gap-4">
 
-                    <div id="sukuCadangList" class="space-y-4"></div>
+                    <div id="sukuCadangList" class="space-y-4 empty:hidden"></div>
 
                     <button type="button" id="btnTambahSukuCadang"
                         class="w-full py-4 bg-[#1273EB] text-white rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-blue-100 hover:bg-[#0E59B8] transition-all">

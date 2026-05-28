@@ -25,9 +25,11 @@
         {{-- Kolom Kiri --}}
         <div class="col-span-9 space-y-6">
 
-            {{-- BOX 1 : Informasi Pemilik Kendaraan --}}
+            {{-- =========================================================
+             BOX 1 : Informasi Pemilik Kendaraan
+            ========================================================= --}}
             <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm">
-                <div class="flex items-center gap-3 p-6 border-b border-gray-100">
+                <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
                     <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#1273EB]">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -60,9 +62,11 @@
                 </div>
             </div>
 
-            {{-- BOX 2 : Informasi Mobil Pelanggan --}}
+            {{-- =========================================================
+             BOX 2 : Informasi Mobil Pelanggan
+            ========================================================= --}}
             <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm">
-                <div class="flex items-center gap-3 p-6 border-b border-gray-100">
+                <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
                     <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -79,7 +83,7 @@
                         <div id="vehicleEmptyHint" class="py-3 px-4 bg-gray-50 border border-dashed border-gray-200 rounded-xl text-[13px] text-gray-400 text-center">
                             Pilih pelanggan terlebih dahulu
                         </div>
-                        <div class="relative" id="vehicleDropdownWrapper">
+                        <div class="relative" id="vehicleDropdownWrapper" class="hidden">
                             <div class="relative">
                                 <input type="text" id="vehicleSearch" placeholder="Cari model atau nopol kendaraan..."
                                     autocomplete="off"
@@ -105,9 +109,11 @@
                 </div>
             </div>
 
-            {{-- BOX 3 : Cabang Yang Digunakan --}}
+            {{-- =========================================================
+             BOX 3 : Cabang Yang Digunakan
+            ========================================================= --}}
             <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm">
-                <div class="flex items-center gap-3 p-6 border-b border-gray-100">
+                <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
                     <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -141,9 +147,11 @@
                 </div>
             </div>
 
-            {{-- BOX 4 : Penggunaan Suku Cadang --}}
+            {{-- =========================================================
+             BOX 4 : Penggunaan Suku Cadang
+            ========================================================= --}}
             <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm">
-                <div class="flex items-center gap-3 p-6 border-b border-gray-100">
+                <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
                     <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -154,8 +162,11 @@
                     </div>
                     <h2 class="text-[16px] font-bold text-[#213F5C]">Penggunaan Suku Cadang</h2>
                 </div>
+
                 <div class="p-8 space-y-6">
-                    <div id="sukuCadangList" class="space-y-4"></div>
+
+                    <div id="sukuCadangList" class="space-y-4 empty:hidden"></div>
+
                     <button type="button" id="btnTambahSukuCadang"
                         class="w-full py-4 bg-[#1273EB] text-white rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-blue-100 hover:bg-[#0E59B8] transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
@@ -163,43 +174,56 @@
                         </svg>
                         Tambah Suku Cadang
                     </button>
+
+                    {{-- FORM TAMBAH SUKU CADANG --}}
                     <div id="formSukuCadang" class="hidden bg-[#F8FAFF] border border-[#D1E4FF] rounded-3xl p-8 space-y-6">
-                        <h3 class="text-[14px] font-bold text-[#213F5C]">Tambahkan Penggunaan Suku Cadang</h3>
+
+                        <h3 class="text-[14px] font-bold text-[#213F5C]">
+                            Tambahkan Penggunaan Suku Cadang
+                        </h3>
+
                         <div class="space-y-5">
+                            {{-- Dropdown stok / Suku Cadang --}}
                             <div>
-                                <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Pilih Suku Cadang (Stok)</label>
+                                <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Cari Suku Cadang</label>
                                 <div class="relative" id="stokDropdownWrapper">
                                     <div class="relative">
-                                        <input type="text" id="stokSearch" placeholder="Ketik atau pilih suku cadang..."
+                                        <input type="text" id="stokSearch" placeholder="Pilih suku cadang yang ingin digunakan..."
                                             autocomplete="off"
-                                            class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] text-[14px] text-[#213F5C] pr-10">
+                                            class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300 pr-10">
                                         <span id="stokSearchClear" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-red-400 text-lg leading-none" onclick="clearStok()">×</span>
                                     </div>
                                     <div id="stokDropdownList" class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
                                         <div id="stokDropdownItems" class="max-h-[380px] overflow-y-auto custom-scrollbar"></div>
                                     </div>
                                 </div>
+
                                 <input type="hidden" id="inputStok" value="">
                                 <input type="hidden" id="inputStokLabel" value="">
-                                <input type="hidden" id="inputNamaBarang" value="">
                             </div>
+
+                            {{-- Jumlah --}}
                             <div>
-                                <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Jumlah Stok Yang Digunakan</label>
-                                <input type="number" id="inputJumlah" placeholder="Contoh: 1" min="1"
-                                    class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] text-[14px] text-[#213F5C]">
+                                <label class="block text-[13px] font-bold text-[#213F5C] mb-2">
+                                    Jumlah Stok Yang Digunakan
+                                </label>
+                                <input type="number" id="inputJumlah" placeholder="Contoh : 1" min="1"
+                                    class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
                             </div>
                         </div>
+
                         <div class="flex gap-3 pt-2">
                             <button type="button" id="btnSimpanSukuCadang"
-                                class="flex-1 py-3.5 bg-[#1273EB] text-white rounded-xl font-bold text-[14px] hover:bg-[#0E59B8] transition-all">
+                                class="flex-1 py-3.5 bg-[#1273EB] text-white rounded-xl font-bold text-[14px] hover:bg-[#0E59B8]">
                                 Simpan
                             </button>
                             <button type="button" id="btnBatalSukuCadang"
-                                class="px-8 py-3.5 bg-white border border-gray-200 text-gray-500 rounded-xl font-bold text-[14px] hover:bg-gray-50 transition-all">
+                                class="px-8 py-3.5 bg-white border border-gray-200 text-gray-500 rounded-xl font-bold text-[14px] hover:bg-gray-50">
                                 Batal
                             </button>
                         </div>
                     </div>
+
                     <input type="hidden" id="inputSukuCadangJSON" name="suku_cadang" value="[]">
                 </div>
             </div>
@@ -263,7 +287,6 @@
     let isDirty = false;
     const token = localStorage.getItem('access_token');
 
-    // Dummy cabang — konsisten dengan form tambah & detail
     const cabangDummy = { '1': 'Pelajar Pejuang', '2': 'Ahmad Yani' };
 
     let selectedCustomer = null;
@@ -275,7 +298,7 @@
     let customerDebounce = null;
     let currentVehicles  = [];
 
-    // Quick Info
+    // ── Quick Info ────────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', async () => {
         const name = localStorage.getItem('user_name') || 'User';
         const role = localStorage.getItem('user_role') || 'Staff';
@@ -305,14 +328,17 @@
                 return;
             }
 
-            const t = result.data;
+            const t            = result.data;
             const customerData = t.vehicle?.customer;
             const vehicleData  = t.vehicle;
 
             if (customerData) {
                 selectCustomer({
-                    id: customerData.customer_id, nama: customerData.name,
-                    telepon: customerData.phone_number, alamat: customerData.address, vehicles: []
+                    id      : customerData.customer_id,
+                    nama    : customerData.name,
+                    telepon : customerData.phone_number,
+                    alamat  : customerData.address,
+                    vehicles: []
                 });
                 const custResult  = await searchCustomers(customerData.name);
                 const matchedCust = custResult.find(c => c.id === customerData.customer_id);
@@ -325,20 +351,21 @@
                     selectVehicle(mappedVehicle);
                 } else {
                     selectVehicle({
-                        id: vehicleData.vehicles_id, model: vehicleData.model,
-                        license_plate: vehicleData.license_plate, engine_code: vehicleData.engine_code,
-                        odometer: vehicleData.odometer,
+                        id           : vehicleData.vehicles_id,
+                        model        : vehicleData.model,
+                        license_plate: vehicleData.license_plate,
+                        engine_code  : vehicleData.engine_code,
+                        odometer     : vehicleData.odometer,
                     });
                 }
             }
 
             document.getElementById('km_masuk').value = t.km_masuk ?? '';
 
-            // Pre-fill cabang — coba dari API, fallback ke dummy
+            // Pre-fill cabang
             const cabangId = t.cabang_id ?? null;
             if (cabangId) {
                 const select = document.getElementById('cabang_bengkel');
-                // cek apakah value ada di options
                 const optionExists = Array.from(select.options).some(o => o.value === String(cabangId));
                 if (optionExists) {
                     select.value = String(cabangId);
@@ -348,15 +375,18 @@
                 }
             }
 
+            // Pre-fill suku cadang
             sukuCadangItems = (t.items ?? []).map(item => ({
-                id           : item.id ?? Date.now() + Math.random(),
-                sparepart_id : item.sparepart_id ?? item.spare_part_id,
-                nama         : item.item_name ?? item.sparepart?.name ?? '-',
-                deskripsi    : item.item_name ?? item.sparepart?.name ?? '-',
-                harga        : item.price ? 'Rp ' + Number(item.price).toLocaleString('id-ID') : (item.sparepart ? 'Rp ' + Number(item.sparepart.selling_price).toLocaleString('id-ID') : '-'),
-                jumlah       : String(item.quantity ?? item.qty ?? 1) + ' pcs',
-                tanggal      : '-',
-                supplier     : item.sparepart?.supplier?.name ?? '-',
+                id          : item.id ?? Date.now() + Math.random(),
+                sparepart_id: item.sparepart_id ?? item.spare_part_id,
+                nama        : item.item_name ?? item.sparepart?.name ?? '-',
+                deskripsi   : item.item_name ?? item.sparepart?.name ?? '-',
+                harga       : item.price
+                    ? 'Rp ' + Number(item.price).toLocaleString('id-ID')
+                    : (item.sparepart ? 'Rp ' + Number(item.sparepart.selling_price).toLocaleString('id-ID') : '-'),
+                jumlah      : String(item.quantity ?? item.qty ?? 1) + ' pcs',
+                tanggal     : '-',
+                supplier    : item.sparepart?.supplier?.name ?? '-',
             }));
             syncHiddenJSON();
             renderSukuCadang();
@@ -367,6 +397,7 @@
             Swal.fire('Error', 'Tidak bisa terhubung ke server.', 'error');
         }
 
+        // Back button
         const backBtn = document.getElementById('btnBackForm');
         if (backBtn) {
             const detailUrl = "{{ route('antrian-pengerjaan.show', ':id') }}".replace(':id', id);
@@ -375,9 +406,13 @@
                 ev.preventDefault();
                 if (isDirty) {
                     Swal.fire({
-                        title: 'Keluar tanpa menyimpan?', text: 'Perubahan yang kamu buat belum disimpan.',
-                        icon: 'warning', showCancelButton: true,
-                        confirmButtonText: 'Ya, Keluar', cancelButtonText: 'Batal', confirmButtonColor: '#1273EB',
+                        title             : 'Keluar tanpa menyimpan?',
+                        text              : 'Perubahan yang kamu buat belum disimpan.',
+                        icon              : 'warning',
+                        showCancelButton  : true,
+                        confirmButtonText : 'Ya, Keluar',
+                        cancelButtonText  : 'Batal',
+                        confirmButtonColor: '#1273EB',
                     }).then(result => {
                         if (result.isConfirmed) { isDirty = false; window.location.href = detailUrl; }
                     });
@@ -404,31 +439,12 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
-    // CABANG DROPDOWN
-    // ═══════════════════════════════════════════════════════════════
-    const cabangSelect = document.getElementById('cabang_bengkel');
-    if (cabangSelect) {
-        cabangSelect.addEventListener('change', function () {
-            const label = this.options[this.selectedIndex].text;
-            const infoBox  = document.getElementById('cabangInfoBox');
-            const infoName = document.getElementById('cabangInfoName');
-            if (this.value) {
-                infoName.textContent = '📍 ' + label;
-                infoBox.classList.remove('hidden');
-            } else {
-                infoBox.classList.add('hidden');
-            }
-            isDirty = true;
-        });
-    }
-
-    // ═══════════════════════════════════════════════════════════════
     // CUSTOMER SEARCH
     // ═══════════════════════════════════════════════════════════════
     async function searchCustomers(keyword) {
         try {
             const params = keyword ? `?search=${encodeURIComponent(keyword)}` : '';
-            const res = await fetch(`/api/customers-for-antrian${params}`, {
+            const res    = await fetch(`/api/customers-for-antrian${params}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const result = await res.json();
@@ -443,6 +459,7 @@
         const container = document.getElementById('customerDropdownItems');
         const dropdown  = document.getElementById('customerDropdownList');
         container.innerHTML = '';
+
         if (list.length === 0) {
             container.innerHTML = '<div class="p-4 text-center text-[13px] text-gray-400">Pelanggan tidak ditemukan</div>';
         } else {
@@ -461,13 +478,13 @@
 
     function selectCustomer(c) {
         selectedCustomer = c;
-        document.getElementById('selectedCustomerId').value = c.id;
-        document.getElementById('customerSearch').value    = `${c.nama} - ${c.telepon}`;
+        document.getElementById('selectedCustomerId').value           = c.id;
+        document.getElementById('customerSearch').value               = `${c.nama} - ${c.telepon}`;
         document.getElementById('customerSearchClear').classList.remove('hidden');
         document.getElementById('customerDropdownList').classList.add('hidden');
-        document.getElementById('customerInfoName').textContent    = c.nama;
-        document.getElementById('customerInfoPhone').textContent   = '📞 ' + c.telepon;
-        document.getElementById('customerInfoAddress').textContent = '📍 ' + (c.alamat || '-');
+        document.getElementById('customerInfoName').textContent       = c.nama;
+        document.getElementById('customerInfoPhone').textContent      = '📞 ' + c.telepon;
+        document.getElementById('customerInfoAddress').textContent    = '📍 ' + (c.alamat || '-');
         document.getElementById('customerInfoBox').classList.remove('hidden');
         populateVehicleDropdown(c.vehicles ?? []);
         isDirty = true;
@@ -487,12 +504,12 @@
 
     const customerSearchEl = document.getElementById('customerSearch');
     if (customerSearchEl) {
-        customerSearchEl.addEventListener('focus', async function() {
+        customerSearchEl.addEventListener('focus', async function () {
             if (!customersData.length) customersData = await searchCustomers('');
             renderCustomerDropdown(customersData);
             document.getElementById('customerDropdownList').classList.remove('hidden');
         });
-        customerSearchEl.addEventListener('input', function() {
+        customerSearchEl.addEventListener('input', function () {
             const kw = this.value.trim().toLowerCase();
             document.getElementById('customerDropdownList').classList.remove('hidden');
             if (kw.length === 0) { renderCustomerDropdown(customersData); return; }
@@ -552,16 +569,17 @@
 
     const vehicleSearchEl = document.getElementById('vehicleSearch');
     if (vehicleSearchEl) {
-        vehicleSearchEl.addEventListener('focus', function() {
+        vehicleSearchEl.addEventListener('focus', function () {
             renderVehicleDropdown(currentVehicles);
             document.getElementById('vehicleDropdownList').classList.remove('hidden');
         });
-        vehicleSearchEl.addEventListener('input', function() {
+        vehicleSearchEl.addEventListener('input', function () {
             const kw = this.value.trim().toLowerCase();
             document.getElementById('vehicleDropdownList').classList.remove('hidden');
             if (kw.length === 0) { renderVehicleDropdown(currentVehicles); return; }
             const filtered = currentVehicles.filter(v =>
-                (v.model || '').toLowerCase().includes(kw) || (v.license_plate || '').toLowerCase().includes(kw)
+                (v.model || '').toLowerCase().includes(kw) ||
+                (v.license_plate || '').toLowerCase().includes(kw)
             );
             renderVehicleDropdown(filtered);
         });
@@ -579,7 +597,7 @@
 
     function selectVehicle(v) {
         selectedVehicle = v;
-        document.getElementById('selectedVehicleId').value = v.id;
+        document.getElementById('selectedVehicleId').value      = v.id;
         const vs = document.getElementById('vehicleSearch');
         if (vs) vs.value = `${v.model} - ${v.license_plate}`;
         const vc = document.getElementById('vehicleSearchClear'); if (vc) vc.classList.remove('hidden');
@@ -594,23 +612,47 @@
     }
 
     // ═══════════════════════════════════════════════════════════════
+    // CABANG DROPDOWN
+    // ═══════════════════════════════════════════════════════════════
+    const cabangSelect = document.getElementById('cabang_bengkel');
+    if (cabangSelect) {
+        cabangSelect.addEventListener('change', function () {
+            const label    = this.options[this.selectedIndex].text;
+            const infoBox  = document.getElementById('cabangInfoBox');
+            const infoName = document.getElementById('cabangInfoName');
+            if (this.value) {
+                infoName.textContent = '📍 ' + label;
+                infoBox.classList.remove('hidden');
+            } else {
+                infoBox.classList.add('hidden');
+            }
+            isDirty = true;
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════
     // STOK DROPDOWN
     // ═══════════════════════════════════════════════════════════════
     async function loadStokList() {
         try {
-            const res = await fetch('/api/spareparts-for-antrian', { headers: { 'Authorization': `Bearer ${token}` } });
+            const res    = await fetch('/api/spareparts-for-antrian', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
             const result = await res.json();
             if (res.ok && result.data) stokList = result.data;
         } catch (e) { console.error('Gagal load stok:', e); }
     }
 
     function renderStokOptions(keyword = '') {
-        const container = document.getElementById('stokDropdownItems');
-        const dropdown  = document.getElementById('stokDropdownList');
+        const container  = document.getElementById('stokDropdownItems');
+        const dropdown   = document.getElementById('stokDropdownList');
         container.innerHTML = '';
-        const filteredList = stokList.filter(s =>
-            s.nama.toLowerCase().includes(keyword.toLowerCase()) || s.stok.toString().includes(keyword)
+
+        const filteredList = stokList.filter(stok =>
+            stok.nama.toLowerCase().includes(keyword.toLowerCase()) ||
+            stok.stok.toString().includes(keyword)
         );
+
         if (filteredList.length === 0) {
             container.innerHTML = '<div class="p-4 text-center text-gray-400 text-[14px]">Stok tidak ditemukan...</div>';
         } else {
@@ -625,7 +667,8 @@
                     <div class="flex justify-between items-center text-[12px]">
                         <span class="text-gray-500">Sisa Stok: <span class="font-bold text-[#213F5C]">${escHtml(String(stok.stok))}</span></span>
                         <span class="text-gray-400">Suplier: ${escHtml(stok.supplier || '-')}</span>
-                    </div>`;
+                    </div>
+                `;
                 div.addEventListener('click', () => selectStok(stok));
                 container.appendChild(div);
             });
@@ -635,12 +678,20 @@
 
     const stokSearchEl = document.getElementById('stokSearch');
     if (stokSearchEl) {
-        stokSearchEl.addEventListener('focus', function() { renderStokOptions(this.value.trim()); });
-        stokSearchEl.addEventListener('input', function() { renderStokOptions(this.value.trim()); });
+        stokSearchEl.addEventListener('focus', function () {
+            renderStokOptions(this.value.trim());
+            document.getElementById('stokDropdownList').classList.remove('hidden');
+        });
+        stokSearchEl.addEventListener('input', function () {
+            const kw = this.value.trim();
+            document.getElementById('stokDropdownList').classList.remove('hidden');
+            renderStokOptions(kw);
+        });
     }
 
     function clearStok() {
-        selectedStokId = null; selectedStokData = null;
+        selectedStokId   = null;
+        selectedStokData = null;
         document.getElementById('inputStok').value = '';
         const ss = document.getElementById('stokSearch'); if (ss) ss.value = '';
         const sc = document.getElementById('stokSearchClear'); if (sc) sc.classList.add('hidden');
@@ -649,7 +700,8 @@
     }
 
     function selectStok(stok) {
-        selectedStokId = stok.id; selectedStokData = stok;
+        selectedStokId   = stok.id;
+        selectedStokData = stok;
         document.getElementById('inputStok').value = stok.id;
         const ss = document.getElementById('stokSearch');
         if (ss) ss.value = `${stok.nama} - ${stok.harga} (Sisa: ${stok.stok})`;
@@ -660,7 +712,7 @@
     function resetStokDropdown() { clearStok(); }
 
     // ═══════════════════════════════════════════════════════════════
-    // SUKU CADANG
+    // SUKU CADANG FORM LOGIC
     // ═══════════════════════════════════════════════════════════════
     const btnTambah   = document.getElementById('btnTambahSukuCadang');
     const formSC      = document.getElementById('formSukuCadang');
@@ -684,15 +736,27 @@
     });
 
     btnSimpanSC.addEventListener('click', () => {
-        if (!selectedStokData) { Swal.fire('Oops!', 'Pilih suku cadang dari dropdown!', 'warning'); return; }
+        if (!selectedStokData) {
+            Swal.fire('Oops!', 'Pilih suku cadang yang ingin digunakan!', 'warning');
+            return;
+        }
+
         const jumlah = parseInt(document.getElementById('inputJumlah').value.trim()) || 1;
+
         sukuCadangItems.push({
-            id: Date.now(), sparepart_id: selectedStokData.id,
-            nama: selectedStokData.nama, deskripsi: selectedStokData.nama,
-            harga: selectedStokData.harga, jumlah: jumlah + ' pcs',
-            tanggal: selectedStokData.tanggal, supplier: selectedStokData.supplier,
+            id          : Date.now(),
+            sparepart_id: selectedStokData.id,
+            nama        : selectedStokData.nama,
+            deskripsi   : selectedStokData.nama,
+            harga       : selectedStokData.harga,
+            jumlah      : jumlah + ' pcs',
+            tanggal     : selectedStokData.tanggal,
+            supplier    : selectedStokData.supplier,
+            stok        : selectedStokData.stok,
         });
-        renderSukuCadang(); syncHiddenJSON();
+
+        renderSukuCadang();
+        syncHiddenJSON();
         formSC.classList.add('hidden');
         btnTambah.classList.remove('hidden');
         resetStokDropdown();
@@ -701,10 +765,14 @@
 
     function hapusSukuCadang(id) {
         sukuCadangItems = sukuCadangItems.filter(i => i.id !== id);
-        renderSukuCadang(); syncHiddenJSON(); isDirty = true;
+        renderSukuCadang();
+        syncHiddenJSON();
+        isDirty = true;
     }
 
-    function syncHiddenJSON() { hiddenJSON.value = JSON.stringify(sukuCadangItems); }
+    function syncHiddenJSON() {
+        hiddenJSON.value = JSON.stringify(sukuCadangItems);
+    }
 
     function renderSukuCadang() {
         listEl.innerHTML = '';
@@ -721,10 +789,12 @@
                     <button type="button" onclick="hapusSukuCadang(${item.id})"
                         class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#FFF5F5] border border-[#FFE0E0] text-[#FF4D4D] hover:bg-[#FFEBEB] transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                     </button>
-                </div>`;
+                </div>
+            `;
             listEl.appendChild(el);
         });
     }
@@ -733,16 +803,21 @@
     document.querySelectorAll('input, select').forEach(el => {
         el.addEventListener('input', () => isDirty = true);
     });
+
     window.addEventListener('beforeunload', (e) => {
         if (isDirty) { e.preventDefault(); e.returnValue = ''; }
     });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Enter') e.preventDefault(); });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') e.preventDefault();
+    });
 
     // ═══════════════════════════════════════════════════════════════
     // SUBMIT
     // ═══════════════════════════════════════════════════════════════
     document.getElementById('submitBtnApi').addEventListener('click', async (e) => {
         e.preventDefault();
+
         if (!selectedCustomer) { Swal.fire('Oops!', 'Pilih pelanggan terlebih dahulu!', 'warning'); return; }
         if (!selectedVehicle)  { Swal.fire('Oops!', 'Pilih kendaraan pelanggan!', 'warning'); return; }
 
@@ -751,7 +826,10 @@
         const id    = getAntrianId();
         const items = sukuCadangItems
             .filter(sc => sc.sparepart_id)
-            .map(sc => ({ sparepart_id: sc.sparepart_id, quantity: parseInt(sc.jumlah) || 1 }));
+            .map(sc => ({
+                sparepart_id: sc.sparepart_id,
+                quantity    : parseInt(sc.jumlah) || 1
+            }));
 
         const payload = {
             customer_id : selectedCustomer.id,
@@ -764,8 +842,12 @@
         try {
             const res = await fetch(`/api/transactions/${id}`, {
                 method : 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
-                body   : JSON.stringify(payload),
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    'Accept'       : 'application/json'
+                },
+                body: JSON.stringify(payload),
             });
             const result = await res.json();
             if (res.ok && result.status === 'success') {
