@@ -113,6 +113,31 @@
         </main>
     </div>
     <script>
+            // ── Auth Guard: tolak akses kalau belum login ──
+            (function () {
+                const token = localStorage.getItem('access_token');
+                if (!token) {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Sesi Tidak Ditemukan!',
+                            text: 'Kamu belum login. Silakan login terlebih dahulu untuk mengakses halaman ini.',
+                            confirmButtonText: 'Ke Halaman Login',
+                            confirmButtonColor: '#1273EB',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                        }).then(() => {
+                            window.location.replace('/');
+                        });
+                    });
+                }
+            })();
+
+        // ── Helper global: ambil role user saat ini ──
+        function getUserRole() {
+            return (localStorage.getItem('user_role') || '').toLowerCase();
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const name = localStorage.getItem('user_name') || 'User';
             const role = localStorage.getItem('user_role') || 'Guest';
@@ -164,39 +189,39 @@
          */
         function renderPaginationControls(result, fetchFn) {
             const container = document.getElementById('paginationControls');
-            const fromEl    = document.getElementById('paginationFrom');
-            const toEl      = document.getElementById('paginationTo');
-            const totalEl   = document.getElementById('paginationTotal');
+            const fromEl = document.getElementById('paginationFrom');
+            const toEl = document.getElementById('paginationTo');
+            const totalEl = document.getElementById('paginationTotal');
 
-            if (fromEl)  fromEl.innerText  = result.from  ?? 0;
-            if (toEl)    toEl.innerText    = result.to    ?? 0;
+            if (fromEl) fromEl.innerText = result.from ?? 0;
+            if (toEl) toEl.innerText = result.to ?? 0;
             if (totalEl) totalEl.innerText = result.total ?? 0;
 
             if (!container) return;
             container.innerHTML = '';
 
             const currentPage = result.current_page ?? 1;
-            const lastPage    = result.last_page    ?? 1;
+            const lastPage = result.last_page ?? 1;
 
             if (lastPage <= 1) return;
 
             // Style helpers
-            const btnBase    = 'w-8 h-8 flex items-center justify-center rounded-lg text-[12px] font-bold transition-all';
-            const btnActive  = 'bg-[#1273EB] text-white shadow-sm';
-            const btnNormal  = 'bg-white border border-[#D9E2EC] text-[#627D98] hover:bg-[#EAF2FF] hover:text-[#1273EB]';
-            const btnDisabled= 'bg-[#F0F4F8] text-[#CBD5E1] cursor-not-allowed border border-[#E2E8F0]';
+            const btnBase = 'w-8 h-8 flex items-center justify-center rounded-lg text-[12px] font-bold transition-all';
+            const btnActive = 'bg-[#1273EB] text-white shadow-sm';
+            const btnNormal = 'bg-white border border-[#D9E2EC] text-[#627D98] hover:bg-[#EAF2FF] hover:text-[#1273EB]';
+            const btnDisabled = 'bg-[#F0F4F8] text-[#CBD5E1] cursor-not-allowed border border-[#E2E8F0]';
 
             // Previous button
             const prevBtn = document.createElement('button');
             prevBtn.innerHTML = '‹';
             prevBtn.className = `${btnBase} ${currentPage === 1 ? btnDisabled : btnNormal}`;
-            prevBtn.disabled  = currentPage === 1;
+            prevBtn.disabled = currentPage === 1;
             if (currentPage > 1) prevBtn.addEventListener('click', () => fetchFn(currentPage - 1));
             container.appendChild(prevBtn);
 
             // Page number buttons (show max 5 around current)
             let startPage = Math.max(1, currentPage - 2);
-            let endPage   = Math.min(lastPage, currentPage + 2);
+            let endPage = Math.min(lastPage, currentPage + 2);
             if (endPage - startPage < 4) {
                 if (startPage === 1) endPage = Math.min(lastPage, startPage + 4);
                 else startPage = Math.max(1, endPage - 4);
@@ -242,7 +267,7 @@
             const nextBtn = document.createElement('button');
             nextBtn.innerHTML = '›';
             nextBtn.className = `${btnBase} ${currentPage === lastPage ? btnDisabled : btnNormal}`;
-            nextBtn.disabled  = currentPage === lastPage;
+            nextBtn.disabled = currentPage === lastPage;
             if (currentPage < lastPage) nextBtn.addEventListener('click', () => fetchFn(currentPage + 1));
             container.appendChild(nextBtn);
         }

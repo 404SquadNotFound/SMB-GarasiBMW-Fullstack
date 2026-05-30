@@ -32,6 +32,19 @@
         'exportExcelUrl'=> 'javascript:exportSukuCadang()',
         'exportPdfUrl'  => 'javascript:exportSukuCadangPdf()'
     ])
+    {{-- Script: hanya finance & kepala_admin yang boleh lihat tombol tambah suku cadang --}}
+    <script>
+        (function() {
+            const role = (localStorage.getItem('user_role') || '').toLowerCase();
+            const canAdd = ['finance', 'kepala_admin'];
+            if (!canAdd.includes(role)) {
+                document.addEventListener('DOMContentLoaded', function() {
+                    const addBtn = document.querySelector('a[href="{{ route('suku-cadang.create') }}"]');
+                    if (addBtn) addBtn.style.display = 'none';
+                });
+            }
+        })();
+    </script>
 
     @include('layouts.table_wrapper')
 

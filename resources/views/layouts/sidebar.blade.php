@@ -117,8 +117,9 @@
             </div>
         </div>
 
-        {{-- Kepegawaian --}}
-        <div class="pt-[4px]"
+        {{-- Kepegawaian: hanya CEO & Finance --}}
+        <div id="sidebar-kepegawaian"
+            class="pt-[4px]"
             x-data="{ open: {{ request()->is('manajemen-pegawai*', 'laporan-absensi*', 'izin-terlambat*', 'payroll*') ? 'true' : 'false' }} }">
             <button @click="open = !open"
                 class="w-full flex items-center justify-between px-[16px] py-[12px] rounded-[10px] text-[#213F5C] font-bold">
@@ -173,6 +174,7 @@
                 </div>
             </div>
         </div>
+
 
         {{-- Master Data --}}
         <div class="pt-[4px]"
@@ -232,3 +234,15 @@
         </div>
     </nav>
 </aside>
+
+<script>
+    // Sembunyikan sidebar Kepegawaian untuk role selain ceo & finance
+    (function() {
+        const role = (localStorage.getItem('user_role') || '').toLowerCase();
+        const allowed = ['ceo', 'finance'];
+        if (!allowed.includes(role)) {
+            const el = document.getElementById('sidebar-kepegawaian');
+            if (el) el.style.display = 'none';
+        }
+    })();
+</script>

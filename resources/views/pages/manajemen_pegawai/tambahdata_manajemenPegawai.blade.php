@@ -95,7 +95,7 @@
                 <select id="role" required
                     class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C]">
                     <option value="" disabled selected>Pilih Role</option>
-                    <option value="pemilik_bengkel">Pemilik Bengkel</option>
+                    <option value="ceo">CEO</option>
                     <option value="finance">Finance</option>
                     <option value="kepala_bengkel">Kepala Bengkel</option>
                     <option value="kepala_admin">Kepala Admin</option>

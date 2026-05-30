@@ -27,6 +27,18 @@
         'addUrl'      => route('antrian-pengerjaan.create'),
         'btnText'     => 'Tambah Antrian',
     ])
+    {{-- Script: sembunyikan tombol tambah untuk role CEO --}}
+    <script>
+        (function() {
+            const role = (localStorage.getItem('user_role') || '').toLowerCase();
+            if (role === 'ceo') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    const addBtn = document.querySelector('a[href="{{ route('antrian-pengerjaan.create') }}"]');
+                    if (addBtn) addBtn.style.display = 'none';
+                });
+            }
+        })();
+    </script>
     @include('layouts.table_wrapper')
 
     <script>

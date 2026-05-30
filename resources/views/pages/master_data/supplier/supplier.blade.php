@@ -23,6 +23,19 @@
         'exportExcelUrl' => route('supplier.export'),
         'exportPdfUrl' => route('supplier.export.pdf'),
     ])
+    {{-- Script: sembunyikan tombol tambah untuk role CEO, admin, kepala_bengkel --}}
+    <script>
+        (function() {
+            const role = (localStorage.getItem('user_role') || '').toLowerCase();
+            const noAdd = ['ceo', 'admin', 'kepala_bengkel'];
+            if (noAdd.includes(role)) {
+                document.addEventListener('DOMContentLoaded', function() {
+                    const addBtn = document.querySelector('a[href="{{ route('supplier.create') }}"]');
+                    if (addBtn) addBtn.style.display = 'none';
+                });
+            }
+        })();
+    </script>
     @include('layouts.table_wrapper')
 
     <script>

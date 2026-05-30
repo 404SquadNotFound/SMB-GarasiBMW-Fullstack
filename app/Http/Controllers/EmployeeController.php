@@ -66,7 +66,7 @@ class EmployeeController extends Controller
             'address' => 'required|string',
             'email' => 'required|email|unique:employees,email',
             'password' => 'required|min:6',
-            'role' => 'required|in:pemilik_bengkel,finance,kepala_bengkel,kepala_admin,admin,karyawan',
+            'role' => 'required|in:ceo,finance,kepala_bengkel,kepala_admin,admin,karyawan',
             'base_salary' => 'required|numeric',
         ], [
             'email.unique' => 'Email ini sudah digunakan! 1 Pegawai harus menggunakan 1 email unik yang berbeda dan tidak boleh sama.'

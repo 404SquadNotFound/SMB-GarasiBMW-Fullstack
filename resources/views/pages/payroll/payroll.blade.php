@@ -56,6 +56,18 @@
         'addUrl' => route('payroll.create'),
         'btnText' => 'Tambah Gaji Karyawan'
     ])
+    {{-- Script: sembunyikan tombol tambah untuk role CEO --}}
+    <script>
+        (function() {
+            const role = (localStorage.getItem('user_role') || '').toLowerCase();
+            if (role === 'ceo') {
+                document.addEventListener('DOMContentLoaded', function() {
+                    const addBtn = document.querySelector('a[href="{{ route('payroll.create') }}"]');
+                    if (addBtn) addBtn.style.display = 'none';
+                });
+            }
+        })();
+    </script>
 
             @include('layouts.table_wrapper', [
                 // Data dummy, nanti ini dihapus jika sudah pakai data dari Controller
