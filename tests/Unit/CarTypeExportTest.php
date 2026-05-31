@@ -13,7 +13,7 @@ use Mockery;
 
 class CarTypeExportTest extends TestCase
 {
-    use RefreshDatabase;
+    use \Illuminate\Foundation\Testing\DatabaseTransactions;
 
     protected $excelServiceMock;
     protected $pdfServiceMock;
@@ -22,6 +22,10 @@ class CarTypeExportTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+
+        if (!extension_loaded('pdo_sqlite')) {
+            config(['database.default' => 'mysql']);
+        }
 
         // Mock kedua service
         $this->excelServiceMock = Mockery::mock(ExportService::class);
