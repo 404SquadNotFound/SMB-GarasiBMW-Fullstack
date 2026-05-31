@@ -20,7 +20,7 @@
     </div>
 
     {{-- Grid 2 kolom --}}
-    <div class="grid grid-cols-12 gap-6 pb-10 w-full">
+    <div class="grid grid-cols-12 gap-6 pb-10 w-full" x-data="antrianTambahForm()" x-init="init()">
 
         {{-- Kolom Kiri --}}
         <div class="col-span-9 space-y-6">
@@ -43,25 +43,41 @@
                     {{-- Searchable Customer Dropdown --}}
                     <div>
                         <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Cari Pelanggan <span class="text-red-500">*</span></label>
-                        <div class="relative" id="customerDropdownWrapper">
+                        <div class="relative" @click.stop id="customerDropdownWrapper">
                             <div class="relative">
-                                <input type="text" id="customerSearch" placeholder="Ketik nama atau nomor telepon pelanggan..."
+                                <input type="text" x-model="customerSearch"
+                                    @input="filterCustomers"
+                                    @focus="showCustomerDropdown = true; if(!customersData.length) loadCustomers()"
+                                    placeholder="Ketik nama atau nomor telepon pelanggan..."
                                     autocomplete="off"
-                                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300 pr-10">
-                                <span id="customerSearchClear" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-red-400 text-lg leading-none" onclick="clearCustomer()">×</span>
+                                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300 pr-10"
+                                    :class="showCustomerDropdown ? 'border-[#1273EB]' : ''">
+                                <span x-show="selectedCustomer" @click="clearCustomer()"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-red-400 text-lg leading-none">×</span>
                             </div>
-                            <div id="customerDropdownList" class="hidden absolute z-50 left-0 right-0 mt-1 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
-                                <div id="customerDropdownItems" class="max-h-[260px] overflow-y-auto"></div>
+                            <div x-show="showCustomerDropdown && filteredCustomers.length > 0" x-cloak
+                                class="absolute z-50 left-0 right-0 mt-1 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden dropdown-scroll-wrap">
+                                <div class="max-h-[260px] overflow-y-auto dropdown-scroll">
+                                    <template x-for="c in filteredCustomers" :key="c.id">
+                                        <div @click="selectCustomer(c)"
+                                            class="px-5 py-3.5 hover:bg-[#F0F7FF] cursor-pointer border-b border-gray-50 last:border-0 transition-colors">
+                                            <p class="text-[14px] font-bold text-[#213F5C]" x-text="c.nama"></p>
+                                            <p class="text-[12px] text-gray-400"
+                                                x-text="c.telepon + (c.vehicles?.length ? ' • ' + c.vehicles.length + ' kendaraan' : '')"></p>
+                                        </div>
+                                    </template>
+                                    <div x-show="filteredCustomers.length === 0" class="p-4 text-center text-[13px] text-gray-400">Pelanggan tidak ditemukan</div>
+                                </div>
                             </div>
                         </div>
-                        <input type="hidden" id="selectedCustomerId">
                     </div>
 
                     {{-- Info pelanggan terpilih (readonly) --}}
-                    <div id="customerInfoBox" class="hidden bg-[#F0F7FF] border border-[#B1D3FF] rounded-xl p-4 space-y-1">
-                        <p class="text-[13px] font-bold text-[#1273EB]" id="customerInfoName"></p>
-                        <p class="text-[12px] text-gray-500" id="customerInfoPhone"></p>
-                        <p class="text-[12px] text-gray-400" id="customerInfoAddress"></p>
+                    <div x-show="selectedCustomer" x-cloak
+                        class="bg-[#F0F7FF] border border-[#B1D3FF] rounded-xl p-4 space-y-1">
+                        <p class="text-[13px] font-bold text-[#1273EB]" x-text="selectedCustomer?.nama"></p>
+                        <p class="text-[12px] text-gray-500" x-text="selectedCustomer ? '📞 ' + selectedCustomer.telepon : ''"></p>
+                        <p class="text-[12px] text-gray-400" x-text="selectedCustomer ? '📍 ' + (selectedCustomer.alamat || '-') : ''"></p>
                     </div>
                 </div>
             </div>
@@ -84,36 +100,59 @@
 
                 <div class="p-8 space-y-5">
                     {{-- Pilih Kendaraan --}}
-                    <div id="vehicleSectionWrapper">
+                    <div>
                         <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Pilih Kendaraan <span class="text-red-500">*</span></label>
-                        <div id="vehicleEmptyHint" class="py-3 px-4 bg-gray-50 border border-dashed border-gray-200 rounded-xl text-[13px] text-gray-400 text-center">
+
+                        {{-- Hint jika belum pilih customer --}}
+                        <div x-show="!selectedCustomer"
+                            class="py-3 px-4 bg-gray-50 border border-dashed border-gray-200 rounded-xl text-[13px] text-gray-400 text-center">
                             Pilih pelanggan terlebih dahulu
                         </div>
-                        <div class="relative" id="vehicleDropdownWrapper" class="hidden">
-                            <div class="relative">
-                                <input type="text" id="vehicleSearch" placeholder="Cari model atau nopol kendaraan..."
-                                    autocomplete="off"
-                                    class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300 pr-10">
-                                <span id="vehicleSearchClear" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-red-400 text-lg leading-none" onclick="clearVehicle()">×</span>
-                            </div>
-                            <div id="vehicleDropdownList" class="hidden absolute z-50 left-0 right-0 mt-1 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
-                                <div id="vehicleDropdownItems" class="max-h-[220px] overflow-y-auto"></div>
+
+                        {{-- Dropdown kendaraan --}}
+                        <div x-show="selectedCustomer" x-cloak class="relative" @click.stop>
+                            <input type="text" x-model="vehicleSearch"
+                                @input="filterVehicles"
+                                @focus="showVehicleDropdown = true"
+                                placeholder="Cari model atau nopol kendaraan..."
+                                autocomplete="off"
+                                class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300 pr-10"
+                                :class="showVehicleDropdown ? 'border-[#1273EB]' : ''">
+                            <span x-show="selectedVehicle" @click="clearVehicle()"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-red-400 text-lg leading-none">×</span>
+                            <div x-show="showVehicleDropdown" x-cloak
+                                class="absolute z-50 left-0 right-0 mt-1 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
+                                <div class="max-h-[220px] overflow-y-auto dropdown-scroll">
+                                    <template x-for="v in filteredVehicles" :key="v.id">
+                                        <div @click="selectVehicle(v)"
+                                            class="px-5 py-3.5 hover:bg-[#F0F7FF] cursor-pointer border-b border-gray-50 last:border-0 transition-colors">
+                                            <p class="text-[14px] font-bold text-[#213F5C]" x-text="v.model"></p>
+                                            <p class="text-[12px] text-gray-400"
+                                                x-text="v.license_plate + (v.engine_code ? ' • ' + v.engine_code : '')"></p>
+                                        </div>
+                                    </template>
+                                    <div x-show="filteredVehicles.length === 0"
+                                        class="p-4 text-center text-[13px] text-gray-400">Tidak ada kendaraan ditemukan</div>
+                                </div>
                             </div>
                         </div>
-                        <input type="hidden" id="selectedVehicleId">
                     </div>
 
                     {{-- Info kendaraan terpilih (readonly) --}}
-                    <div id="vehicleInfoBox" class="hidden bg-[#F0F7FF] border border-[#B1D3FF] rounded-xl p-4 space-y-1">
-                        <p class="text-[13px] font-bold text-[#1273EB]" id="vehicleInfoModel"></p>
-                        <p class="text-[12px] text-gray-500" id="vehicleInfoPlate"></p>
-                        <p class="text-[12px] text-gray-400" id="vehicleInfoEngine"></p>
+                    <div x-show="selectedVehicle" x-cloak
+                        class="bg-[#F0F7FF] border border-[#B1D3FF] rounded-xl p-4 space-y-1">
+                        <p class="text-[13px] font-bold text-[#1273EB]" x-text="selectedVehicle?.model"></p>
+                        <p class="text-[12px] text-gray-500" x-text="selectedVehicle ? '🚗 ' + selectedVehicle.license_plate : ''"></p>
+                        <p class="text-[12px] text-gray-400" x-text="selectedVehicle?.engine_code ? '⚙️ ' + selectedVehicle.engine_code : ''"></p>
                     </div>
 
-                    {{-- KM Masuk --}}
+                    {{-- KM Masuk — angka saja, tanpa teks "Km" --}}
                     <div>
-                        <label class="block text-[14px] font-bold text-[#213F5C] mb-2">KM Masuk Mobil</label>
-                        <input type="text" id="km_masuk" placeholder="Masukkan kilometer saat masuk"
+                        <label class="block text-[14px] font-bold text-[#213F5C] mb-2">KM Masuk</label>
+                        <input type="number" id="km_masuk" x-model="kmMasuk"
+                            placeholder="Contoh: 15000"
+                            min="0"
+                            @keydown="if(['-','e','E','+'].includes($event.key)) $event.preventDefault()"
                             class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
                     </div>
                 </div>
@@ -138,24 +177,40 @@
                 <div class="p-8 space-y-5">
                     <div>
                         <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Pilih Cabang <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <select id="cabang_bengkel" name="cabang_bengkel"
-                                class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] appearance-none cursor-pointer">
-                                <option value="" disabled selected>Pilih cabang bengkel...</option>
-                                <option value="1">Pelajar Pejuang</option>
-                                <option value="2">Ahmad Yani</option>
-                            </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center">
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        {{-- Dropdown cabang konsisten dengan style suku cadang --}}
+                        <div class="relative" @click.stop>
+                            <input type="text" readonly
+                                :value="selectedCabang ? selectedCabang.label : ''"
+                                @click="showCabangDropdown = !showCabangDropdown"
+                                placeholder="Pilih cabang bengkel..."
+                                class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] font-semibold text-[#213F5C] cursor-pointer focus:border-[#1273EB]"
+                                :class="showCabangDropdown ? 'border-[#1273EB] ring-2 ring-[#1273EB]/10' : ''">
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                <svg class="w-4 h-4 transition-transform duration-200"
+                                    :class="showCabangDropdown ? 'rotate-180' : ''"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
                                 </svg>
+                            </div>
+                            <div x-show="showCabangDropdown" x-cloak
+                                class="absolute z-50 w-full mt-1 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
+                                <div class="max-h-[220px] overflow-y-auto dropdown-scroll">
+                                    <template x-for="cab in cabangOptions" :key="cab.value">
+                                        <div @click="selectCabang(cab)"
+                                            class="px-5 py-3.5 text-[14px] font-semibold text-[#213F5C] hover:bg-[#F0F7FF] cursor-pointer border-b border-gray-50 last:border-0 transition-colors"
+                                            :class="selectedCabang?.value === cab.value ? 'bg-[#EAF2FF] text-[#1273EB]' : ''"
+                                            x-text="cab.label">
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     {{-- Info cabang terpilih --}}
-                    <div id="cabangInfoBox" class="hidden bg-[#F0F7FF] border border-[#B1D3FF] rounded-xl p-4">
-                        <p class="text-[13px] font-bold text-[#1273EB]" id="cabangInfoName"></p>
+                    <div x-show="selectedCabang" x-cloak class="bg-[#F0F7FF] border border-[#B1D3FF] rounded-xl p-4">
+                        <p class="text-[13px] font-bold text-[#1273EB]"
+                            x-text="selectedCabang ? '📍 ' + selectedCabang.label : ''"></p>
                     </div>
                 </div>
             </div>
@@ -178,9 +233,27 @@
 
                 <div class="p-8 flex flex-col gap-4">
 
-                    <div id="sukuCadangList" class="space-y-4 empty:hidden"></div>
+                    {{-- Daftar suku cadang --}}
+                    <template x-for="item in sukuCadangItems" :key="item.id">
+                        <div class="flex items-center justify-between p-4 bg-[#F9FBFF] rounded-[12px] border border-[#E5E9F2]">
+                            <div>
+                                <p class="text-[13px] font-bold text-[#213F5C]" x-text="item.nama"></p>
+                                <p class="text-[11px] text-gray-400 mt-0.5" x-text="item.deskripsi || '-'"></p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[12px] font-bold text-[#213F5C]" x-text="item.jumlah + ' pcs'"></span>
+                                <button type="button" @click="hapusSukuCadang(item.id)"
+                                    class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#FFF5F5] border border-[#FFE0E0] text-[#FF4D4D] hover:bg-[#FFEBEB] transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
 
-                    <button type="button" id="btnTambahSukuCadang"
+                    <button type="button" x-show="!showFormSukuCadang" @click="openSukuCadangForm()"
                         class="w-full py-4 bg-[#1273EB] text-white rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 shadow-lg shadow-blue-100 hover:bg-[#0E59B8] transition-all">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                             <path d="M12 4.5v15m7.5-7.5h-15"></path>
@@ -189,55 +262,71 @@
                     </button>
 
                     {{-- FORM TAMBAH SUKU CADANG --}}
-                    <div id="formSukuCadang" class="hidden bg-[#F8FAFF] border border-[#D1E4FF] rounded-3xl p-8 space-y-6">
+                    <div x-show="showFormSukuCadang" x-cloak
+                        class="bg-[#F8FAFF] border border-[#D1E4FF] rounded-3xl p-8 space-y-6">
 
-                        <h3 class="text-[14px] font-bold text-[#213F5C]">
-                            Tambahkan Penggunaan Suku Cadang
-                        </h3>
+                        <h3 class="text-[14px] font-bold text-[#213F5C]">Tambahkan Penggunaan Suku Cadang</h3>
 
                         <div class="space-y-5">
-                            {{-- Dropdown stok / Suku Cadang --}}
+                            {{-- Dropdown stok --}}
                             <div>
                                 <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Cari Suku Cadang</label>
-                                <div class="relative" id="stokDropdownWrapper">
-                                    <div class="relative">
-                                        <input type="text" id="stokSearch" placeholder="Pilih suku cadang yang ingin digunakan..."
-                                            autocomplete="off"
-                                            class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300 pr-10">
-                                        <span id="stokSearchClear" class="hidden absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-red-400 text-lg leading-none" onclick="clearStok()">×</span>
-                                    </div>
-                                    <div id="stokDropdownList" class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
-                                        <div id="stokDropdownItems" class="max-h-[380px] overflow-y-auto custom-scrollbar"></div>
+                                <div class="relative" @click.stop>
+                                    <input type="text" x-model="stokSearch"
+                                        @input="filterStok"
+                                        @focus="showStokDropdown = true"
+                                        placeholder="Pilih suku cadang yang ingin digunakan..."
+                                        autocomplete="off"
+                                        class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300 pr-10"
+                                        :class="showStokDropdown ? 'border-[#1273EB]' : ''">
+                                    <span x-show="selectedStokData" @click="clearStok()"
+                                        class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-red-400 text-lg leading-none">×</span>
+                                    <div x-show="showStokDropdown && filteredStok.length > 0" x-cloak
+                                        class="absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
+                                        <div class="max-h-[380px] overflow-y-auto dropdown-scroll">
+                                            <template x-for="stok in filteredStok" :key="stok.id">
+                                                <div @click="selectStok(stok)"
+                                                    class="hover:bg-[#F0F7FF] cursor-pointer p-4 border-b border-gray-50 last:border-0"
+                                                    :class="selectedStokData?.id === stok.id ? 'bg-blue-50' : ''">
+                                                    <div class="flex justify-between items-center mb-1">
+                                                        <span class="text-[14px] font-bold text-[#213F5C]" x-text="stok.nama"></span>
+                                                        <span class="text-[14px] font-bold text-[#1273EB]" x-text="stok.harga"></span>
+                                                    </div>
+                                                    <div class="flex justify-between items-center text-[12px]">
+                                                        <span class="text-gray-500">Sisa Stok: <span class="font-bold text-[#213F5C]" x-text="stok.stok"></span></span>
+                                                        <span class="text-gray-400" x-text="'Suplier: ' + (stok.supplier || '-')"></span>
+                                                    </div>
+                                                </div>
+                                            </template>
+                                            <div x-show="filteredStok.length === 0"
+                                                class="p-4 text-center text-gray-400 text-[14px]">Stok tidak ditemukan...</div>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <input type="hidden" id="inputStok" value="">
-                                <input type="hidden" id="inputStokLabel" value="">
                             </div>
 
                             {{-- Jumlah --}}
                             <div>
-                                <label class="block text-[13px] font-bold text-[#213F5C] mb-2">
-                                    Jumlah Stok Yang Digunakan
-                                </label>
-                                <input type="number" id="inputJumlah" placeholder="Contoh : 1" min="1"
+                                <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Jumlah Stok Yang Digunakan</label>
+                                <input type="number" x-model="inputJumlah"
+                                    placeholder="Contoh : 1" min="1"
+                                    @keydown="if(['-','e','E','+'].includes($event.key)) $event.preventDefault()"
                                     class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
                             </div>
                         </div>
 
                         <div class="flex gap-3 pt-2">
-                            <button type="button" id="btnSimpanSukuCadang"
+                            <button type="button" @click="simpanSukuCadang()"
                                 class="flex-1 py-3.5 bg-[#1273EB] text-white rounded-xl font-bold text-[14px] hover:bg-[#0E59B8]">
                                 Simpan
                             </button>
-                            <button type="button" id="btnBatalSukuCadang"
+                            <button type="button" @click="batalSukuCadang()"
                                 class="px-8 py-3.5 bg-white border border-gray-200 text-gray-500 rounded-xl font-bold text-[14px] hover:bg-gray-50">
                                 Batal
                             </button>
                         </div>
                     </div>
 
-                    <input type="hidden" id="inputSukuCadangJSON" name="suku_cadang" value="[]">
                 </div>
             </div>
 
@@ -258,10 +347,11 @@
                 <div class="space-y-4">
                     <p class="text-[11px] text-gray-400 font-bold uppercase tracking-widest">Created By</p>
                     <div class="flex items-center gap-3 bg-[#F9FBFF] p-3 rounded-xl border border-[#E5E9F2]">
-                        <div class="user-initial-box w-10 h-10 rounded-full bg-[#1273EB] flex items-center justify-center text-white font-bold text-[13px]">?</div>
+                        <div class="w-10 h-10 rounded-full bg-[#1273EB] flex items-center justify-center text-white font-bold text-[13px]"
+                            x-text="userInitial">?</div>
                         <div class="overflow-hidden">
-                            <p class="user-name-box text-[13px] font-bold text-[#213F5C] truncate">Loading...</p>
-                            <p class="user-role-box text-[11px] text-gray-400 font-medium italic">...</p>
+                            <p class="text-[13px] font-bold text-[#213F5C] truncate" x-text="userName">Loading...</p>
+                            <p class="text-[11px] text-gray-400 font-medium italic" x-text="userRole">...</p>
                         </div>
                     </div>
                 </div>
@@ -269,7 +359,7 @@
 
             {{-- Tombol Aksi --}}
             <div class="bg-white rounded-[20px] border border-[#E5E9F2] p-6 shadow-sm space-y-3">
-                <button type="button" id="submitBtnApi"
+                <button type="button" @click="submitData()"
                     class="w-full flex items-center justify-center gap-2 py-4 bg-[#1273EB] text-white rounded-xl font-bold text-[15px] hover:bg-[#0E59B8] transition-all shadow-lg shadow-blue-100">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
@@ -291,514 +381,297 @@
 </div>
 
 <style>
-    .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+    [x-cloak] { display: none !important; }
+    .dropdown-scroll::-webkit-scrollbar { width: 6px; }
+    .dropdown-scroll::-webkit-scrollbar-track { background: transparent; margin: 4px 0; }
+    .dropdown-scroll::-webkit-scrollbar-thumb { background: #D1E4FF; border-radius: 99px; }
+    .dropdown-scroll::-webkit-scrollbar-thumb:hover { background: #1273EB; }
 </style>
 
 <script>
-    let isDirty = false;
-    const token = localStorage.getItem('access_token');
+function antrianTambahForm() {
+    return {
+        token: localStorage.getItem('access_token'),
+        isDirty: false,
 
-    // Quick Info
-    document.addEventListener('DOMContentLoaded', () => {
-        const name = localStorage.getItem('user_name') || 'User';
-        const role = localStorage.getItem('user_role') || 'Staff';
-        document.querySelectorAll('.user-name-box').forEach(el => el.innerText = name);
-        document.querySelectorAll('.user-role-box').forEach(el => el.innerText = role);
-        document.querySelectorAll('.user-initial-box').forEach(el => el.innerText = name.charAt(0).toUpperCase());
-        loadStokList();
-    });
+        // User info
+        userName: 'Loading...',
+        userRole: '...',
+        userInitial: '?',
 
-    // ── State utama ───────────────────────────────────────────────────────────
-    let selectedCustomer = null;
-    let selectedVehicle  = null;
-    let stokList         = [];
-    let sukuCadangItems  = [];
-    let selectedStokId   = null;
-    let selectedStokData = null;
-    let customerDebounce = null;
-    let currentVehicles  = [];
+        // Customer
+        customerSearch: '',
+        customersData: [],
+        filteredCustomers: [],
+        showCustomerDropdown: false,
+        selectedCustomer: null,
+        customerDebounce: null,
 
-    function escHtml(str) {
-        const d = document.createElement('div');
-        d.appendChild(document.createTextNode(str || ''));
-        return d.innerHTML;
-    }
+        // Vehicle
+        vehicleSearch: '',
+        currentVehicles: [],
+        filteredVehicles: [],
+        showVehicleDropdown: false,
+        selectedVehicle: null,
 
-    // ═══════════════════════════════════════════════════════════════
-    // CUSTOMER SEARCH
-    // ═══════════════════════════════════════════════════════════════
-    async function searchCustomers(keyword) {
-        try {
-            const params = keyword ? `?search=${encodeURIComponent(keyword)}` : '';
-            const res = await fetch(`/api/customers-for-antrian${params}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+        // KM
+        kmMasuk: '',
+
+        // Cabang
+        cabangOptions: [
+            { value: '1', label: 'Pelajar Pejuang' },
+            { value: '2', label: 'Ahmad Yani' },
+        ],
+        showCabangDropdown: false,
+        selectedCabang: null,
+
+        // Stok / Suku Cadang
+        stokList: [],
+        stokSearch: '',
+        filteredStok: [],
+        showStokDropdown: false,
+        selectedStokData: null,
+        inputJumlah: '',
+        showFormSukuCadang: false,
+        sukuCadangItems: [],
+
+        // ── init ──────────────────────────────────────────────────
+        async init() {
+            this.userName    = localStorage.getItem('user_name') || 'User';
+            this.userRole    = localStorage.getItem('user_role') || 'Staff';
+            this.userInitial = this.userName.charAt(0).toUpperCase();
+
+            await this.loadStokList();
+
+            // Global click-outside close all dropdowns
+            document.addEventListener('click', () => {
+                this.showCustomerDropdown = false;
+                this.showVehicleDropdown  = false;
+                this.showCabangDropdown   = false;
+                this.showStokDropdown     = false;
             });
-            const result = await res.json();
-            return res.ok ? (result.data ?? []) : [];
-        } catch { return []; }
-    }
 
-    let customersData = [];
-
-    function renderCustomerDropdown(list) {
-        customersData = list;
-        const container = document.getElementById('customerDropdownItems');
-        const dropdown  = document.getElementById('customerDropdownList');
-        container.innerHTML = '';
-
-        if (list.length === 0) {
-            container.innerHTML = '<div class="p-4 text-center text-[13px] text-gray-400">Pelanggan tidak ditemukan</div>';
-        } else {
-            list.forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'px-5 py-3.5 hover:bg-[#F0F7FF] cursor-pointer border-b border-gray-50 last:border-0 transition-colors';
-                div.innerHTML = `
-                    <p class="text-[14px] font-bold text-[#213F5C]">${escHtml(c.nama)}</p>
-                    <p class="text-[12px] text-gray-400">${escHtml(c.telepon)} ${c.vehicles?.length ? '• ' + c.vehicles.length + ' kendaraan' : ''}</p>`;
-                div.addEventListener('click', () => selectCustomer(c));
-                container.appendChild(div);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') e.preventDefault();
             });
-        }
-        dropdown.classList.remove('hidden');
-    }
 
-    function selectCustomer(c) {
-        selectedCustomer = c;
-        document.getElementById('selectedCustomerId').value = c.id;
-        document.getElementById('customerSearch').value    = `${c.nama} - ${c.telepon}`;
-        document.getElementById('customerSearchClear').classList.remove('hidden');
-        document.getElementById('customerDropdownList').classList.add('hidden');
+            window.addEventListener('beforeunload', (e) => {
+                if (this.isDirty) { e.preventDefault(); e.returnValue = ''; }
+            });
+        },
 
-        document.getElementById('customerInfoName').textContent    = c.nama;
-        document.getElementById('customerInfoPhone').textContent   = '📞 ' + c.telepon;
-        document.getElementById('customerInfoAddress').textContent = '📍 ' + (c.alamat || '-');
-        document.getElementById('customerInfoBox').classList.remove('hidden');
+        // ── Customer ──────────────────────────────────────────────
+        async loadCustomers(keyword = '') {
+            try {
+                const params = keyword ? `?search=${encodeURIComponent(keyword)}` : '';
+                const res    = await fetch(`/api/customers-for-antrian${params}`, {
+                    headers: { 'Authorization': `Bearer ${this.token}` }
+                });
+                const result = await res.json();
+                this.customersData = res.ok ? (result.data ?? []) : [];
+            } catch { this.customersData = []; }
+            this.filteredCustomers = this.customersData;
+        },
 
-        populateVehicleDropdown(c.vehicles ?? []);
-        isDirty = true;
-    }
+        filterCustomers() {
+            const kw = this.customerSearch.trim().toLowerCase();
+            this.showCustomerDropdown = true;
 
-    function clearCustomer() {
-        selectedCustomer = null;
-        document.getElementById('selectedCustomerId').value = '';
-        document.getElementById('customerSearch').value     = '';
-        document.getElementById('customerSearchClear').classList.add('hidden');
-        document.getElementById('customerInfoBox').classList.add('hidden');
-        document.getElementById('customerDropdownList').classList.add('hidden');
+            if (!kw) { this.filteredCustomers = this.customersData; return; }
 
-        clearVehicle();
-        document.getElementById('vehicleEmptyHint').classList.remove('hidden');
-        document.getElementById('vehicleDropdownWrapper').classList.add('hidden');
-    }
-
-    const customerSearchEl = document.getElementById('customerSearch');
-    if (customerSearchEl) {
-        customerSearchEl.addEventListener('focus', async function() {
-            if (!customersData.length) {
-                customersData = await searchCustomers('');
-            }
-            renderCustomerDropdown(customersData);
-            document.getElementById('customerDropdownList').classList.remove('hidden');
-        });
-
-        customerSearchEl.addEventListener('input', function() {
-            const kw = this.value.trim().toLowerCase();
-            document.getElementById('customerDropdownList').classList.remove('hidden');
-
-            if (kw.length === 0) {
-                renderCustomerDropdown(customersData);
-                return;
-            }
-
-            const filtered = customersData.filter(c =>
-                c.nama.toLowerCase().includes(kw) ||
-                c.telepon.toLowerCase().includes(kw)
+            const local = this.customersData.filter(c =>
+                c.nama.toLowerCase().includes(kw) || c.telepon.toLowerCase().includes(kw)
             );
 
-            if (filtered.length > 0) {
-                renderCustomerDropdown(filtered);
+            if (local.length > 0) {
+                this.filteredCustomers = local;
             } else {
-                clearTimeout(customerDebounce);
-                customerDebounce = setTimeout(async () => {
-                    const list = await searchCustomers(kw);
-                    renderCustomerDropdown(list);
+                clearTimeout(this.customerDebounce);
+                this.customerDebounce = setTimeout(async () => {
+                    await this.loadCustomers(kw);
                 }, 350);
             }
-        });
-    }
+        },
 
-    document.addEventListener('click', (e) => {
-        if (!document.getElementById('customerDropdownWrapper')?.contains(e.target)) {
-            document.getElementById('customerDropdownList')?.classList.add('hidden');
-        }
-        if (!document.getElementById('vehicleDropdownWrapper')?.contains(e.target)) {
-            document.getElementById('vehicleDropdownList')?.classList.add('hidden');
-        }
-        if (!document.getElementById('stokDropdownWrapper')?.contains(e.target)) {
-            document.getElementById('stokDropdownList')?.classList.add('hidden');
-        }
-    });
+        selectCustomer(c) {
+            this.selectedCustomer     = c;
+            this.customerSearch       = `${c.nama} - ${c.telepon}`;
+            this.showCustomerDropdown = false;
+            this.currentVehicles      = c.vehicles ?? [];
+            this.filteredVehicles     = this.currentVehicles;
+            this.clearVehicle();
+            this.isDirty = true;
+        },
 
-    // ═══════════════════════════════════════════════════════════════
-    // VEHICLE DROPDOWN
-    // ═══════════════════════════════════════════════════════════════
-    function populateVehicleDropdown(vehicles) {
-        currentVehicles = vehicles;
-        const hint    = document.getElementById('vehicleEmptyHint');
-        const wrapper = document.getElementById('vehicleDropdownWrapper');
+        clearCustomer() {
+            this.selectedCustomer     = null;
+            this.customerSearch       = '';
+            this.showCustomerDropdown = false;
+            this.currentVehicles      = [];
+            this.filteredVehicles     = [];
+            this.clearVehicle();
+        },
 
-        hint.classList.add('hidden');
-        wrapper.classList.remove('hidden');
-
-        renderVehicleDropdown(vehicles);
-    }
-
-    function renderVehicleDropdown(list) {
-        const container = document.getElementById('vehicleDropdownItems');
-        const dropdown  = document.getElementById('vehicleDropdownList');
-        container.innerHTML = '';
-
-        if (list.length === 0) {
-            container.innerHTML = '<div class="p-4 text-center text-[13px] text-gray-400">Tidak ada kendaraan ditemukan</div>';
-        } else {
-            list.forEach(v => {
-                const div = document.createElement('div');
-                div.className = 'px-5 py-3.5 hover:bg-[#F0F7FF] cursor-pointer border-b border-gray-50 last:border-0 transition-colors';
-                div.innerHTML = `
-                    <p class="text-[14px] font-bold text-[#213F5C]">${escHtml(v.model)}</p>
-                    <p class="text-[12px] text-gray-400">${escHtml(v.license_plate)} ${v.engine_code ? '• ' + v.engine_code : ''}</p>`;
-                div.addEventListener('click', () => selectVehicle(v));
-                container.appendChild(div);
-            });
-        }
-        dropdown.classList.remove('hidden');
-    }
-
-    const vehicleSearchEl = document.getElementById('vehicleSearch');
-    if (vehicleSearchEl) {
-        vehicleSearchEl.addEventListener('focus', function() {
-            renderVehicleDropdown(currentVehicles);
-            document.getElementById('vehicleDropdownList').classList.remove('hidden');
-        });
-
-        vehicleSearchEl.addEventListener('input', function() {
-            const kw = this.value.trim().toLowerCase();
-            document.getElementById('vehicleDropdownList').classList.remove('hidden');
-
-            if (kw.length === 0) {
-                renderVehicleDropdown(currentVehicles);
-                return;
-            }
-
-            const filtered = currentVehicles.filter(v =>
+        // ── Vehicle ───────────────────────────────────────────────
+        filterVehicles() {
+            const kw = this.vehicleSearch.trim().toLowerCase();
+            this.showVehicleDropdown = true;
+            if (!kw) { this.filteredVehicles = this.currentVehicles; return; }
+            this.filteredVehicles = this.currentVehicles.filter(v =>
                 (v.model || '').toLowerCase().includes(kw) ||
                 (v.license_plate || '').toLowerCase().includes(kw)
             );
-            renderVehicleDropdown(filtered);
-        });
-    }
+        },
 
-    function clearVehicle() {
-        selectedVehicle = null;
-        document.getElementById('selectedVehicleId').value = '';
-        const vs = document.getElementById('vehicleSearch');
-        if (vs) vs.value = '';
-        const vc = document.getElementById('vehicleSearchClear');
-        if (vc) vc.classList.add('hidden');
-        document.getElementById('vehicleInfoBox').classList.add('hidden');
-        document.getElementById('vehicleDropdownList').classList.add('hidden');
-        renderVehicleDropdown(currentVehicles);
-    }
-
-    function selectVehicle(v) {
-        selectedVehicle = v;
-        document.getElementById('selectedVehicleId').value       = v.id;
-        const vs = document.getElementById('vehicleSearch');
-        if (vs) vs.value = `${v.model} - ${v.license_plate}`;
-        const vc = document.getElementById('vehicleSearchClear');
-        if (vc) vc.classList.remove('hidden');
-
-        document.getElementById('vehicleInfoModel').textContent  = v.model;
-        document.getElementById('vehicleInfoPlate').textContent  = '🚗 ' + v.license_plate;
-        document.getElementById('vehicleInfoEngine').textContent = v.engine_code ? '⚙️ ' + v.engine_code : '';
-        document.getElementById('vehicleInfoBox').classList.remove('hidden');
-        document.getElementById('vehicleDropdownList').classList.add('hidden');
-
-        const kmEl = document.getElementById('km_masuk');
-        if (kmEl && !kmEl.value) {
-            kmEl.value = v.odometer ? v.odometer + ' Km' : '';
-        }
-
-        isDirty = true;
-    }
-    
-    // ═══════════════════════════════════════════════════════════════
-    // CABANG DROPDOWN
-    // ═══════════════════════════════════════════════════════════════
-    const cabangSelect = document.getElementById('cabang_bengkel');
-    if (cabangSelect) {
-        cabangSelect.addEventListener('change', function () {
-            const label = this.options[this.selectedIndex].text;
-            const infoBox  = document.getElementById('cabangInfoBox');
-            const infoName = document.getElementById('cabangInfoName');
-            if (this.value) {
-                infoName.textContent = '📍 ' + label;
-                infoBox.classList.remove('hidden');
-            } else {
-                infoBox.classList.add('hidden');
+        selectVehicle(v) {
+            this.selectedVehicle     = v;
+            this.vehicleSearch       = `${v.model} - ${v.license_plate}`;
+            this.showVehicleDropdown = false;
+            // KM Masuk: auto-isi hanya jika field masih kosong
+            if (!this.kmMasuk && v.odometer) {
+                this.kmMasuk = v.odometer;
             }
-            isDirty = true;
-        });
-    }
+            this.isDirty = true;
+        },
 
-    // ═══════════════════════════════════════════════════════════════
-    // STOK DROPDOWN
-    // ═══════════════════════════════════════════════════════════════
-    async function loadStokList() {
-        try {
-            const res = await fetch('/api/spareparts-for-antrian', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const result = await res.json();
-            if (res.ok && result.data) stokList = result.data;
-        } catch (e) { console.error('Gagal load stok:', e); }
-    }
+        clearVehicle() {
+            this.selectedVehicle     = null;
+            this.vehicleSearch       = '';
+            this.showVehicleDropdown = false;
+            this.filteredVehicles    = this.currentVehicles;
+        },
 
-    function renderStokOptions(keyword = '') {
-        const container = document.getElementById('stokDropdownItems');
-        const dropdown  = document.getElementById('stokDropdownList');
-        container.innerHTML = '';
+        // ── Cabang ────────────────────────────────────────────────
+        selectCabang(cab) {
+            this.selectedCabang     = cab;
+            this.showCabangDropdown = false;
+            this.isDirty = true;
+        },
 
-        const filteredList = stokList.filter(stok =>
-            stok.nama.toLowerCase().includes(keyword.toLowerCase()) ||
-            stok.stok.toString().includes(keyword)
-        );
+        // ── Stok / Suku Cadang ────────────────────────────────────
+        async loadStokList() {
+            try {
+                const res    = await fetch('/api/spareparts-for-antrian', {
+                    headers: { 'Authorization': `Bearer ${this.token}` }
+                });
+                const result = await res.json();
+                if (res.ok && result.data) {
+                    this.stokList     = result.data;
+                    this.filteredStok = result.data;
+                }
+            } catch (e) { console.error('Gagal load stok:', e); }
+        },
 
-        if (filteredList.length === 0) {
-            container.innerHTML = '<div class="p-4 text-center text-gray-400 text-[14px]">Stok tidak ditemukan...</div>';
-        } else {
-            filteredList.forEach(stok => {
-                const div = document.createElement('div');
-                div.className = 'stok-option-item hover:bg-[#F0F7FF] cursor-pointer p-4 border-b border-gray-50' + (selectedStokId === stok.id ? ' bg-blue-50' : '');
-                div.innerHTML = `
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-[14px] font-bold text-[#213F5C]">${escHtml(stok.nama)}</span>
-                        <span class="text-[14px] font-bold text-[#1273EB]">${escHtml(stok.harga)}</span>
-                    </div>
-                    <div class="flex justify-between items-center text-[12px]">
-                        <span class="text-gray-500">Sisa Stok: <span class="font-bold text-[#213F5C]">${escHtml(String(stok.stok))}</span></span>
-                        <span class="text-gray-400">Suplier: ${escHtml(stok.supplier || '-')}</span>
-                    </div>
-                `;
-                div.addEventListener('click', () => selectStok(stok));
-                container.appendChild(div);
-            });
-        }
-        dropdown.classList.remove('hidden');
-    }
+        filterStok() {
+            const kw = this.stokSearch.trim().toLowerCase();
+            this.showStokDropdown = true;
+            this.filteredStok = kw
+                ? this.stokList.filter(s =>
+                    s.nama.toLowerCase().includes(kw) ||
+                    String(s.stok).includes(kw))
+                : this.stokList;
+        },
 
-    const stokSearchEl = document.getElementById('stokSearch');
-    if (stokSearchEl) {
-        stokSearchEl.addEventListener('focus', function() {
-            renderStokOptions(this.value.trim());
-            document.getElementById('stokDropdownList').classList.remove('hidden');
-        });
+        selectStok(stok) {
+            this.selectedStokData = stok;
+            this.stokSearch       = `${stok.nama} - ${stok.harga} (Sisa: ${stok.stok})`;
+            this.showStokDropdown = false;
+        },
 
-        stokSearchEl.addEventListener('input', function() {
-            const kw = this.value.trim();
-            document.getElementById('stokDropdownList').classList.remove('hidden');
-            renderStokOptions(kw);
-        });
-    }
+        clearStok() {
+            this.selectedStokData = null;
+            this.stokSearch       = '';
+            this.filteredStok     = this.stokList;
+            this.showStokDropdown = false;
+        },
 
-    function clearStok() {
-        selectedStokId   = null;
-        selectedStokData = null;
-        document.getElementById('inputStok').value = '';
-        const ss = document.getElementById('stokSearch');
-        if (ss) ss.value = '';
-        const sc = document.getElementById('stokSearchClear');
-        if (sc) sc.classList.add('hidden');
-        document.getElementById('stokDropdownList').classList.add('hidden');
-        renderStokOptions('');
-    }
+        openSukuCadangForm() {
+            this.showFormSukuCadang = true;
+            this.inputJumlah        = '';
+            this.clearStok();
+        },
 
-    function selectStok(stok) {
-        selectedStokId   = stok.id;
-        selectedStokData = stok;
-        document.getElementById('inputStok').value = stok.id;
+        batalSukuCadang() {
+            this.showFormSukuCadang = false;
+            this.clearStok();
+        },
 
-        const ss = document.getElementById('stokSearch');
-        if (ss) ss.value = `${stok.nama} - ${stok.harga} (Sisa: ${stok.stok})`;
-
-        const sc = document.getElementById('stokSearchClear');
-        if (sc) sc.classList.remove('hidden');
-
-        document.getElementById('stokDropdownList').classList.add('hidden');
-    }
-
-    function resetStokDropdown() {
-        clearStok();
-    }
-
-    // ═══════════════════════════════════════════════════════════════
-    // SUKU CADANG FORM LOGIC
-    // ═══════════════════════════════════════════════════════════════
-    const btnTambah   = document.getElementById('btnTambahSukuCadang');
-    const formSC      = document.getElementById('formSukuCadang');
-    const btnSimpanSC = document.getElementById('btnSimpanSukuCadang');
-    const btnBatalSC  = document.getElementById('btnBatalSukuCadang');
-    const listEl      = document.getElementById('sukuCadangList');
-    const hiddenJSON  = document.getElementById('inputSukuCadangJSON');
-
-    btnTambah.addEventListener('click', () => {
-        formSC.classList.remove('hidden');
-        btnTambah.classList.add('hidden');
-        document.getElementById('inputJumlah').value = '';
-        resetStokDropdown();
-        requestAnimationFrame(() => document.getElementById('stokSearch')?.focus({ preventScroll: true }));
-    });
-
-    btnBatalSC.addEventListener('click', () => {
-        formSC.classList.add('hidden');
-        btnTambah.classList.remove('hidden');
-        resetStokDropdown();
-    });
-
-    btnSimpanSC.addEventListener('click', () => {
-        if (!selectedStokData) {
-            Swal.fire('Oops!', 'Pilih suku cadang yang ingin digunakan!', 'warning');
-            return;
-        }
-
-        const namaBarang = selectedStokData.nama;
-        const jumlah = parseInt(document.getElementById('inputJumlah').value.trim()) || 1;
-
-        sukuCadangItems.push({
-            id           : Date.now(),
-            sparepart_id : selectedStokData.id,
-            nama         : namaBarang,
-            deskripsi    : selectedStokData.nama,
-            harga        : selectedStokData.harga,
-            jumlah       : jumlah + ' pcs',
-            tanggal      : selectedStokData.tanggal,
-            supplier     : selectedStokData.supplier,
-            stok         : selectedStokData.stok,
-        });
-
-        renderSukuCadang();
-        syncHiddenJSON();
-        formSC.classList.add('hidden');
-        btnTambah.classList.remove('hidden');
-        resetStokDropdown();
-    });
-
-    function hapusSukuCadang(id) {
-        sukuCadangItems = sukuCadangItems.filter(i => i.id !== id);
-        renderSukuCadang();
-        syncHiddenJSON();
-    }
-
-    function syncHiddenJSON() {
-        hiddenJSON.value = JSON.stringify(sukuCadangItems);
-    }
-
-    function renderSukuCadang() {
-        listEl.innerHTML = '';
-        sukuCadangItems.forEach(item => {
-            const el = document.createElement('div');
-            el.className = 'flex items-center justify-between p-4 bg-[#F9FBFF] rounded-[12px] border border-[#E5E9F2]';
-            el.innerHTML = `
-                <div>
-                    <p class="text-[13px] font-bold text-[#213F5C]">${escHtml(item.nama)}</p>
-                    <p class="text-[11px] text-gray-400 mt-0.5">${escHtml(item.deskripsi || '-')}</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-[12px] font-bold text-[#213F5C]">${escHtml(item.jumlah)}</span>
-                    <button type="button" onclick="hapusSukuCadang(${item.id})"
-                        class="w-8 h-8 flex items-center justify-center rounded-lg bg-[#FFF5F5] border border-[#FFE0E0] text-[#FF4D4D] hover:bg-[#FFEBEB] transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                    </button>
-                </div>
-            `;
-            listEl.appendChild(el);
-        });
-    }
-
-    // ── Dirty flag ────────────────────────────────────────────────────────────
-    document.querySelectorAll('input, select').forEach(el => {
-        el.addEventListener('input', () => isDirty = true);
-    });
-
-    window.addEventListener('beforeunload', (e) => {
-        if (isDirty) {
-            e.preventDefault();
-            e.returnValue = '';
-        }
-    });
-
-    // ═══════════════════════════════════════════════════════════════
-    // SUBMIT
-    // ═══════════════════════════════════════════════════════════════
-    document.getElementById('submitBtnApi').addEventListener('click', async (e) => {
-        e.preventDefault();
-
-        if (!selectedCustomer) {
-            Swal.fire('Oops!', 'Pilih pelanggan terlebih dahulu!', 'warning'); return;
-        }
-        if (!selectedVehicle) {
-            Swal.fire('Oops!', 'Pilih kendaraan pelanggan!', 'warning'); return;
-        }
-
-        Swal.fire({ title: 'Menyimpan data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-        const items = sukuCadangItems
-            .filter(sc => sc.sparepart_id)
-            .map(sc => ({
-                sparepart_id : sc.sparepart_id,
-                quantity     : parseInt(sc.jumlah) || 1
-            }));
-
-        const payload = {
-            customer_id : selectedCustomer.id,
-            vehicle_id  : selectedVehicle.id,
-            km_masuk    : document.getElementById('km_masuk').value.trim() || null,
-            cabang_id   : document.getElementById('cabang_bengkel').value || null,
-            items,
-        };
-
-        try {
-            const res = await fetch('/api/transactions', {
-                method  : 'POST',
-                headers : {
-                    'Content-Type'  : 'application/json',
-                    'Authorization' : `Bearer ${token}`,
-                    'Accept'        : 'application/json'
-                },
-                body: JSON.stringify(payload),
-            });
-            const result = await res.json();
-            if (res.ok && result.status === 'success') {
-                isDirty = false;
-                await Swal.fire({ icon: 'success', title: 'Berhasil!', timer: 2000, showConfirmButton: false });
-                window.location.href = "{{ route('antrian-pengerjaan.index') }}";
-            } else {
-                Swal.fire('Gagal!', result.message ?? 'Terjadi kesalahan.', 'error');
+        simpanSukuCadang() {
+            if (!this.selectedStokData) {
+                Swal.fire('Oops!', 'Pilih suku cadang yang ingin digunakan!', 'warning');
+                return;
             }
-        } catch (err) {
-            console.error(err);
-            Swal.fire('Error', 'Tidak bisa terhubung ke server.', 'error');
-        }
-    });
+            const jumlah = parseInt(this.inputJumlah) || 1;
+            this.sukuCadangItems.push({
+                id          : Date.now(),
+                sparepart_id: this.selectedStokData.id,
+                nama        : this.selectedStokData.nama,
+                deskripsi   : this.selectedStokData.nama,
+                harga       : this.selectedStokData.harga,
+                jumlah      : jumlah,
+                supplier    : this.selectedStokData.supplier,
+                stok        : this.selectedStokData.stok,
+            });
+            this.showFormSukuCadang = false;
+            this.clearStok();
+            this.isDirty = true;
+        },
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') { e.preventDefault(); }
-    });
+        hapusSukuCadang(id) {
+            this.sukuCadangItems = this.sukuCadangItems.filter(i => i.id !== id);
+            this.isDirty = true;
+        },
+
+        // ── Submit ────────────────────────────────────────────────
+        async submitData() {
+            if (!this.selectedCustomer) {
+                Swal.fire('Oops!', 'Pilih pelanggan terlebih dahulu!', 'warning'); return;
+            }
+            if (!this.selectedVehicle) {
+                Swal.fire('Oops!', 'Pilih kendaraan pelanggan!', 'warning'); return;
+            }
+
+            Swal.fire({ title: 'Menyimpan data...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            const items = this.sukuCadangItems
+                .filter(sc => sc.sparepart_id)
+                .map(sc => ({
+                    sparepart_id: sc.sparepart_id,
+                    quantity    : parseInt(sc.jumlah) || 1,
+                }));
+
+            const payload = {
+                customer_id: this.selectedCustomer.id,
+                vehicle_id : this.selectedVehicle.id,
+                km_masuk   : this.kmMasuk ? parseInt(this.kmMasuk) : null,
+                cabang_id  : this.selectedCabang ? this.selectedCabang.value : null,
+                items,
+            };
+
+            try {
+                const res    = await fetch('/api/transactions', {
+                    method : 'POST',
+                    headers: {
+                        'Content-Type' : 'application/json',
+                        'Authorization': `Bearer ${this.token}`,
+                        'Accept'       : 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
+                const result = await res.json();
+                if (res.ok && result.status === 'success') {
+                    this.isDirty = false;
+                    await Swal.fire({ icon: 'success', title: 'Berhasil!', timer: 2000, showConfirmButton: false });
+                    window.location.href = "{{ route('antrian-pengerjaan.index') }}";
+                } else {
+                    Swal.fire('Gagal!', result.message ?? 'Terjadi kesalahan.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Error', 'Tidak bisa terhubung ke server.', 'error');
+            }
+        },
+    };
+}
 </script>
 @endsection
