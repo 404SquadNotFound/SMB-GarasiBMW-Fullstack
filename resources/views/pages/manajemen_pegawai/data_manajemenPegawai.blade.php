@@ -143,6 +143,20 @@
                     }
 
                     // RENDER DATA (Kalo ada)
+                    // Helper: hitung durasi kerja dari join_date ke sekarang
+                    function calcDurasiKerja(joinDateStr) {
+                        if (!joinDateStr) return '-';
+                        const join = new Date(joinDateStr);
+                        const now  = new Date();
+                        let years  = now.getFullYear() - join.getFullYear();
+                        let months = now.getMonth() - join.getMonth();
+                        if (months < 0) { years--; months += 12; }
+                        if (years === 0 && months === 0) return 'Baru bergabung';
+                        const yPart = years  > 0 ? `${years} Tahun`  : '';
+                        const mPart = months > 0 ? `${months} Bulan` : '';
+                        return [yPart, mPart].filter(Boolean).join(' ');
+                    }
+
                     items.forEach(item => {
                         const isAktif = item.status == 1 || item.status === true || item.status === 'aktif';
                         const statusBadge = isAktif ?
@@ -153,7 +167,7 @@
                             <tr class="hover:bg-[#F9FCFF] transition-colors group">
                                 <td class="px-6 py-[18px] font-bold text-[#213F5C]">${item.name}</td>
                                 <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${item.email}</td>
-                                <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${item.join_date ?? '-'}</td>
+                                <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${calcDurasiKerja(item.join_date)}</td>
                                 <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${item.role}</td>
                                 <td class="px-6 py-[18px] text-[#213F5C] font-semibold text-[13px]">${statusBadge}</td>
                                 <td class="px-6 py-4.5 text-center">

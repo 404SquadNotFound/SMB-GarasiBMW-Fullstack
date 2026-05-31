@@ -114,24 +114,25 @@
     </div>
     <script>
             // ── Auth Guard: tolak akses kalau belum login ──
-            (function () {
-                const token = localStorage.getItem('access_token');
-                if (!token) {
-                    document.addEventListener('DOMContentLoaded', function () {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Sesi Tidak Ditemukan!',
-                            text: 'Kamu belum login. Silakan login terlebih dahulu untuk mengakses halaman ini.',
-                            confirmButtonText: 'Ke Halaman Login',
-                            confirmButtonColor: '#1273EB',
-                            allowOutsideClick: false,
-                            allowEscapeKey: false,
-                        }).then(() => {
-                            window.location.replace('/');
-                        });
-                    });
-                }
-            })();
+        (function () {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                // Simpan flag ke sessionStorage agar login page tampilkan alert
+                sessionStorage.setItem('no_session', '1');
+                window.location.replace('/');
+                return;
+            }
+
+            // ── Role Guard: tolak role guest & karyawan ──
+            const role = (localStorage.getItem('user_role') || '').toLowerCase();
+            const blockedRoles = ['karyawan', 'guest'];
+            if (blockedRoles.includes(role)) {
+                // Simpan flag ke sessionStorage agar login page bisa tampilkan alert
+                sessionStorage.setItem('blocked_role', role);
+                localStorage.clear();
+                window.location.replace('/');
+            }
+        })();
 
         // ── Helper global: ambil role user saat ini ──
         function getUserRole() {

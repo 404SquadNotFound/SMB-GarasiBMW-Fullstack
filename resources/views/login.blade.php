@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -127,6 +127,38 @@
                 });
                 loginBtn.disabled = false;
                 loginBtn.innerText = 'Masuk';
+            }
+        });
+    </script>
+
+    <script>
+        // ── Tampilkan alert jika user diredirect dari auth/role guard ──
+        document.addEventListener('DOMContentLoaded', function () {
+            // Case 1: Belum login, coba akses halaman via URL langsung
+            const noSession = sessionStorage.getItem('no_session');
+            if (noSession) {
+                sessionStorage.removeItem('no_session');
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Sesi Tidak Ditemukan!',
+                    text: 'Kamu harus login terlebih dahulu untuk mengakses halaman tersebut.',
+                    confirmButtonText: 'Mengerti',
+                    confirmButtonColor: '#1273EB',
+                });
+                return;
+            }
+
+            // Case 2: Sudah login tapi role tidak punya akses (karyawan/guest)
+            const blockedRole = sessionStorage.getItem('blocked_role');
+            if (blockedRole) {
+                sessionStorage.removeItem('blocked_role');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Akses Ditolak!',
+                    text: 'Role "' + blockedRole + '" tidak memiliki izin untuk mengakses sistem ini. Hubungi administrator.',
+                    confirmButtonText: 'Mengerti',
+                    confirmButtonColor: '#1273EB',
+                });
             }
         });
     </script>
