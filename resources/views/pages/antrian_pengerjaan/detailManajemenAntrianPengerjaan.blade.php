@@ -30,6 +30,17 @@
     let   currentStatus     = 'pengecekan';
     let   isStatusDropOpen  = false;
     let   currentTransactionId = null;
+    // ── Config warna per status pembayaran ───────────────────────────────────────
+const paymentStatusConfig = {
+    'belum_lunas'      : { border: '#FFE0E0', bg: '#FFF5F5', text: '#FF4D4D', chevron: '#FF4D4D', label: 'Belum Lunas'       },
+    'down_payment'     : { border: '#FDE68A', bg: '#FFF8EC', text: '#F59E0B', chevron: '#F59E0B', label: 'Down Payment (DP)' },
+    'lunas'            : { border: '#A7F3D0', bg: '#EDFBF3', text: '#16A34A', chevron: '#16A34A', label: 'Lunas'             },
+};
+
+const paymentStatusList       = Object.keys(paymentStatusConfig);
+let   currentPaymentStatus    = 'belum_lunas';
+let   isPaymentDropOpen       = false;
+
 
     // ── Render opsi status ────────────────────────────────────────────────────
     function renderStatusOptions() {
@@ -44,6 +55,114 @@
             container.appendChild(div);
         });
     }
+
+    // ── Render opsi status pembayaran ─────────────────────────────────────────────
+function renderPaymentStatusOptions() {
+    const container = document.getElementById('paymentStatusDropdownItems');
+    container.innerHTML = '';
+    paymentStatusList.forEach(status => {
+        const cfg = paymentStatusConfig[status];
+        const div = document.createElement('div');
+        div.style.cssText = `
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            transition: opacity .15s;
+            background: ${cfg.bg};
+            color: ${cfg.text};
+            border: 1.5px solid ${cfg.border};
+        `;
+        div.textContent = cfg.label;
+        div.addEventListener('mouseenter', () => div.style.opacity = '0.8');
+        div.addEventListener('mouseleave', () => div.style.opacity = '1');
+        div.addEventListener('click', () => selectPaymentStatus(status));
+        container.appendChild(div);
+    });
+}
+
+// ── Pilih status pembayaran ───────────────────────────────────────────────────
+async function selectPaymentStatus(newStatus) {
+    if (newStatus === currentPaymentStatus) { closePaymentDropdown(); return; }
+
+    const prevStatus     = currentPaymentStatus;
+    currentPaymentStatus = newStatus;
+
+    applyPaymentStatusStyle(newStatus);
+    closePaymentDropdown();
+
+    if (!currentTransactionId) return;
+
+    try {
+        const res = await fetch(`/api/transactions/${currentTransactionId}/payment-status`, {
+            method : 'PUT',
+            headers: {
+                'Content-Type' : 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'Accept'       : 'application/json',
+            },
+            body: JSON.stringify({ payment_status: newStatus }),
+        });
+        const result = await res.json();
+
+        if (res.ok) {
+            document.getElementById('updatedAt').textContent = formatTanggal(new Date().toISOString());
+            Swal.fire({ icon: 'success', title: 'Status Pembayaran diperbarui!', text: `Status berhasil diubah ke "${paymentStatusConfig[newStatus].label}"`, timer: 1800, showConfirmButton: false });
+        } else {
+            currentPaymentStatus = prevStatus;
+            applyPaymentStatusStyle(prevStatus);
+            Swal.fire('Gagal!', result.message ?? 'Status pembayaran gagal diperbarui.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        currentPaymentStatus = prevStatus;
+        applyPaymentStatusStyle(prevStatus);
+        Swal.fire('Error', 'Tidak bisa terhubung ke server.', 'error');
+    }
+}
+
+// ── Toggle / Open / Close dropdown pembayaran ─────────────────────────────────
+function togglePaymentDropdown() {
+    if (isPaymentDropOpen) closePaymentDropdown();
+    else openPaymentDropdown();
+}
+
+function openPaymentDropdown() {
+    renderPaymentStatusOptions();
+    const list = document.getElementById('paymentStatusDropdownList');
+    list.style.display = 'block';
+    document.getElementById('paymentStatusDropdownChevron').style.transform = 'rotate(180deg)';
+    isPaymentDropOpen = true;
+}
+
+function closePaymentDropdown() {
+    document.getElementById('paymentStatusDropdownList').style.display = 'none';
+    document.getElementById('paymentStatusDropdownChevron').style.transform = 'rotate(0deg)';
+    isPaymentDropOpen = false;
+}
+
+// Tutup dropdown pembayaran jika klik di luar
+document.addEventListener('click', (e) => {
+    const wrapper = document.getElementById('paymentStatusDropdownWrapper');
+    if (wrapper && !wrapper.contains(e.target)) closePaymentDropdown();
+});
+
+// ── Apply style trigger button pembayaran ─────────────────────────────────────
+function applyPaymentStatusStyle(status) {
+    const cfg     = paymentStatusConfig[status] || paymentStatusConfig['belum_lunas'];
+    const trigger = document.getElementById('paymentStatusDropdownTrigger');
+    const label   = document.getElementById('paymentStatusDropdownLabel');
+    const chevron = document.getElementById('paymentStatusDropdownChevron');
+
+    trigger.style.borderColor     = cfg.border;
+    trigger.style.backgroundColor = cfg.bg;
+    trigger.style.color           = cfg.text;
+    chevron.style.color           = cfg.chevron;
+    label.textContent             = cfg.label;
+}
+
 
     // ── Pilih status ──────────────────────────────────────────────────────────
     async function selectStatus(newStatus) {
@@ -219,6 +338,9 @@
         applyStatusStyle(currentStatus);
 
         renderSukuCadang(t.items || []);
+
+        currentPaymentStatus = t.payment_status || 'belum_lunas';
+applyPaymentStatusStyle(currentPaymentStatus);
     }
 
     // ── Render suku cadang (dari items API) ───────────────────────────────────
