@@ -27,12 +27,14 @@
 
 @section('content')
     @include('layouts.action_bar', [
-        'placeholder' => 'Cari Pelanggan...', 
-        'addUrl' => route('pelanggan.create'), 
-        'btnText' => 'Tambah Pelanggan',
-        'exportExcelUrl' => route('pelanggan.export'),
-        'exportPdfUrl' => route('pelanggan.export.pdf'),
+        'placeholder'     => 'Cari Pelanggan...',
+        'filterModalId'   => 'modalFilterPelanggan',
+        'addUrl'          => route('pelanggan.create'),
+        'btnText'         => 'Tambah Pelanggan',
+        'exportExcelUrl'  => route('pelanggan.export'),
+        'exportPdfUrl'    => route('pelanggan.export.pdf'),
     ])
+
     {{-- Script: sembunyikan tombol tambah untuk role CEO --}}
     <script>
         (function() {
@@ -45,22 +47,67 @@
             }
         })();
     </script>
+
     @include('layouts.table_wrapper')
+
+    {{-- MODAL FILTER --}}
+    <div id="modalFilterPelanggan" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="toggleModal('modalFilterPelanggan')"></div>
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="relative bg-white rounded-[20px] shadow-2xl w-full max-w-md overflow-hidden">
+                <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-[#213F5C]">Filter Pelanggan</h3>
+                    <button onclick="toggleModal('modalFilterPelanggan')" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-[13px] font-bold text-[#627D98] mb-2 uppercase tracking-wider">Model Mobil</label>
+                        <select id="filterCarType" class="w-full px-4 py-3 bg-[#F9FBFF] border border-[#D9E2EC] rounded-xl outline-none text-[#213F5C] font-semibold">
+                            <option value="">Semua Model</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[13px] font-bold text-[#627D98] mb-2 uppercase tracking-wider">Seri</label>
+                        <select id="filterSeries" class="w-full px-4 py-3 bg-[#F9FBFF] border border-[#D9E2EC] rounded-xl outline-none text-[#213F5C] font-semibold">
+                            <option value="">Semua Seri</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="px-6 py-5 bg-gray-50 flex gap-3">
+                    <button onclick="resetFilter()"
+                        class="flex-1 py-3 bg-white border border-[#D9E2EC] text-[#627D98] font-bold rounded-xl text-[14px]">
+                        Reset
+                    </button>
+                    <button onclick="applyFilter()"
+                        class="flex-1 py-3 bg-[#1273EB] text-white font-bold rounded-xl text-[14px]">
+                        Terapkan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         const token = localStorage.getItem('access_token');
         let timeout = null;
 
-        async function fetchCustomers(search = '', page = 1) {
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.toggle('hidden');
+        }
+
+        async function fetchCustomers(search = '', car_type_id = '', series = '', page = 1) {
             const tbody = document.getElementById('customerTableBody');
-            const fromEl = document.getElementById('paginationFrom');
-            const toEl = document.getElementById('paginationTo');
-            const totalEl = document.getElementById('paginationTotal');
 
             try {
-                const res = await fetch(`/api/customers?limit=10&search=${search}&page=${page}`, {
-                    headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
-                });
+                const res = await fetch(
+                    `/api/customers?limit=10&search=${search}&car_type_id=${car_type_id}&series=${series}&page=${page}`,
+                    { headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` } }
+                );
                 const result = await res.json();
 
                 if (res.ok) {
@@ -85,13 +132,12 @@
                     }
 
                     items.forEach(c => {
-                        // Logic nampilin semua nomor polisi & model mobil (Multiple support)
-                        const plates = c.vehicles.length > 0 
-                            ? c.vehicles.map(v => `<div class="mb-1 last:mb-0">${v.license_plate}</div>`).join('') 
+                        const plates = c.vehicles.length > 0
+                            ? c.vehicles.map(v => `<div class="mb-1 last:mb-0">${v.license_plate}</div>`).join('')
                             : '<span class="text-gray-300">-</span>';
-                        
-                        const models = c.vehicles.length > 0 
-                            ? c.vehicles.map(v => `<div class="mb-1 last:mb-0 font-bold">${v.model || (v.car_type ? v.car_type.name : '-')}</div>`).join('') 
+
+                        const models = c.vehicles.length > 0
+                            ? c.vehicles.map(v => `<div class="mb-1 last:mb-0 font-bold">${v.model || (v.car_type ? v.car_type.name : '-')}</div>`).join('')
                             : '<span class="text-gray-300">-</span>';
 
                         tbody.innerHTML += `
@@ -114,7 +160,7 @@
                             </tr>`;
                     });
 
-                    renderPaginationControls(result, (p) => fetchCustomers(search, p));
+                    renderPaginationControls(result, (p) => fetchCustomers(search, car_type_id, series, p));
                 }
             } catch (e) {
                 console.error(e);
@@ -122,14 +168,70 @@
             }
         }
 
-        // Search logic with Debounce
+        // Search dengan debounce — bawa nilai filter yang aktif
         document.getElementById('searchInput').addEventListener('input', (e) => {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
-                fetchCustomers(e.target.value, 1);
+                const car_type_id = document.getElementById('filterCarType').value;
+                const series = document.getElementById('filterSeries').value;
+                fetchCustomers(e.target.value, car_type_id, series, 1);
             }, 500);
         });
 
-        document.addEventListener('DOMContentLoaded', () => fetchCustomers());
+        function applyFilter() {
+            const search = document.getElementById('searchInput').value;
+            const car_type_id = document.getElementById('filterCarType').value;
+            const series = document.getElementById('filterSeries').value;
+            fetchCustomers(search, car_type_id, series, 1);
+            toggleModal('modalFilterPelanggan');
+        }
+
+        function resetFilter() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('filterCarType').value = '';
+            document.getElementById('filterSeries').value = '';
+            fetchCustomers();
+            toggleModal('modalFilterPelanggan');
+        }
+
+        // Load dropdown options untuk modal filter
+        async function loadOptions() {
+            try {
+                const headers = { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' };
+
+                // Load model mobil
+                const resCarTypes = await fetch('/api/car-types?limit=200', { headers });
+                const resultCarTypes = await resCarTypes.json();
+                if (resCarTypes.ok) {
+                    const select = document.getElementById('filterCarType');
+                    (resultCarTypes.data || []).forEach(ct => {
+                        const opt = document.createElement('option');
+                        opt.value = ct.car_type_id;
+                        opt.text = ct.name;
+                        select.appendChild(opt);
+                    });
+                }
+
+                // Load seri
+                const resSeries = await fetch('/api/car-series', { headers });
+                const resultSeries = await resSeries.json();
+                if (resSeries.ok) {
+                    const select = document.getElementById('filterSeries');
+                    (resultSeries.data || []).forEach(s => {
+                        const opt = document.createElement('option');
+                        opt.value = s;
+                        opt.text = s;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch (e) {
+                console.error('Gagal load filter options:', e);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadOptions();
+            fetchCustomers();
+        });
     </script>
 @endsection

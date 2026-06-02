@@ -2,8 +2,9 @@
 {{--
     TODO Backend:
     - Kirim $antrian (Eloquent model) dari Controller ke view ini
-    - Endpoint ubah status: PUT/PATCH /api/antrian-pengerjaan/{id}/status
-    - Endpoint hapus: DELETE /api/antrian-pengerjaan/{id}
+    - Endpoint ubah status pengerjaan : PUT/PATCH /api/transactions/{id}/status
+    - Endpoint ubah status pembayaran : PUT/PATCH /api/transactions/{id}/payment-status
+    - Endpoint hapus: DELETE /api/transactions/{id}
     - $antrian->suku_cadang → relasi ke tabel antrian_suku_cadang
 --}}
 @extends('layouts.master')
@@ -15,7 +16,7 @@
 @include('layouts.detail_wrapper_antrian')
 
 <script>
-    // ── Config warna per status ───────────────────────────────────────────────
+    // ── Config warna per status pengerjaan ────────────────────────────────────
     const statusConfig = {
         'pengecekan'  : { border: '#FDE68A', bg: '#FFF8EC', text: '#F59E0B', chevron: '#F59E0B', optClass: 'status-option-pengecekan'  },
         'menunggu'    : { border: '#E5E7EB', bg: '#F5F5F5', text: '#6B7280', chevron: '#6B7280', optClass: 'status-option-menunggu'     },
@@ -24,14 +25,28 @@
         'selesai'     : { border: '#A7F3D0', bg: '#EDFBF3', text: '#16A34A', chevron: '#16A34A', optClass: 'status-option-selesai'      },
     };
 
-    const statusList        = Object.keys(statusConfig);
-    const btnPembayaran     = document.getElementById('btnProsesPembayaran');
-    const token             = localStorage.getItem('access_token');
-    let   currentStatus     = 'pengecekan';
-    let   isStatusDropOpen  = false;
-    let   currentTransactionId = null;
+    // ── Config warna per status pembayaran ────────────────────────────────────
+    const paymentStatusConfig = {
+        'belum_lunas'   : { border: '#FFE0E0', bg: '#FFF5F5', text: '#FF4D4D', chevron: '#FF4D4D', label: 'Belum Lunas',       optClass: 'payment-option-belum-lunas'   },
+        'down_payment'  : { border: '#FDE68A', bg: '#FFF8EC', text: '#F59E0B', chevron: '#F59E0B', label: 'Down Payment (DP)', optClass: 'payment-option-down-payment'  },
+        'lunas'         : { border: '#A7F3D0', bg: '#EDFBF3', text: '#16A34A', chevron: '#16A34A', label: 'Lunas',             optClass: 'payment-option-lunas'          },
+    };
 
-    // ── Render opsi status ────────────────────────────────────────────────────
+    const statusList            = Object.keys(statusConfig);
+    const paymentStatusList     = Object.keys(paymentStatusConfig);
+    const btnPembayaran         = document.getElementById('btnProsesPembayaran');
+    const token                 = localStorage.getItem('access_token');
+    let   currentStatus         = 'pengecekan';
+    let   currentPaymentStatus  = 'belum_lunas';
+    let   isStatusDropOpen      = false;
+    let   isPaymentDropOpen     = false;
+    let   currentTransactionId  = null;
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // DROPDOWN STATUS PENGERJAAN
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // ── Render opsi status pengerjaan ─────────────────────────────────────────
     function renderStatusOptions() {
         const container = document.getElementById('statusDropdownItems');
         container.innerHTML = '';
@@ -45,7 +60,7 @@
         });
     }
 
-    // ── Pilih status ──────────────────────────────────────────────────────────
+    // ── Pilih status pengerjaan ───────────────────────────────────────────────
     async function selectStatus(newStatus) {
         if (newStatus === currentStatus) { closeStatusDropdown(); return; }
 
@@ -85,13 +100,16 @@
         }
     }
 
-    // ── Toggle / Open / Close dropdown status ─────────────────────────────────
+    // ── Toggle / Open / Close dropdown status pengerjaan ─────────────────────
     function toggleStatusDropdown() {
         if (isStatusDropOpen) closeStatusDropdown();
         else openStatusDropdown();
     }
 
     function openStatusDropdown() {
+        // Tutup dropdown pembayaran jika terbuka
+        if (isPaymentDropOpen) closePaymentDropdown();
+
         renderStatusOptions();
         document.getElementById('statusDropdownList').classList.remove('hidden');
         document.getElementById('statusDropdownList').style.display = 'block';
@@ -106,15 +124,9 @@
         isStatusDropOpen = false;
     }
 
-    // Tutup dropdown jika klik di luar
-    document.addEventListener('click', (e) => {
-        const wrapper = document.getElementById('statusDropdownWrapper');
-        if (wrapper && !wrapper.contains(e.target)) closeStatusDropdown();
-    });
-
-    // ── Apply style trigger button sesuai status ─────────────────────────────
+    // ── Apply style trigger button pengerjaan ─────────────────────────────────
     function applyStatusStyle(status) {
-        const cfg     = statusConfig[status] || statusConfig['Pengecekan'];
+        const cfg     = statusConfig[status] || statusConfig['pengecekan'];
         const trigger = document.getElementById('statusDropdownTrigger');
         const label   = document.getElementById('statusDropdownLabel');
         const chevron = document.getElementById('statusDropdownChevron');
@@ -127,6 +139,112 @@
 
         updatePembayaranBtn(status);
     }
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // DROPDOWN STATUS PEMBAYARAN
+    // ═══════════════════════════════════════════════════════════════════════════
+
+    // ── Render opsi status pembayaran ─────────────────────────────────────────
+    function renderPaymentStatusOptions() {
+        const container = document.getElementById('paymentStatusDropdownItems');
+        container.innerHTML = '';
+        paymentStatusList.forEach(status => {
+            const cfg = paymentStatusConfig[status];
+            const div = document.createElement('div');
+            div.className = `payment-option-item ${cfg.optClass}`;
+            div.textContent = cfg.label;
+            div.addEventListener('click', () => selectPaymentStatus(status));
+            container.appendChild(div);
+        });
+    }
+
+    // ── Pilih status pembayaran ───────────────────────────────────────────────
+    async function selectPaymentStatus(newStatus) {
+        if (newStatus === currentPaymentStatus) { closePaymentDropdown(); return; }
+
+        const prevStatus        = currentPaymentStatus;
+        currentPaymentStatus    = newStatus;
+
+        applyPaymentStatusStyle(newStatus);
+        closePaymentDropdown();
+
+        if (!currentTransactionId) return;
+
+        try {
+            const res = await fetch(`/api/transactions/${currentTransactionId}/payment-status`, {
+                method : 'PUT',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    'Accept'       : 'application/json',
+                },
+                body: JSON.stringify({ payment_status: newStatus }),
+            });
+            const result = await res.json();
+
+            if (res.ok) {
+                document.getElementById('updatedAt').textContent = formatTanggal(new Date().toISOString());
+                Swal.fire({ icon: 'success', title: 'Status Pembayaran diperbarui!', text: `Status berhasil diubah ke "${paymentStatusConfig[newStatus].label}"`, timer: 1800, showConfirmButton: false });
+            } else {
+                currentPaymentStatus = prevStatus;
+                applyPaymentStatusStyle(prevStatus);
+                Swal.fire('Gagal!', result.message ?? 'Status pembayaran gagal diperbarui.', 'error');
+            }
+        } catch (err) {
+            console.error(err);
+            currentPaymentStatus = prevStatus;
+            applyPaymentStatusStyle(prevStatus);
+            Swal.fire('Error', 'Tidak bisa terhubung ke server.', 'error');
+        }
+    }
+
+    // ── Toggle / Open / Close dropdown pembayaran ─────────────────────────────
+    function togglePaymentDropdown() {
+        if (isPaymentDropOpen) closePaymentDropdown();
+        else openPaymentDropdown();
+    }
+
+    function openPaymentDropdown() {
+        // Tutup dropdown pengerjaan jika terbuka
+        if (isStatusDropOpen) closeStatusDropdown();
+
+        renderPaymentStatusOptions();
+        document.getElementById('paymentStatusDropdownList').style.display = 'block';
+        document.getElementById('paymentStatusDropdownChevron').style.transform = 'rotate(180deg)';
+        isPaymentDropOpen = true;
+    }
+
+    function closePaymentDropdown() {
+        document.getElementById('paymentStatusDropdownList').style.display = 'none';
+        document.getElementById('paymentStatusDropdownChevron').style.transform = 'rotate(0deg)';
+        isPaymentDropOpen = false;
+    }
+
+    // ── Apply style trigger button pembayaran ─────────────────────────────────
+    function applyPaymentStatusStyle(status) {
+        const cfg     = paymentStatusConfig[status] || paymentStatusConfig['belum_lunas'];
+        const trigger = document.getElementById('paymentStatusDropdownTrigger');
+        const label   = document.getElementById('paymentStatusDropdownLabel');
+        const chevron = document.getElementById('paymentStatusDropdownChevron');
+
+        trigger.style.borderColor     = cfg.border;
+        trigger.style.backgroundColor = cfg.bg;
+        trigger.style.color           = cfg.text;
+        chevron.style.color           = cfg.chevron;
+        label.textContent             = cfg.label;
+    }
+
+    // ── Tutup kedua dropdown jika klik di luar ────────────────────────────────
+    document.addEventListener('click', (e) => {
+        const statusWrapper  = document.getElementById('statusDropdownWrapper');
+        const paymentWrapper = document.getElementById('paymentStatusDropdownWrapper');
+        if (statusWrapper  && !statusWrapper.contains(e.target))  closeStatusDropdown();
+        if (paymentWrapper && !paymentWrapper.contains(e.target)) closePaymentDropdown();
+    });
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // TOMBOL & HELPERS
+    // ═══════════════════════════════════════════════════════════════════════════
 
     // ── Update tombol proses pembayaran ───────────────────────────────────────
     function updatePembayaranBtn(status) {
@@ -175,27 +293,33 @@
         return `${tgl} pukul ${jam}`;
     }
 
-    // ── Render detail ke halaman ──────────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════════
+    // RENDER DETAIL
+    // ═══════════════════════════════════════════════════════════════════════════
+
     function renderDetail(t) {
         const customer = t.vehicle?.customer ?? {};
         const vehicle  = t.vehicle           ?? {};
 
-        document.getElementById('detailName').textContent        = customer.name          || '-';
-        document.getElementById('detailPhone').textContent       = customer.phone_number  || '-';
-        document.getElementById('detailAddress').textContent     = customer.address       || '-';
-        document.getElementById('detailCarModel').textContent    = vehicle.model          || '-';
-        document.getElementById('detailKmMasuk').textContent     = t.km_masuk             || '-';
-        document.getElementById('detailEngineCode').textContent  = vehicle.engine_code    || '-';
-        document.getElementById('detailLicensePlate').textContent= vehicle.license_plate  || '-';
+        document.getElementById('detailName').textContent         = customer.name          || '-';
+        document.getElementById('detailPhone').textContent        = customer.phone_number  || '-';
+        document.getElementById('detailAddress').textContent      = customer.address       || '-';
+        document.getElementById('detailCarModel').textContent     = vehicle.model          || '-';
+        document.getElementById('detailKmMasuk').textContent      = t.km_masuk             || '-';
+        document.getElementById('detailEngineCode').textContent   = vehicle.engine_code    || '-';
+        document.getElementById('detailLicensePlate').textContent = vehicle.license_plate  || '-';
+
+        // API return field "branch" dengan value string e.g. "PELAJAR_PEJUANG"
         const cabangMap = {
-            '1': 'Pelajar Pejuang',
-            '2': 'Ahmad Yani',
+            'PELAJAR_PEJUANG' : 'Pelajar Pejuang',
+            'AHMAD_YANI'      : 'Ahmad Yani',
+            '1'               : 'Pelajar Pejuang',
+            '2'               : 'Ahmad Yani',
         };
-        const cabangId   = t.cabang_id ? String(t.cabang_id) : null;
-        const cabangNama = cabangId ? (cabangMap[cabangId] ?? 'Cabang #' + cabangId) : '-';
-        document.getElementById('detailCabang').textContent = cabangNama
-            ? '📍 ' + cabangNama
-            : '-';
+        const branchRaw  = t.branch ?? t.cabang_id ?? null;
+        const branchKey  = branchRaw ? String(branchRaw).toUpperCase().replace(/ /g, '_') : null;
+        const cabangNama = branchKey ? (cabangMap[branchKey] ?? cabangMap[String(branchRaw)] ?? branchRaw) : null;
+        document.getElementById('detailCabang').textContent = cabangNama ? '📍 ' + cabangNama : '-';
 
         const createdByName = t.creator?.name || 'Unknown';
         document.getElementById('createdByName').textContent    = createdByName;
@@ -214,14 +338,32 @@
             });
         }
 
+        // Set & render status pengerjaan
         currentStatus = t.status_service || 'pengecekan';
         currentTransactionId = t.transaction_id;
         applyStatusStyle(currentStatus);
 
+        // API return field "status_payment" dengan value: unpaid / dp / paid
+        const paymentApiMap = {
+            'unpaid' : 'belum_lunas',
+            'dp'     : 'down_payment',
+            'paid'   : 'lunas',
+            // fallback jika backend sudah pakai key sama
+            'belum_lunas'  : 'belum_lunas',
+            'down_payment' : 'down_payment',
+            'lunas'        : 'lunas',
+        };
+        const rawPayment     = t.status_payment ?? t.payment_status ?? 'unpaid';
+        currentPaymentStatus = paymentApiMap[rawPayment] ?? 'belum_lunas';
+        applyPaymentStatusStyle(currentPaymentStatus);
+
         renderSukuCadang(t.items || []);
     }
 
-    // ── Render suku cadang (dari items API) ───────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SUKU CADANG
+    // ═══════════════════════════════════════════════════════════════════════════
+
     function renderSukuCadang(items) {
         const container = document.getElementById('sukuCadangContainer');
         const emptyEl   = document.getElementById('sukuCadangEmpty');
@@ -235,14 +377,18 @@
         emptyEl.style.display = 'none';
 
         items.forEach(sc => {
-            // Support both API item format and legacy format
-            const nama     = sc.nama      ?? sc.sparepart?.name ?? '-';
-            const deskripsi= sc.deskripsi ?? sc.sparepart?.name ?? '-';
-            const harga    = sc.harga     ?? (sc.sparepart ? 'Rp ' + Number(sc.sparepart.selling_price).toLocaleString('id-ID') : '-');
-            const jumlah   = sc.jumlah    ?? String(sc.quantity ?? 1) + ' pcs';
-            const tanggal  = sc.tanggal   ?? '-';
-            const supplier = sc.supplier  ?? sc.sparepart?.supplier?.name ?? '-';
-            const scId     = sc.id        ?? sc.transaction_item_id;
+            // API return: item_name, qty, price, subtotal — support juga format lama
+            const nama     = sc.item_name  ?? sc.nama      ?? sc.sparepart?.name ?? '-';
+            const deskripsi= sc.item_type  ?? sc.deskripsi ?? sc.sparepart?.name ?? '-';
+            const harga    = sc.price      ?? sc.harga
+                             ?? (sc.sparepart ? 'Rp ' + Number(sc.sparepart.selling_price).toLocaleString('id-ID') : '-');
+            const hargaFmt = (typeof harga === 'number' || !isNaN(Number(harga)))
+                             ? 'Rp ' + Number(harga).toLocaleString('id-ID')
+                             : harga;
+            const jumlah   = sc.qty        ?? sc.quantity  ?? sc.jumlah ?? 1;
+            const tanggal  = sc.tanggal    ?? sc.sparepart?.date ?? '-';
+            const supplier = sc.supplier   ?? sc.sparepart?.supplier?.name ?? '-';
+            const scId     = sc.item_id    ?? sc.id        ?? sc.transaction_item_id;
 
             const div = document.createElement('div');
             div.className = 'sc-item flex items-center justify-between p-4 bg-[#F9FBFF] rounded-[14px] border border-[#E5E9F2]';
@@ -254,8 +400,8 @@
                 </div>
                 <div class="flex items-center gap-4">
                     <div class="text-right">
-                        <p class="text-[13px] font-bold text-[#213F5C]">${escHtml(harga)}</p>
-                        <p class="text-[11px] text-gray-400">${escHtml(jumlah)} • ${escHtml(tanggal)}</p>
+                        <p class="text-[13px] font-bold text-[#213F5C]">${escHtml(hargaFmt)}</p>
+                        <p class="text-[11px] text-gray-400">${escHtml(String(jumlah))} pcs • ${escHtml(tanggal)}</p>
                         <p class="text-[11px] text-gray-400">Supplier: ${escHtml(supplier)}</p>
                     </div>
                 </div>
@@ -339,7 +485,7 @@
         modal.classList.remove('flex');
     }
 
-    // ── Simpan hasil edit suku cadang ke localStorage ─────────────────────────
+    // ── Simpan hasil edit suku cadang ─────────────────────────────────────────
     function simpanEditSC() {
         const scId    = parseInt(document.getElementById('editSCId').value, 10);
         const newNama = document.getElementById('editSCNama').value.trim();
@@ -386,6 +532,10 @@
         });
     }
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // HAPUS & PEMBAYARAN
+    // ═══════════════════════════════════════════════════════════════════════════
+
     // ── Hapus antrian via API ──────────────────────────────────────────────────
     function handleHapus() {
         const id = currentTransactionId ?? getAntrianId();
@@ -430,7 +580,10 @@
         window.location.href = `/antrian-pengerjaan/${id}/pembayaran`;
     }
 
-    // ── Inisialisasi halaman via API ──────────────────────────────────────────
+    // ═══════════════════════════════════════════════════════════════════════════
+    // INISIALISASI
+    // ═══════════════════════════════════════════════════════════════════════════
+
     document.addEventListener('DOMContentLoaded', async () => {
         const id = getAntrianId();
 

@@ -63,7 +63,7 @@
             </div>
 
             <div class="space-y-3">
-                <button type="button" id="submitBtnApi"
+                <button type="button" id="{{ $submitBtnId ?? 'submitBtnApi' }}"
                     class="w-full flex items-center justify-center gap-2 py-4 bg-[#1273EB] text-white rounded-xl font-bold text-[15px] hover:bg-[#0E59B8] transition-all shadow-lg shadow-blue-100">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>

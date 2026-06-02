@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title', 'Laporan Absensi')
-@section('title_header', 'Manajemen Rekap Karyawan')
+@section('title_header', 'Manajemen Rekap Pegawai')
 
 @section('content')
 {{-- Kontrol Modal dan Tab --}}
@@ -19,14 +19,14 @@
     <div class="flex items-center justify-between mb-5">
         <div class="relative w-[340px]">
             <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#627D98]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            <input type="text" placeholder="Cari Karyawan" class="w-full pl-10 pr-4 py-3 bg-white border border-[#D9E2EC] rounded-[10px] outline-none shadow-sm text-[14px]">
+            <input type="text" placeholder="Cari Pegawai" class="w-full pl-10 pr-4 py-3 bg-white border border-[#D9E2EC] rounded-[10px] outline-none shadow-sm text-[14px]">
         </div>
 
         <div class="flex items-center gap-2.5">
             <button class="flex items-center gap-2 px-5 py-[11px] bg-white border border-[#D9E2EC] rounded-[10px] font-bold text-[13px] text-[#213F5C] shadow-sm hover:bg-gray-50 transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg> Filter</button>
             <button class="flex items-center gap-2 px-5 py-[11px] bg-white border border-[#D9E2EC] rounded-[10px] font-bold text-[13px] text-[#213F5C] shadow-sm hover:bg-gray-50 transition-all"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> Export</button>
             <button @click="openModal = true" class="flex items-center gap-2 px-5 py-[11px] bg-[#1273EB] text-white rounded-[10px] font-bold text-[13px] shadow-sm hover:bg-[#0E62CC] transition-all">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> Rekap Karyawan
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg> Rekap Pegawai
             </button>
         </div>
     </div>
@@ -49,7 +49,7 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-white border-b border-[#D9E2EC] text-[11px] font-bold text-[#627D98] uppercase tracking-wider">
-                        <th class="px-6 py-5">Nama Karyawan</th>
+                        <th class="px-6 py-5">Nama Pegawai</th>
                         <th class="px-6 py-5 text-center">Senin</th>
                         <th class="px-6 py-5 text-center">Selasa</th>
                         <th class="px-6 py-5 text-center">Rabu</th>
@@ -95,7 +95,7 @@
                     <svg class="w-8 h-8 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold text-[#213F5C] mb-1">Rekap Kehadiran Karyawan</h2>
+                    <h2 class="text-2xl font-bold text-[#213F5C] mb-1">Rekap Kehadiran Pegawai</h2>
                     <p class="text-gray-400 font-medium text-[15px]">Total <span x-text="rekap[activeTab].total"></span> catatan kehadiran</p>
                 </div>
             </div>

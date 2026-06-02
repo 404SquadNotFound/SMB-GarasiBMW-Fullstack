@@ -1,11 +1,11 @@
 @extends('layouts.master')
 
-@section('title', 'Gaji Karyawan')
+@section('title', 'Gaji Pegawai')
 
-@section('title_header', 'Gaji Karyawan')
+@section('title_header', 'Gaji Pegawai')
 
 @section('table_header')
-    <th class="px-6 py-5">Nama Karyawan</th>
+    <th class="px-6 py-5">Nama Pegawai</th>
     <th class="px-6 py-5">Pendapata</th>
     <th class="px-6 py-5">Penalti</th>
     <th class="px-6 py-5">Tabungan</th>
@@ -48,13 +48,13 @@
 
     @include('layouts.action_bar', [
         // Ntar tambahin logika pencarian export sama postnya
-        'placeholder' => 'Cari Gaji Karyawan...',
+        'placeholder' => 'Cari Gaji Pegawai...',
         'searchUrl' => '#',
         'filterModalId' => 'modalFilterPayroll',
         'exportExcelUrl' => '#',
         'exportPdfUrl' => '#',
         'addUrl' => route('payroll.create'),
-        'btnText' => 'Tambah Gaji Karyawan'
+        'btnText' => 'Tambah Gaji Pegawai'
     ])
     {{-- Script: sembunyikan tombol tambah untuk role CEO --}}
     <script>

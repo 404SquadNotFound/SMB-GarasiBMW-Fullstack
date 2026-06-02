@@ -5,7 +5,7 @@
 @section('title_header', 'Pendataan Izin Keterlambatan')
 
 @section('table_header')
-    <th class="px-6 py-5">Nama Karyawan</th>
+    <th class="px-6 py-5">Nama Pegawai</th>
     <th class="px-6 py-5">Tanggal Terlambat</th>
     <th class="px-6 py-5">Alasan</th>
     <th class="px-6 py-5 text-center">Aksi</th>

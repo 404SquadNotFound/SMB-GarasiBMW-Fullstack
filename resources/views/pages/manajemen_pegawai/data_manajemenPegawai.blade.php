@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
-@section('title', 'Manajemen Karyawan')
-@section('title_header', 'Manajemen Pegawai | Data Karyawan')
+@section('title', 'Manajemen Pegawai')
+@section('title_header', 'Manajemen Pegawai | Data Pegawai')
 
 {{-- 1. WAJIB ADA HEADER TABEL --}}
 @section('table_header')
@@ -17,7 +17,7 @@
 @section('table_body')
     <tbody id="employeeTableBody">
         <tr>
-            <td colspan="6" class="text-center py-10 text-gray-400 italic">Memuat data karyawan...</td>
+            <td colspan="6" class="text-center py-10 text-gray-400 italic">Memuat data pegawai...</td>
         </tr>
     </tbody>
 @endsection
@@ -130,7 +130,7 @@
                                         <svg class="w-24 h-24 text-gray-200 mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                         </svg>
-                                        <h3 class="text-[16px] font-bold text-[#213F5C] mb-1">Data karyawan tidak ditemukan</h3>
+                                        <h3 class="text-[16px] font-bold text-[#213F5C] mb-1">Data Pegawai tidak ditemukan</h3>
                                         <p class="text-[13px] text-gray-400 font-medium">Coba cek keyword pencarian atau tambahkan data baru.</p>
                                     </div>
                                 </td>

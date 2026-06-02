@@ -12,7 +12,7 @@
     </div>
 @endsection
 
-@section('detail_title', 'Detail Karyawan')
+@section('detail_title', 'Detail Pegawai')
 
 @section('detail_content')
     <div id="pegawaiDetailContainer" class="space-y-4">
@@ -59,7 +59,7 @@
                                             clip-rule="evenodd" />
                                     </svg>
                                 </div>
-                                <h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Pribadi Karyawan</h3>
+                                <h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Pribadi Pegawai</h3>
                             </div>
                             <div class="grid grid-cols-2 gap-x-8 gap-y-5">
                                 <div>
@@ -97,7 +97,7 @@
                                             d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                     </svg>
                                 </div>
-                                <h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Akun Karyawan</h3>
+                                <h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Akun Pegawai</h3>
                             </div>
                             <div class="space-y-4">
                                 <div>
@@ -216,6 +216,6 @@
         'backUrl'      => route('manajemen-pegawai.index'),
         'editUrl'      => route('manajemen-pegawai.edit', ['id' => request()->route('id')]),
         'hapusUrl'     => route('manajemen-pegawai.delete', ['id' => request()->route('id')]),
-        'sectionTitle' => 'Detail Karyawan'
+        'sectionTitle' => 'Detail Pegawai',
     ])
 @endsection

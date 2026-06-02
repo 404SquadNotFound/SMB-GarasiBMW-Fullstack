@@ -57,18 +57,18 @@
                             : '-';
 
                     const detailHtml = `
-                        {{-- Seksi: Informasi Karyawan --}}
+                        {{-- Seksi: Informasi Pegawai --}}
                         <div class="bg-white border border-[#E5E9F2] rounded-2xl p-6">
                             <div class="flex items-center gap-2 mb-5">
                                 <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                 </svg>
-                                <h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Karyawan</h3>
+                                <h3 class="text-[15px] font-bold text-[#213F5C]">Informasi Pegawai</h3>
                             </div>
                             <div class="space-y-3">
                                 <div class="flex items-center">
-                                    <p class="w-40 text-[13px] text-gray-400">Nama Karyawan</p>
+                                    <p class="w-40 text-[13px] text-gray-400">Nama Pegawai</p>
                                     <p class="text-[13px] font-semibold text-[#213F5C]">${item.employee?.name ?? item.employee_id ?? '-'}</p>
                                 </div>
                                 <div class="flex items-center">

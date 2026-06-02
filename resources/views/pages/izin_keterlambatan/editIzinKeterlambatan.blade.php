@@ -18,14 +18,14 @@
 @section('form_fields')
     <form id="editIzinForm" class="space-y-4">
 
-        {{-- Nama Karyawan --}}
+        {{-- Nama Pegawai --}}
         <div>
             <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
-                Nama Karyawan <span class="text-red-500">*</span>
+                Nama Pegawai <span class="text-red-500">*</span>
             </label>
             <select id="employee_id" required
                 class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[#213F5C]">
-                <option value="" disabled selected>Pilih nama karyawan</option>
+                <option value="" disabled selected>Pilih nama pegawai</option>
                 {{-- Options will be loaded dynamically --}}
             </select>
         </div>

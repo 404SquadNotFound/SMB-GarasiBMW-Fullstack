@@ -48,7 +48,7 @@
                                 placeholder="Masukkan Email">
                         </div>
                         <div class="mb-4">
-                            <label for="password" class="form-label text-muted fw-semibold small">Password</label>
+                            <label for="password" class="form-label text-muted fw-semibold small">Kata Sandi</label>
                             <input type="password" class="form-control form-control-lg custom-input" id="password"
                                 required placeholder="Masukkan Password">
                         </div>
