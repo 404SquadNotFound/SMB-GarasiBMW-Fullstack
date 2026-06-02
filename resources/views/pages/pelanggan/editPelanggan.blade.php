@@ -88,7 +88,7 @@
                 {{-- FORM INPUT MOBIL --}}
                 <div x-show="showForm" class="bg-[#F8FAFF] border border-[#D1E4FF] rounded-3xl p-8 space-y-6" x-transition x-cloak>
                     <h3 class="text-[14px] font-bold text-[#213F5C]" x-text="editIndex !== null ? 'Ubah Informasi Mobil Pelanggan' : 'Tambahkan Informasi Mobil Pelanggan'"></h3>
-                    <div class="flex flex-col space-y-5">
+                    <div class="flex flex-col gap-5">
                         {{-- Model Mobil --}}
                         <div>
                             <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Model Mobil</label>

@@ -135,7 +135,7 @@
                         <p class="text-[12px] text-gray-400" x-text="selectedVehicle?.engine_code ? '⚙️ ' + selectedVehicle.engine_code : ''"></p>
                     </div>
 
-                    {{-- KM Masuk — angka saja, tanpa teks "Km" --}}
+                    {{-- KM Masuk --}}
                     <div>
                         <label class="block text-[14px] font-bold text-[#213F5C] mb-2">KM Masuk</label>
                         <input type="number" x-model="kmMasuk"
@@ -165,7 +165,6 @@
                 <div class="p-8 space-y-5">
                     <div>
                         <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Pilih Cabang <span class="text-red-500">*</span></label>
-                        {{-- Dropdown cabang konsisten dengan style suku cadang --}}
                         <div class="relative" @click.stop>
                             <input type="text" readonly
                                 :value="selectedCabang ? selectedCabang.label : ''"
@@ -219,7 +218,7 @@
 
                 <div class="p-8 space-y-6">
 
-                    {{-- Daftar suku cadang --}}
+                    {{-- Daftar suku cadang yang sudah ditambah --}}
                     <template x-for="item in sukuCadangItems" :key="item.id">
                         <div class="flex items-center justify-between p-4 bg-[#F9FBFF] rounded-[12px] border border-[#E5E9F2]">
                             <div>
@@ -247,56 +246,124 @@
                         Tambah Suku Cadang
                     </button>
 
-                    {{-- FORM TAMBAH SUKU CADANG --}}
+                    {{-- =====================================================
+                     FORM TAMBAH SUKU CADANG — 3 step bertahap
+                    ===================================================== --}}
                     <div x-show="showFormSukuCadang" x-cloak
                         class="bg-[#F8FAFF] border border-[#D1E4FF] rounded-3xl p-8 space-y-6">
 
                         <h3 class="text-[14px] font-bold text-[#213F5C]">Tambahkan Penggunaan Suku Cadang</h3>
 
-                        <div class="space-y-5">
+                        <div class="space-y-6">
+
+                            {{-- STEP 1: Cari Nama Barang --}}
                             <div>
-                                <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Cari Suku Cadang</label>
+                                <label class="flex items-center gap-2 text-[13px] font-bold text-[#213F5C] mb-2">
+                                    <span class="inline-flex items-center justify-center w-5 h-5 bg-[#1273EB] text-white rounded-full text-[10px] font-bold flex-shrink-0">1</span>
+                                    Cari Nama Barang
+                                </label>
                                 <div class="relative" @click.stop>
-                                    <input type="text" x-model="stokSearch"
-                                        @input="filterStok"
-                                        @focus="showStokDropdown = true"
-                                        placeholder="Pilih suku cadang yang ingin digunakan..."
+                                    <input type="text" x-model="barangSearch"
+                                        @input="onBarangInput(); selectedBatch = null; inputJumlah = ''"
+                                        @focus="onBarangFocus"
+                                        placeholder="Ketik nama atau kode barang..."
                                         autocomplete="off"
                                         class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300 pr-10"
-                                        :class="showStokDropdown ? 'border-[#1273EB]' : ''">
-                                    <span x-show="selectedStokData" @click="clearStok()"
+                                        :class="showBarangDropdown ? 'border-[#1273EB]' : ''">
+                                    <span x-show="selectedBarang" @click="clearBarang()"
                                         class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 cursor-pointer hover:text-red-400 text-lg leading-none">×</span>
-                                    <div x-show="showStokDropdown && filteredStok.length > 0" x-cloak
+                                    <div x-show="showBarangDropdown && filteredBarang.length > 0" x-cloak
                                         class="absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
-                                        <div class="max-h-[380px] overflow-y-auto dropdown-scroll">
-                                            <template x-for="stok in filteredStok" :key="stok.id">
-                                                <div @click="selectStok(stok)"
+                                        <div class="max-h-[260px] overflow-y-auto dropdown-scroll">
+                                            <template x-for="b in filteredBarang" :key="b.id">
+                                                <div @click="selectBarang(b)"
                                                     class="hover:bg-[#F0F7FF] cursor-pointer p-4 border-b border-gray-50 last:border-0"
-                                                    :class="selectedStokData?.id === stok.id ? 'bg-blue-50' : ''">
+                                                    :class="selectedBarang?.id === b.id ? 'bg-blue-50' : ''">
                                                     <div class="flex justify-between items-center mb-1">
-                                                        <span class="text-[14px] font-bold text-[#213F5C]" x-text="stok.nama"></span>
-                                                        <span class="text-[14px] font-bold text-[#1273EB]" x-text="stok.harga"></span>
+                                                        <span class="text-[14px] font-bold text-[#213F5C]" x-text="b.nama"></span>
+                                                        <span class="text-[12px] text-gray-400" x-text="b.kode ?? ''"></span>
                                                     </div>
-                                                    <div class="flex justify-between items-center text-[12px]">
-                                                        <span class="text-gray-500">Sisa Stok: <span class="font-bold text-[#213F5C]" x-text="stok.stok"></span></span>
-                                                        <span class="text-gray-400" x-text="'Suplier: ' + (stok.supplier || '-')"></span>
+                                                    <div class="flex justify-between items-center text-[12px] text-gray-400">
+                                                        <span>Sisa stok: <span class="font-semibold text-[#213F5C]" x-text="b.stok"></span></span>
+                                                        <span x-text="'Supplier: ' + (b.supplier || '-')"></span>
                                                     </div>
                                                 </div>
                                             </template>
-                                            <div x-show="filteredStok.length === 0"
-                                                class="p-4 text-center text-gray-400 text-[14px]">Stok tidak ditemukan...</div>
+                                            <div x-show="filteredBarang.length === 0"
+                                                class="p-4 text-center text-gray-400 text-[14px]">Barang tidak ditemukan...</div>
                                         </div>
+                                    </div>
+                                </div>
+                                {{-- Info barang terpilih --}}
+                                <div x-show="selectedBarang" x-cloak
+                                    class="mt-2 px-4 py-3 bg-white border border-[#E5E9F2] rounded-xl">
+                                    <span class="text-[13px] font-bold text-[#213F5C]" x-text="selectedBarang?.nama"></span>
+                                    <span class="text-[12px] text-gray-400" x-show="selectedBarang?.kode" x-text="' · ' + selectedBarang?.kode"></span>
+                                    <span class="text-[12px] text-gray-400" x-show="selectedBarang?.supplier" x-text="' · Supplier: ' + selectedBarang?.supplier"></span>
+                                    <span class="text-[12px] text-gray-400" x-text="'  ·  Total stok: ' + (selectedBarang?.stok ?? 0) + ' pcs'"></span>
+                                </div>
+                            </div>
+
+                            {{-- STEP 2: Pilih Stok Tersedia (muncul setelah pilih barang) --}}
+                            <div x-show="selectedBarang" x-cloak>
+                                <label class="flex items-center gap-2 text-[13px] font-bold text-[#213F5C] mb-1">
+                                    <span class="inline-flex items-center justify-center w-5 h-5 bg-[#1273EB] text-white rounded-full text-[10px] font-bold flex-shrink-0">2</span>
+                                    Pilih Stok Tersedia (Tanggal Masuk &amp; Harga)
+                                </label>
+                                <p class="text-[12px] text-gray-400 mb-3 ml-7">Pilih dari stok yang tersedia untuk barang ini</p>
+
+                                <div x-show="loadingBatch" class="py-4 text-center text-[13px] text-gray-400">
+                                    Memuat stok tersedia...
+                                </div>
+
+                                <div x-show="!loadingBatch" class="space-y-2">
+                                    <template x-for="batch in batchList" :key="batch.id">
+                                        <div @click="selectBatch(batch)"
+                                            class="flex items-start gap-3 p-4 bg-white border rounded-xl cursor-pointer transition-all"
+                                            :class="selectedBatch?.id === batch.id
+                                                ? 'border-[#1273EB] bg-[#F0F7FF]'
+                                                : 'border-[#E5E9F2] hover:bg-[#F9FBFF]'">
+                                            <div class="mt-0.5 w-4 h-4 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all"
+                                                :class="selectedBatch?.id === batch.id ? 'border-[#1273EB] bg-[#1273EB]' : 'border-gray-300'">
+                                                <div x-show="selectedBatch?.id === batch.id"
+                                                    class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="text-[13px] font-bold text-[#213F5C]"
+                                                    x-text="'Masuk: ' + batch.tanggal_masuk"></p>
+                                                <p class="text-[12px] text-gray-500 mt-0.5"
+                                                    x-text="'Harga beli: ' + batch.harga_beli + '  ·  Harga jual: ' + batch.harga_jual"></p>
+                                                <p class="text-[12px] text-gray-400 mt-0.5">
+                                                    Sisa stok:
+                                                    <span class="font-bold text-[#213F5C]" x-text="batch.sisa + ' pcs'"></span>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <div x-show="batchList.length === 0"
+                                        class="py-3 px-4 text-center text-[13px] text-gray-400 border border-dashed border-gray-200 rounded-xl">
+                                        Tidak ada stok tersedia untuk barang ini
                                     </div>
                                 </div>
                             </div>
 
-                            <div>
-                                <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Jumlah Stok Yang Digunakan</label>
-                                <input type="number" x-model="inputJumlah"
-                                    placeholder="Contoh : 1" min="1"
-                                    @keydown="if(['-','e','E','+'].includes($event.key)) $event.preventDefault()"
-                                    class="w-full px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+                            {{-- STEP 3: Jumlah yang dipakai --}}
+                            <div x-show="selectedBatch" x-cloak>
+                                <label class="flex items-center gap-2 text-[13px] font-bold text-[#213F5C] mb-2">
+                                    <span class="inline-flex items-center justify-center w-5 h-5 bg-[#1273EB] text-white rounded-full text-[10px] font-bold flex-shrink-0">3</span>
+                                    Jumlah Stok Yang Digunakan
+                                </label>
+                                <div class="flex items-center gap-3">
+                                    <input type="number" x-model="inputJumlah"
+                                        :max="selectedBatch?.sisa ?? 9999"
+                                        placeholder="Contoh : 1" min="1"
+                                        @keydown="if(['-','e','E','+'].includes($event.key)) $event.preventDefault()"
+                                        class="w-48 px-5 py-3.5 bg-white border border-[#E5E9F2] rounded-xl outline-none focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all text-[14px] text-[#213F5C] placeholder-gray-300">
+                                    <span class="text-[13px] text-gray-400"
+                                        x-text="'pcs (maks. ' + (selectedBatch?.sisa ?? '-') + ' dari stok ini)'"></span>
+                                </div>
                             </div>
+
                         </div>
 
                         <div class="flex gap-3 pt-2">
@@ -409,12 +476,19 @@ function antrianEditForm() {
         showCabangDropdown: false,
         selectedCabang: null,
 
-        // Stok / Suku Cadang
-        stokList: [],
-        stokSearch: '',
-        filteredStok: [],
-        showStokDropdown: false,
-        selectedStokData: null,
+        // Barang (master nama barang)
+        barangList: [],
+        barangSearch: '',
+        filteredBarang: [],
+        showBarangDropdown: false,
+        selectedBarang: null,
+
+        // Batch / stok tersedia
+        batchList: [],
+        selectedBatch: null,
+        loadingBatch: false,
+
+        // Input jumlah & form
         inputJumlah: '',
         showFormSukuCadang: false,
         sukuCadangItems: [],
@@ -433,15 +507,14 @@ function antrianEditForm() {
                 return;
             }
 
-            await this.loadStokList();
+            await this.loadBarangList();
             await this.loadTransactionData();
 
-            // Global click-outside
             document.addEventListener('click', () => {
                 this.showCustomerDropdown = false;
                 this.showVehicleDropdown  = false;
                 this.showCabangDropdown   = false;
-                this.showStokDropdown     = false;
+                this.showBarangDropdown   = false;
             });
 
             document.addEventListener('keydown', (e) => {
@@ -490,14 +563,12 @@ function antrianEditForm() {
 
                 // Pre-fill customer
                 if (customerRaw) {
-                    const custList   = await this.fetchCustomers(customerRaw.name);
+                    const custList    = await this.fetchCustomers(customerRaw.name);
                     const matchedCust = custList.find(c => c.id === customerRaw.customer_id);
 
                     if (matchedCust) {
-                        // Gunakan data lengkap termasuk vehicles dari API
                         this._prefillCustomer(matchedCust);
                     } else {
-                        // Fallback: pakai data minimal dari transaksi
                         this._prefillCustomer({
                             id      : customerRaw.customer_id,
                             nama    : customerRaw.name,
@@ -518,7 +589,6 @@ function antrianEditForm() {
                         engine_code  : vehicleRaw.engine_code,
                         odometer     : vehicleRaw.odometer,
                     };
-                    // selectVehicle tanpa auto-fill KM (KM sudah di-set dari transaksi)
                     this._prefillVehicle(vehicle);
                 }
 
@@ -526,8 +596,11 @@ function antrianEditForm() {
                 this.sukuCadangItems = (t.items ?? []).map(item => ({
                     id          : item.id ?? (Date.now() + Math.random()),
                     sparepart_id: item.sparepart_id ?? item.spare_part_id,
+                    batch_id    : item.batch_id ?? null,
                     nama        : item.item_name ?? item.sparepart?.name ?? '-',
-                    deskripsi   : item.item_name ?? item.sparepart?.name ?? '-',
+                    deskripsi   : item.batch_id
+                        ? `Batch ${item.batch_date ?? '-'}`
+                        : (item.item_name ?? item.sparepart?.name ?? '-'),
                     harga       : item.price
                         ? 'Rp ' + Number(item.price).toLocaleString('id-ID')
                         : (item.sparepart ? 'Rp ' + Number(item.sparepart.selling_price).toLocaleString('id-ID') : '-'),
@@ -543,7 +616,6 @@ function antrianEditForm() {
             }
         },
 
-        // Pre-fill customer tanpa mempengaruhi KM
         _prefillCustomer(c) {
             this.selectedCustomer     = c;
             this.customerSearch       = `${c.nama} - ${c.telepon}`;
@@ -552,7 +624,6 @@ function antrianEditForm() {
             this.filteredVehicles     = this.currentVehicles;
         },
 
-        // Pre-fill vehicle tanpa mempengaruhi KM
         _prefillVehicle(v) {
             this.selectedVehicle     = v;
             this.vehicleSearch       = `${v.model} - ${v.license_plate}`;
@@ -572,7 +643,7 @@ function antrianEditForm() {
         },
 
         async loadCustomers(keyword = '') {
-            this.customersData    = await this.fetchCustomers(keyword);
+            this.customersData     = await this.fetchCustomers(keyword);
             this.filteredCustomers = this.customersData;
         },
 
@@ -623,7 +694,7 @@ function antrianEditForm() {
         },
 
         selectVehicle(v) {
-            // Saat user pilih kendaraan baru saat edit, KM TIDAK otomatis berubah
+            // Saat edit, KM TIDAK otomatis berubah saat ganti kendaraan
             this._prefillVehicle(v);
             this.isDirty = true;
         },
@@ -642,72 +713,112 @@ function antrianEditForm() {
             this.isDirty = true;
         },
 
-        // ── Stok / Suku Cadang ────────────────────────────────────
-        async loadStokList() {
+        // ── Barang ────────────────────────────────────────────────
+        async loadBarangList() {
             try {
                 const res    = await fetch('/api/spareparts-for-antrian', {
                     headers: { 'Authorization': `Bearer ${this.token}` }
                 });
                 const result = await res.json();
                 if (res.ok && result.data) {
-                    this.stokList     = result.data;
-                    this.filteredStok = result.data;
+                    this.barangList    = result.data;
+                    this.filteredBarang = result.data;
                 }
-            } catch (e) { console.error('Gagal load stok:', e); }
+            } catch (e) { console.error('Gagal load barang:', e); }
         },
 
-        filterStok() {
-            const kw = this.stokSearch.trim().toLowerCase();
-            this.showStokDropdown = true;
-            this.filteredStok = kw
-                ? this.stokList.filter(s =>
-                    s.nama.toLowerCase().includes(kw) ||
-                    String(s.stok).includes(kw))
-                : this.stokList;
+        onBarangFocus() {
+            this.filteredBarang    = this.barangList;
+            this.showBarangDropdown = true;
         },
 
-        selectStok(stok) {
-            this.selectedStokData = stok;
-            this.stokSearch       = `${stok.nama} - ${stok.harga} (Sisa: ${stok.stok})`;
-            this.showStokDropdown = false;
+        onBarangInput() {
+            const kw = this.barangSearch.trim().toLowerCase();
+            this.showBarangDropdown = true;
+            this.filteredBarang = kw
+                ? this.barangList.filter(b =>
+                    b.nama.toLowerCase().includes(kw) ||
+                    (b.kode ?? '').toLowerCase().includes(kw) ||
+                    String(b.stok).includes(kw))
+                : this.barangList;
         },
 
-        clearStok() {
-            this.selectedStokData = null;
-            this.stokSearch       = '';
-            this.filteredStok     = this.stokList;
-            this.showStokDropdown = false;
+        selectBarang(b) {
+            this.selectedBarang     = b;
+            this.barangSearch       = b.nama;
+            this.showBarangDropdown = false;
+            this.selectedBatch      = null;
+            this.batchList          = [];
+            this.inputJumlah        = '';
+            this.loadBatchList(b.id);
         },
 
+        clearBarang() {
+            this.selectedBarang     = null;
+            this.barangSearch       = '';
+            this.filteredBarang     = this.barangList;
+            this.showBarangDropdown = false;
+            this.selectedBatch      = null;
+            this.batchList          = [];
+            this.inputJumlah        = '';
+        },
+
+        // ── Batch / Stok tersedia ─────────────────────────────────
+        async loadBatchList(sparepartId) {
+            this.loadingBatch = true;
+            this.batchList    = [];
+            try {
+                const res    = await fetch(`/api/spareparts/${sparepartId}/batches`, {
+                    headers: { 'Authorization': `Bearer ${this.token}` }
+                });
+                const result = await res.json();
+                if (res.ok && result.data) this.batchList = result.data;
+            } catch (e) { console.error('Gagal load batch:', e); }
+            this.loadingBatch = false;
+        },
+
+        selectBatch(batch) {
+            this.selectedBatch = batch;
+            this.inputJumlah   = '';
+        },
+
+        // ── Form suku cadang ──────────────────────────────────────
         openSukuCadangForm() {
             this.showFormSukuCadang = true;
             this.inputJumlah        = '';
-            this.clearStok();
+            this.clearBarang();
         },
 
         batalSukuCadang() {
             this.showFormSukuCadang = false;
-            this.clearStok();
+            this.clearBarang();
         },
 
         simpanSukuCadang() {
-            if (!this.selectedStokData) {
-                Swal.fire('Oops!', 'Pilih suku cadang yang ingin digunakan!', 'warning');
+            if (!this.selectedBarang) {
+                Swal.fire('Oops!', 'Pilih nama barang terlebih dahulu!', 'warning');
+                return;
+            }
+            if (!this.selectedBatch) {
+                Swal.fire('Oops!', 'Pilih stok tersedia (tanggal masuk & harga)!', 'warning');
                 return;
             }
             const jumlah = parseInt(this.inputJumlah) || 1;
+            if (jumlah > this.selectedBatch.sisa) {
+                Swal.fire('Oops!', `Jumlah melebihi sisa stok (${this.selectedBatch.sisa} pcs)!`, 'warning');
+                return;
+            }
             this.sukuCadangItems.push({
                 id          : Date.now(),
-                sparepart_id: this.selectedStokData.id,
-                nama        : this.selectedStokData.nama,
-                deskripsi   : this.selectedStokData.nama,
-                harga       : this.selectedStokData.harga,
-                jumlah      : jumlah,
-                supplier    : this.selectedStokData.supplier,
-                stok        : this.selectedStokData.stok,
+                sparepart_id: this.selectedBarang.id,
+                batch_id    : this.selectedBatch.id,
+                nama        : this.selectedBarang.nama,
+                deskripsi   : `Batch ${this.selectedBatch.tanggal_masuk}`,
+                harga       : this.selectedBatch.harga_jual,
+                jumlah,
             });
             this.showFormSukuCadang = false;
-            this.clearStok();
+            this.clearBarang();
             this.isDirty = true;
         },
 
@@ -751,6 +862,7 @@ function antrianEditForm() {
                 .filter(sc => sc.sparepart_id)
                 .map(sc => ({
                     sparepart_id: sc.sparepart_id,
+                    batch_id    : sc.batch_id ?? null,
                     quantity    : parseInt(sc.jumlah) || 1,
                 }));
 
