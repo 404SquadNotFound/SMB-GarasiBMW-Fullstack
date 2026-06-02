@@ -354,28 +354,28 @@
                                 </div>
 
                                 <div x-show="!loadingBatch" class="space-y-2">
-                                        <template x-for="(batch, index) in batchList" :key="batch.id || index">
-                                            <div @click="selectBatch(batch)"
-                                                class="flex items-center gap-3 px-5 py-3.5 bg-white rounded-2xl cursor-pointer shadow-sm transition-all border-2"
-                                                :class="selectedBatch?.id === batch.id ?
-                                                        'border-[#1273EB] bg-[#EAF2FF]' :
-                                                        'border-transparent hover:border-[#B8D4FF]'">
-                                                {{-- Custom radio --}}
-                                                <div class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all"
-                                                    :class="selectedBatch?.id === batch.id ? 'border-[#1273EB] bg-[#1273EB]' :
-                                                            'border-gray-300 bg-white'">
-                                                    <div x-show="selectedBatch?.id === batch.id"
-                                                        class="w-2 h-2 rounded-full bg-white"></div>
-                                                </div>
-                                                <div class="flex-1 min-w-0">
-                                                    <p class="text-[13px] font-bold text-[#213F5C]"
-                                                        x-text="batch.tanggal_masuk"></p>
-                                                    <p class="text-[11px] text-gray-400 mt-0.5"
-                                                        x-text="'HPP: ' + batch.harga_beli + '  ·  Jual: ' + batch.harga_jual + '  ·  Sisa: ' + batch.sisa + ' pcs'">
-                                                    </p>
-                                                </div>
+                                    <template x-for="(batch, index) in batchList" :key="batch.id || index">
+                                        <div @click="selectBatch(batch)"
+                                            class="flex items-center gap-3 px-5 py-3.5 bg-white rounded-2xl cursor-pointer shadow-sm transition-all border-2"
+                                            :class="selectedBatch?.id === batch.id ?
+                                                    'border-[#1273EB] bg-[#EAF2FF]' :
+                                                    'border-transparent hover:border-[#B8D4FF]'">
+                                            {{-- Custom radio --}}
+                                            <div class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all"
+                                                :class="selectedBatch?.id === batch.id ? 'border-[#1273EB] bg-[#1273EB]' :
+                                                        'border-gray-300 bg-white'">
+                                                <div x-show="selectedBatch?.id === batch.id"
+                                                    class="w-2 h-2 rounded-full bg-white"></div>
                                             </div>
-                                        </template>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-[13px] font-bold text-[#213F5C]"
+                                                    x-text="batch.tanggal_masuk"></p>
+                                                <p class="text-[11px] text-gray-400 mt-0.5"
+                                                    x-text="'HPP: ' + batch.harga_beli + '  ·  Jual: ' + batch.harga_jual + '  ·  Sisa: ' + batch.sisa + ' pcs'">
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </template>
                                     <div x-show="batchList.length === 0"
                                         class="px-5 py-4 bg-white rounded-2xl text-[13px] text-gray-400 text-center shadow-sm">
                                         Tidak ada stok tersedia untuk barang ini
@@ -414,6 +414,119 @@
 
                     </div>
                 </div>
+
+                {{-- =========================================================
+                BOX 5 : Down Payment
+                ========================================================= --}}
+                <div class="bg-white rounded-[20px] border border-[#E5E9F2] shadow-sm">
+                    <div class="flex items-center gap-3 p-6 border-b border-gray-100 bg-white">
+                        <div class="w-8 h-8 bg-[#F1F5F9] rounded-lg flex items-center justify-center text-[#213F5C]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <h2 class="text-[16px] font-bold text-[#213F5C]">Down Payment</h2>
+                    </div>
+
+                    <div class="p-8 space-y-5">
+
+                        {{-- Toggle Down Payment Aktif --}}
+                        <div>
+                            <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Gunakan Down Payment</label>
+                            <label
+                                class="flex items-center gap-3 px-5 py-3.5 border rounded-xl cursor-pointer transition-all select-none"
+                                :class="downPaymentAktif
+                                    ? 'bg-[#EAF2FF] border-[#1273EB]'
+                                    : 'bg-[#F9FBFF] border-[#E5E9F2] hover:bg-[#F0F7FF]'">
+                                <input type="checkbox" x-model="downPaymentAktif" class="hidden">
+                                {{-- Custom checkbox --}}
+                                <div class="w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all"
+                                    :class="downPaymentAktif ? 'bg-[#1273EB] border-[#1273EB]' : 'bg-white border-gray-300'">
+                                    <svg x-show="downPaymentAktif" class="w-3 h-3 text-white" fill="none"
+                                        stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                    </svg>
+                                </div>
+                                <span class="text-[14px] font-semibold transition-colors"
+                                    :class="downPaymentAktif ? 'text-[#1273EB]' : 'text-gray-400'">
+                                    Down Payment Aktif
+                                </span>
+                            </label>
+                        </div>
+
+                        {{-- Status Pembayaran --}}
+                        <div>
+                            <label class="block text-[14px] font-bold mb-2 transition-colors"
+                                :class="downPaymentAktif ? 'text-[#213F5C]' : 'text-gray-300'">
+                                Status Pembayaran <span x-show="downPaymentAktif" class="text-red-500">*</span>
+                            </label>
+                            <div class="relative" @click.stop>
+                                <input type="text" readonly
+                                    :value="selectedStatusPembayaran ? selectedStatusPembayaran.label : ''"
+                                    :disabled="!downPaymentAktif"
+                                    @click="if(downPaymentAktif) showStatusPembayaranDropdown = !showStatusPembayaranDropdown"
+                                    placeholder="Pilih status pembayaran..."
+                                    class="w-full px-5 py-3.5 border rounded-xl outline-none text-[14px] font-semibold transition-all"
+                                    :class="!downPaymentAktif
+                                        ? 'bg-[#F4F6F9] border-[#EAECF0] text-gray-300 cursor-not-allowed placeholder-gray-200'
+                                        : showStatusPembayaranDropdown
+                                            ? 'bg-[#F9FBFF] border-[#1273EB] ring-2 ring-[#1273EB]/10 text-[#213F5C] cursor-pointer'
+                                            : 'bg-[#F9FBFF] border-[#E5E9F2] text-[#213F5C] cursor-pointer hover:border-[#B1D3FF]'">
+                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors"
+                                    :class="downPaymentAktif ? 'text-gray-400' : 'text-gray-200'">
+                                    <svg class="w-4 h-4 transition-transform duration-200"
+                                        :class="showStatusPembayaranDropdown ? 'rotate-180' : ''"
+                                        fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                </div>
+                                <div x-show="showStatusPembayaranDropdown && downPaymentAktif" x-cloak
+                                    class="absolute z-50 w-full mt-1 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
+                                    <div class="max-h-[200px] overflow-y-auto dropdown-scroll">
+                                        <template x-for="opt in statusPembayaranOptions" :key="opt.value">
+                                            <div @click="selectStatusPembayaran(opt)"
+                                                class="px-5 py-3.5 text-[14px] font-semibold text-[#213F5C] hover:bg-[#F0F7FF] cursor-pointer border-b border-gray-50 last:border-0 transition-colors"
+                                                :class="selectedStatusPembayaran?.value === opt.value ? 'bg-[#EAF2FF] text-[#1273EB]' : ''"
+                                                x-text="opt.label">
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Harga Down Payment --}}
+                        <div>
+                            <label class="block text-[14px] font-bold mb-2 transition-colors"
+                                :class="downPaymentAktif ? 'text-[#213F5C]' : 'text-gray-300'">
+                                Harga Down Payment <span x-show="downPaymentAktif" class="text-red-500">*</span>
+                            </label>
+                            <input type="number" x-model="hargaDownPayment"
+                                :disabled="!downPaymentAktif"
+                                placeholder="Masukkan harga down payment"
+                                min="0"
+                                @keydown="if(['-','e','E','+'].includes($event.key)) $event.preventDefault()"
+                                class="w-full px-5 py-3.5 border rounded-xl outline-none text-[14px] transition-all"
+                                :class="!downPaymentAktif
+                                    ? 'bg-[#F4F6F9] border-[#EAECF0] text-gray-300 cursor-not-allowed placeholder-gray-200'
+                                    : 'bg-[#F9FBFF] border-[#E5E9F2] text-[#213F5C] placeholder-gray-300 focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10'">
+                        </div>
+
+                        {{-- Ringkasan DP (muncul jika semua field terisi) --}}
+                        <div x-show="downPaymentAktif && selectedStatusPembayaran && hargaDownPayment" x-cloak
+                            class="bg-[#F0F7FF] border border-[#B1D3FF] rounded-xl p-4 space-y-1">
+                            <p class="text-[13px] font-bold text-[#1273EB]">💳 Ringkasan Down Payment</p>
+                            <p class="text-[12px] text-gray-500"
+                                x-text="'Status: ' + (selectedStatusPembayaran?.label ?? '-')"></p>
+                            <p class="text-[12px] text-gray-500"
+                                x-text="'Jumlah DP: Rp ' + Number(hargaDownPayment).toLocaleString('id-ID')"></p>
+                        </div>
+
+                    </div>
+                </div>
+                {{-- END BOX 5 --}}
 
             </div>
 
@@ -519,14 +632,9 @@
                 kmMasuk: '',
 
                 // Cabang
-                cabangOptions: [{
-                    value: '1',
-                    label: 'Pelajar Pejuang'
-                },
-                {
-                    value: '2',
-                    label: 'Ahmad Yani'
-                },
+                cabangOptions: [
+                    { value: '1', label: 'Pelajar Pejuang' },
+                    { value: '2', label: 'Ahmad Yani' },
                 ],
                 showCabangDropdown: false,
                 selectedCabang: null,
@@ -547,20 +655,31 @@
                 showFormSukuCadang: false,
                 sukuCadangItems: [],
 
+                // Down Payment
+                downPaymentAktif: false,
+                selectedStatusPembayaran: null,
+                showStatusPembayaranDropdown: false,
+                hargaDownPayment: '',
+                statusPembayaranOptions: [
+                    { value: 'Belum Lunas',  label: 'Belum Lunas' },
+                    { value: 'Lunas', label: 'Lunas' },
+                ],
+
                 // ── init ──────────────────────────────────────────────────
                 async init() {
-                    this.userName = localStorage.getItem('user_name') || 'User';
-                    this.userRole = localStorage.getItem('user_role') || 'Staff';
+                    this.userName    = localStorage.getItem('user_name') || 'User';
+                    this.userRole    = localStorage.getItem('user_role') || 'Staff';
                     this.userInitial = this.userName.charAt(0).toUpperCase();
 
                     await this.loadBarangList();
 
                     // Global click-outside: tutup semua dropdown
                     document.addEventListener('click', () => {
-                        this.showCustomerDropdown = false;
-                        this.showVehicleDropdown = false;
-                        this.showCabangDropdown = false;
-                        this.showBarangDropdown = false;
+                        this.showCustomerDropdown        = false;
+                        this.showVehicleDropdown         = false;
+                        this.showCabangDropdown          = false;
+                        this.showBarangDropdown          = false;
+                        this.showStatusPembayaranDropdown = false;
                     });
 
                     document.addEventListener('keydown', (e) => {
@@ -579,12 +698,10 @@
                 async loadCustomers(keyword = '') {
                     try {
                         const params = keyword ? `?search=${encodeURIComponent(keyword)}` : '';
-                        const res = await fetch(`/api/customers-for-antrian${params}`, {
-                            headers: {
-                                'Authorization': `Bearer ${this.token}`
-                            }
+                        const res    = await fetch(`/api/customers-for-antrian${params}`, {
+                            headers: { 'Authorization': `Bearer ${this.token}` }
                         });
-                        const result = await res.json();
+                        const result       = await res.json();
                         this.customersData = res.ok ? (result.data ?? []) : [];
                     } catch {
                         this.customersData = [];
@@ -616,21 +733,21 @@
                 },
 
                 selectCustomer(c) {
-                    this.selectedCustomer = c;
-                    this.customerSearch = `${c.nama} - ${c.telepon}`;
+                    this.selectedCustomer  = c;
+                    this.customerSearch    = `${c.nama} - ${c.telepon}`;
                     this.showCustomerDropdown = false;
-                    this.currentVehicles = c.vehicles ?? [];
-                    this.filteredVehicles = this.currentVehicles;
+                    this.currentVehicles   = c.vehicles ?? [];
+                    this.filteredVehicles  = this.currentVehicles;
                     this.clearVehicle();
                     this.isDirty = true;
                 },
 
                 clearCustomer() {
-                    this.selectedCustomer = null;
-                    this.customerSearch = '';
+                    this.selectedCustomer  = null;
+                    this.customerSearch    = '';
                     this.showCustomerDropdown = false;
-                    this.currentVehicles = [];
-                    this.filteredVehicles = [];
+                    this.currentVehicles   = [];
+                    this.filteredVehicles  = [];
                     this.clearVehicle();
                 },
 
@@ -649,8 +766,8 @@
                 },
 
                 selectVehicle(v) {
-                    this.selectedVehicle = v;
-                    this.vehicleSearch = `${v.model} - ${v.license_plate}`;
+                    this.selectedVehicle  = v;
+                    this.vehicleSearch    = `${v.model} - ${v.license_plate}`;
                     this.showVehicleDropdown = false;
                     if (!this.kmMasuk && v.odometer) {
                         this.kmMasuk = v.odometer;
@@ -659,15 +776,15 @@
                 },
 
                 clearVehicle() {
-                    this.selectedVehicle = null;
-                    this.vehicleSearch = '';
+                    this.selectedVehicle  = null;
+                    this.vehicleSearch    = '';
                     this.showVehicleDropdown = false;
                     this.filteredVehicles = this.currentVehicles;
                 },
 
                 // ── Cabang ────────────────────────────────────────────────
                 selectCabang(cab) {
-                    this.selectedCabang = cab;
+                    this.selectedCabang    = cab;
                     this.showCabangDropdown = false;
                     this.isDirty = true;
                 },
@@ -675,14 +792,12 @@
                 // ── Barang ────────────────────────────────────────────────
                 async loadBarangList() {
                     try {
-                        const res = await fetch('/api/spareparts-for-antrian', {
-                            headers: {
-                                'Authorization': `Bearer ${this.token}`
-                            }
+                        const res    = await fetch('/api/spareparts-for-antrian', {
+                            headers: { 'Authorization': `Bearer ${this.token}` }
                         });
                         const result = await res.json();
                         if (res.ok && result.data) {
-                            this.barangList = result.data;
+                            this.barangList    = result.data;
                             this.filteredBarang = result.data;
                         }
                     } catch (e) {
@@ -691,61 +806,59 @@
                 },
 
                 onBarangFocus() {
-                    this.filteredBarang = this.barangList;
+                    this.filteredBarang    = this.barangList;
                     this.showBarangDropdown = true;
                 },
 
                 onBarangInput() {
                     const kw = this.barangSearch.trim().toLowerCase();
                     this.showBarangDropdown = true;
-                    this.filteredBarang = kw ?
-                        this.barangList.filter(b =>
+                    this.filteredBarang = kw
+                        ? this.barangList.filter(b =>
                             b.nama.toLowerCase().includes(kw) ||
-                            (b.kode ?? '').toLowerCase().includes(kw)) :
-                        this.barangList;
+                            (b.kode ?? '').toLowerCase().includes(kw))
+                        : this.barangList;
                 },
 
                 selectBarang(b) {
-                    this.selectedBarang = b;
-                    this.barangSearch = b.nama;
+                    this.selectedBarang    = b;
+                    this.barangSearch      = b.nama;
                     this.showBarangDropdown = false;
-                    this.selectedBatch = null;
-                    this.batchList = [];
-                    this.inputJumlah = '';
+                    this.selectedBatch     = null;
+                    this.batchList         = [];
+                    this.inputJumlah       = '';
                     this.loadBatchList(b.id);
                 },
 
                 clearBarang() {
-                    this.selectedBarang = null;
-                    this.barangSearch = '';
-                    this.filteredBarang = this.barangList;
+                    this.selectedBarang    = null;
+                    this.barangSearch      = '';
+                    this.filteredBarang    = this.barangList;
                     this.showBarangDropdown = false;
-                    this.selectedBatch = null;
-                    this.batchList = [];
-                    this.inputJumlah = '';
+                    this.selectedBatch     = null;
+                    this.batchList         = [];
+                    this.inputJumlah       = '';
                 },
 
                 // ── Batch / Stok tersedia ─────────────────────────────────
                 async loadBatchList(sparepartId) {
                     this.loadingBatch = true;
-                    this.batchList = [];
+                    this.batchList    = [];
                     try {
-                        const res = await fetch(`/api/spareparts/${sparepartId}/stocks`, {
-                            headers: {
-                                'Authorization': `Bearer ${this.token}`
-                            }
+                        const res    = await fetch(`/api/spareparts/${sparepartId}/stocks`, {
+                            headers: { 'Authorization': `Bearer ${this.token}` }
                         });
                         const result = await res.json();
-                        console.log('STOCKS response:', JSON.stringify(result, null, 2)); // <-- lihat ini
-                        const raw = result.data ?? result.stocks ?? result ?? [];
-                        this.batchList = (Array.isArray(raw) ? raw : []).map(b => ({
-                            id: b.id ?? b.id_stok ?? b.stock_id ?? `batch-${index}`,
+                        console.log('STOCKS response:', JSON.stringify(result, null, 2));
+                        const raw    = result.data ?? result.stocks ?? result ?? [];
+                        this.batchList = (Array.isArray(raw) ? raw : []).map((b, index) => ({
+                            id:            b.id ?? b.id_stok ?? b.stock_id ?? `batch-${index}`,
                             tanggal_masuk: b.tanggal_masuk ?? b.date ?? b.created_at ?? '-',
-                            harga_beli: b.harga_beli ?? b.hpp ?? b.purchase_price ?? b.cost_price ?? '-',
-                            harga_jual: b.harga_jual ?? b.harga ?? b.selling_price ?? b.price ?? '-',
-                            sisa: b.sisa ?? b.stock ?? b.quantity ?? b.qty ?? 0,
+                            harga_beli:    b.harga_beli ?? b.hpp ?? b.purchase_price ?? b.cost_price ?? '-',
+                            harga_jual:    b.harga_jual ?? b.harga ?? b.selling_price ?? b.price ?? '-',
+                            sisa:          b.sisa ?? b.stock ?? b.quantity ?? b.qty ?? 0,
                         }));
-                        console.log('batchList mapped:', this.batchList); // <-- dan ini
+                        console.log('batchList mapped:', this.batchList);
                     } catch (e) {
                         console.error('Gagal load stocks:', e);
                     }
@@ -754,13 +867,13 @@
 
                 selectBatch(batch) {
                     this.selectedBatch = batch;
-                    this.inputJumlah = '';
+                    this.inputJumlah   = '';
                 },
 
                 // ── Form suku cadang ──────────────────────────────────────
                 openSukuCadangForm() {
                     this.showFormSukuCadang = true;
-                    this.inputJumlah = '';
+                    this.inputJumlah        = '';
                     this.clearBarang();
                 },
 
@@ -784,12 +897,12 @@
                         return;
                     }
                     this.sukuCadangItems.push({
-                        id: Date.now(),
+                        id:           Date.now(),
                         sparepart_id: this.selectedBarang.id,
-                        batch_id: this.selectedBatch.id,
-                        nama: this.selectedBarang.nama,
-                        deskripsi: 'Masuk: ' + this.selectedBatch.tanggal_masuk,
-                        harga: this.selectedBatch.harga_jual,
+                        batch_id:     this.selectedBatch.id,
+                        nama:         this.selectedBarang.nama,
+                        deskripsi:    'Masuk: ' + this.selectedBatch.tanggal_masuk,
+                        harga:        this.selectedBatch.harga_jual,
                         jumlah,
                     });
                     this.showFormSukuCadang = false;
@@ -799,6 +912,13 @@
 
                 hapusSukuCadang(id) {
                     this.sukuCadangItems = this.sukuCadangItems.filter(i => i.id !== id);
+                    this.isDirty = true;
+                },
+
+                // ── Down Payment ──────────────────────────────────────────
+                selectStatusPembayaran(opt) {
+                    this.selectedStatusPembayaran    = opt;
+                    this.showStatusPembayaranDropdown = false;
                     this.isDirty = true;
                 },
 
@@ -813,6 +933,18 @@
                         return;
                     }
 
+                    // Validasi down payment jika aktif
+                    if (this.downPaymentAktif) {
+                        if (!this.selectedStatusPembayaran) {
+                            Swal.fire('Oops!', 'Pilih status pembayaran untuk down payment!', 'warning');
+                            return;
+                        }
+                        if (!this.hargaDownPayment || parseInt(this.hargaDownPayment) <= 0) {
+                            Swal.fire('Oops!', 'Masukkan harga down payment yang valid!', 'warning');
+                            return;
+                        }
+                    }
+
                     Swal.fire({
                         title: 'Menyimpan data...',
                         allowOutsideClick: false,
@@ -823,24 +955,28 @@
                         .filter(sc => sc.sparepart_id)
                         .map(sc => ({
                             sparepart_id: sc.sparepart_id,
-                            quantity: parseInt(sc.jumlah) || 1,
+                            quantity:     parseInt(sc.jumlah) || 1,
                         }));
 
                     const payload = {
                         customer_id: this.selectedCustomer.id,
-                        vehicle_id: this.selectedVehicle.id,
-                        km_masuk: this.kmMasuk ? parseInt(this.kmMasuk) : null,
-                        cabang_id: this.selectedCabang ? this.selectedCabang.value : null,
+                        vehicle_id:  this.selectedVehicle.id,
+                        km_masuk:    this.kmMasuk ? parseInt(this.kmMasuk) : null,
+                        cabang_id:   this.selectedCabang ? this.selectedCabang.value : null,
                         items,
+                        down_payment: this.downPaymentAktif ? {
+                            status: this.selectedStatusPembayaran?.value ?? null,
+                            jumlah: this.hargaDownPayment ? parseInt(this.hargaDownPayment) : null,
+                        } : null,
                     };
 
                     try {
-                        const res = await fetch('/api/transactions', {
+                        const res    = await fetch('/api/transactions', {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/json',
+                                'Content-Type':  'application/json',
                                 'Authorization': `Bearer ${this.token}`,
-                                'Accept': 'application/json',
+                                'Accept':        'application/json',
                             },
                             body: JSON.stringify(payload),
                         });
@@ -848,9 +984,9 @@
                         if (res.ok && result.status === 'success') {
                             this.isDirty = false;
                             await Swal.fire({
-                                icon: 'success',
-                                title: 'Berhasil!',
-                                timer: 2000,
+                                icon:              'success',
+                                title:             'Berhasil!',
+                                timer:             2000,
                                 showConfirmButton: false
                             });
                             window.location.href = "{{ route('antrian-pengerjaan.index') }}";
