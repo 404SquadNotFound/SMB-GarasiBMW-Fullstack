@@ -163,7 +163,7 @@
                 const token = localStorage.getItem('access_token');
 
                 const result = await Swal.fire({
-                    title: 'Yakin mau hapus brok?',
+                    title: 'Yakin mau hapus data ini?',
                     text: 'Data suku cadang ini akan dihapus permanen!',
                     icon: 'warning',
                     showCancelButton: true,

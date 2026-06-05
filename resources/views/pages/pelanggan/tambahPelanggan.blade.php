@@ -306,9 +306,19 @@
                 removeCar(index) { this.cars.splice(index, 1); },
 
                 async submitAllData() {
-                    if (!this.formData.name || this.cars.length === 0) {
-                        return Swal.fire('Error', 'Nama pelanggan dan minimal 1 mobil wajib diisi!', 'error');
+
+                    let emptyFields = [];
+
+                    if (!this.formData.name) emptyFields.push('Nama Lengkap');
+                    if (!this.formData.phone_number) emptyFields.push('Nomor Telepon');
+                    if (!this.formData.address) emptyFields.push('Alamat');
+                    if (this.cars.length === 0) emptyFields.push('Data Mobil');
+                    
+                    if (emptyFields.length > 0) {
+                        let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
+                        return Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
                     }
+
                     Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });
                     try {
                         const res = await fetch('/api/customers', {
