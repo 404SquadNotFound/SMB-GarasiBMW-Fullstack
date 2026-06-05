@@ -302,14 +302,6 @@ jobs:
               });
             }
         
-      - name: Upload PDF Report
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-report-${{ github.run_number }}
-          path: test-report.pdf
-          retention-days: 14
-          
       - name: Verify Sonar token
         if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
         run: |
