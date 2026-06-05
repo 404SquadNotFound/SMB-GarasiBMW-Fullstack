@@ -13,6 +13,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  checks: write
 
 jobs:
   laravel-tests:
@@ -74,11 +75,110 @@ jobs:
         run: php artisan migrate --force
 
       - name: Run tests with coverage
-        run: php artisan test --coverage-clover=coverage.xml
+        run: php artisan test --coverage-clover=coverage.xml --log-junit=test-results.xml
         env:
           XDEBUG_MODE: coverage
 
+      - name: Publish Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: 'Laravel Test Results'
+          path: test-results.xml
+          reporter: java-junit
+          fail-on-error: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Test Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports-${{ github.run_number }}
+          path: |
+            test-results.xml
+            coverage.xml
+          retention-days: 14
+
+      - name: Comment Coverage Summary on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const path = 'coverage.xml';
+
+            if (!fs.existsSync(path)) {
+              console.log('coverage.xml not found, skipping comment.');
+              return;
+            }
+
+            const xml = fs.readFileSync(path, 'utf8');
+
+            // Parse nilai line-rate dari tag <coverage>
+            const match = xml.match(/line-rate="([0-9.]+)"/);
+            const lineRate = match ? (parseFloat(match[1]) * 100).toFixed(2) : 'N/A';
+
+            // Tentukan emoji berdasarkan threshold
+            const pct = parseFloat(lineRate);
+            const icon = pct >= 80 ? '🟢' : pct >= 60 ? '🟡' : '🔴';
+
+            // Hitung total tests dari JUnit XML
+            let totalTests = 'N/A', failures = 'N/A', errors = 'N/A';
+            const junitPath = 'test-results.xml';
+            if (fs.existsSync(junitPath)) {
+              const junit = fs.readFileSync(junitPath, 'utf8');
+              const testsMatch  = junit.match(/tests="(\d+)"/);
+              const failMatch   = junit.match(/failures="(\d+)"/);
+              const errorMatch  = junit.match(/errors="(\d+)"/);
+              totalTests = testsMatch  ? testsMatch[1]  : 'N/A';
+              failures   = failMatch   ? failMatch[1]   : '0';
+              errors     = errorMatch  ? errorMatch[1]  : '0';
+            }
+
+            const body = [
+              '## 🧪 Test Report Summary',
+              '',
+              `| Metric | Value |`,
+              `|--------|-------|`,
+              `| ${icon} Line Coverage | **${lineRate}%** |`,
+              `| ✅ Total Tests | **${totalTests}** |`,
+              `| ❌ Failures | **${failures}** |`,
+              `| 💥 Errors | **${errors}** |`,
+              '',
+              `> Full report tersedia di tab **[Actions → Artifacts](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})**`,
+            ].join('\n');
+
+            // Cari komentar lama dari bot, update kalau ada (hindari duplikat)
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' && c.body.includes('🧪 Test Report Summary')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
+
+
       - name: Verify Sonar token
+        if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
         run: |
           if [ -z "$SONAR_TOKEN" ]; then
             echo "SONAR_TOKEN is missing"
@@ -90,6 +190,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: SonarQube Scan
+        if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
         uses: SonarSource/sonarqube-scan-action@v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
