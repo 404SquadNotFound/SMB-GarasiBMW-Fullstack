@@ -29,7 +29,6 @@
     const paymentStatusConfig = {
         'belum_lunas'   : { border: '#FFE0E0', bg: '#FFF5F5', text: '#FF4D4D', chevron: '#FF4D4D', label: 'Belum Lunas',       optClass: 'payment-option-belum-lunas'   },
         'down_payment'  : { border: '#FDE68A', bg: '#FFF8EC', text: '#F59E0B', chevron: '#F59E0B', label: 'Down Payment (DP)', optClass: 'payment-option-down-payment'  },
-        'lunas'         : { border: '#A7F3D0', bg: '#EDFBF3', text: '#16A34A', chevron: '#16A34A', label: 'Lunas',             optClass: 'payment-option-lunas'          },
     };
 
     const statusList            = Object.keys(statusConfig);
