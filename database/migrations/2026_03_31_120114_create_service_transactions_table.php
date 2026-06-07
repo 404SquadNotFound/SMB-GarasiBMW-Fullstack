@@ -18,7 +18,8 @@ return new class extends Migration
             $table->enum('branch', ['AHMAD_YANI', 'PELAJAR_PEJUANG']);
             $table->integer('odometer');
             $table->enum('status_service', ['menunggu', 'pengecekan', 'dikerjakan', 'dibatalkan', 'selesai']);
-            $table->enum('status_payment', ['unpaid', 'paid']);
+            $table->enum('status_payment', ['unpaid', 'dp', 'paid'])->default('unpaid');
+            $table->decimal('dp_amount', 15, 2)->nullable();
             $table->decimal('total_parts', 15, 2)->default(0);
             $table->decimal('total_service', 15, 2)->default(0);
             $table->decimal('total_cost', 15, 2)->default(0);

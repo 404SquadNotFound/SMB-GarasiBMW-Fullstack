@@ -80,6 +80,8 @@ class ServiceTransactionController extends Controller
             'items'         => 'nullable|array',
             'items.*.sparepart_id' => 'nullable|exists:spareparts,sparepart_id',
             'items.*.quantity'     => 'nullable|integer|min:1',
+            'status_payment'       => 'nullable|in:unpaid,dp,paid',
+            'dp_amount'            => 'nullable|numeric|min:0',
         ]);
 
         DB::beginTransaction();
@@ -132,7 +134,8 @@ class ServiceTransactionController extends Controller
                 'branch'         => 'PELAJAR_PEJUANG',
                 'odometer'       => (int) preg_replace('/[^0-9]/', '', $request->km_masuk ?? '0'),
                 'status_service' => 'pengecekan',
-                'status_payment' => 'unpaid',
+                'status_payment' => $request->status_payment ?? 'unpaid',
+                'dp_amount'      => $request->dp_amount ?? null,
                 'created_by'     => $request->user()->employees_id ?? 1,
             ]);
 
