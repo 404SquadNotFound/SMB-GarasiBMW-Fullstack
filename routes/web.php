@@ -7,6 +7,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\EngineTypeController;
 use App\Http\Controllers\CarTypeController;
 use App\Http\Controllers\AntrianPengerjaanController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\NotaController;
 
 
@@ -171,6 +172,7 @@ Route::get('/payroll/edit/{id}', function ($id) {
 Route::get('/payroll/delete/{id}', function ($id) {
     return view('pages.payroll.payroll');
 })->name('payroll.delete');
+Route::get('/payroll/{id}', [PayrollController::class, 'show'])->name('payroll.show');
 
 // Route Layanan Servis -> Antrian Pengerjaan 
 Route::get('/manajemen-servis', function () {

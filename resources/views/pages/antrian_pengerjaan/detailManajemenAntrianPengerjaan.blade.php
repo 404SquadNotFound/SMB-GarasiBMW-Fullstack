@@ -28,13 +28,8 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
         }
 
         @keyframes mpFadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
 
         #modalPembayaran .mp-panel {
@@ -42,15 +37,8 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
         }
 
         @keyframes mpSlideUp {
-            from {
-                transform: translateY(28px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+            from { transform: translateY(28px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
         }
 
         /* ── Kartu metode pembayaran ── */
@@ -69,152 +57,59 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
             color: #213F5C;
             user-select: none;
         }
-
-        .mp-metode-card:hover {
-            border-color: #1273EB;
-            background: #F0F7FF;
-        }
-
-        .mp-metode-card.selected {
-            border-color: #1273EB;
-            background: #EAF2FF;
-            color: #1273EB;
-        }
-
+        .mp-metode-card:hover         { border-color: #1273EB; background: #F0F7FF; }
+        .mp-metode-card.selected      { border-color: #1273EB; background: #EAF2FF; color: #1273EB; }
         .mp-metode-card .mp-check {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
+            width: 20px; height: 20px; border-radius: 50%;
             border: 2px solid #D1D5DB;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s;
-            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.15s; flex-shrink: 0;
         }
-
-        .mp-metode-card.selected .mp-check {
-            background: #1273EB;
-            border-color: #1273EB;
-        }
-
-        .mp-metode-card .mp-check svg {
-            display: none;
-        }
-
-        .mp-metode-card.selected .mp-check svg {
-            display: block;
-        }
+        .mp-metode-card.selected .mp-check { background: #1273EB; border-color: #1273EB; }
+        .mp-metode-card .mp-check svg         { display: none; }
+        .mp-metode-card.selected .mp-check svg { display: block; }
 
         /* ── Item jasa di list ── */
         .mp-jasa-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 10px;
             padding: 10px 12px;
-            background: #F9FBFF;
-            border: 1px solid #E5E9F2;
-            border-radius: 10px;
+            background: #F9FBFF; border: 1px solid #E5E9F2; border-radius: 10px;
         }
-
         .mp-jasa-num {
-            min-width: 28px;
-            height: 22px;
-            background: #1273EB;
-            color: #fff;
-            border-radius: 5px;
-            font-size: 11px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+            min-width: 28px; height: 22px;
+            background: #1273EB; color: #fff; border-radius: 5px;
+            font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
         }
-
-        .mp-jasa-nama {
-            flex: 1;
-            font-size: 13px;
-            font-weight: 600;
-            color: #213F5C;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .mp-jasa-harga {
-            font-size: 13px;
-            font-weight: 700;
-            color: #16A34A;
-            white-space: nowrap;
-        }
-
+        .mp-jasa-nama  { flex: 1; font-size: 13px; font-weight: 600; color: #213F5C; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mp-jasa-harga { font-size: 13px; font-weight: 700; color: #16A34A; white-space: nowrap; }
         .mp-jasa-del {
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 7px;
-            background: #FFF5F5;
-            border: 1px solid #FFE0E0;
-            color: #FF4D4D;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: background 0.12s;
+            width: 28px; height: 28px;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 7px; background: #FFF5F5; border: 1px solid #FFE0E0;
+            color: #FF4D4D; cursor: pointer; flex-shrink: 0; transition: background 0.12s;
         }
-
-        .mp-jasa-del:hover {
-            background: #FFEBEB;
-        }
+        .mp-jasa-del:hover { background: #FFEBEB; }
 
         /* ── Input focus ── */
-        .mp-input:focus {
-            border-color: #1273EB;
-            box-shadow: 0 0 0 3px rgba(18, 115, 235, 0.08);
-            outline: none;
-        }
+        .mp-input:focus { border-color: #1273EB; box-shadow: 0 0 0 3px rgba(18,115,235,0.08); outline: none; }
 
         /* ── Error box ── */
         .mp-error-box {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
+            display: flex; align-items: flex-start; gap: 8px;
             padding: 10px 12px;
-            background: #FFF5F5;
-            border: 1.5px solid #FFD5D5;
-            border-radius: 10px;
-            font-size: 12px;
-            color: #DC2626;
-            font-weight: 500;
-            line-height: 1.5;
+            background: #FFF5F5; border: 1.5px solid #FFD5D5; border-radius: 10px;
+            font-size: 12px; color: #DC2626; font-weight: 500; line-height: 1.5;
         }
 
         /* ── Info box metode terpilih ── */
         .mp-info-box {
             padding: 10px 12px;
-            background: #EAF2FF;
-            border: 1.5px solid #B1D3FF;
-            border-radius: 10px;
-            font-size: 12px;
-            color: #213F5C;
-            font-weight: 500;
+            background: #EAF2FF; border: 1.5px solid #B1D3FF; border-radius: 10px;
+            font-size: 12px; color: #213F5C; font-weight: 500;
         }
-
-        .mp-info-box span {
-            display: block;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #6B7280;
-            font-weight: 600;
-            margin-bottom: 2px;
-        }
-
-        .mp-info-box strong {
-            font-size: 14px;
-            font-weight: 700;
-            color: #1273EB;
-        }
+        .mp-info-box span   { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #6B7280; font-weight: 600; margin-bottom: 2px; }
+        .mp-info-box strong { font-size: 14px; font-weight: 700; color: #1273EB; }
     </style>
 
     {{-- ── MODAL ── --}}
@@ -249,7 +144,6 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                             <h3 class="text-[14px] font-bold text-[#1273EB]">Tambah Jasa Service</h3>
                         </div>
 
-                        {{-- Form input --}}
                         <div class="space-y-3">
                             <div>
                                 <label class="block text-[12px] font-bold text-[#213F5C] mb-1.5">
@@ -275,7 +169,6 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                             </button>
                         </div>
 
-                        {{-- Daftar jasa (hidden saat kosong) --}}
                         <div id="mpJasaSection" class="hidden space-y-3">
                             <div class="flex items-center justify-between border-t border-gray-100 pt-3">
                                 <p class="text-[12px] font-bold text-[#213F5C]">Daftar Jasa</p>
@@ -298,24 +191,21 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                         <p class="text-[11px] text-gray-400 -mt-1">Pilih salah satu metode</p>
 
                         <div class="space-y-2.5" id="mpMetodeList">
-                            @foreach(['Tunai', 'BCA', 'Mandiri', 'BNI', 'BRI', 'QRIS'] as $m)
+                            @foreach (['Tunai', 'BCA', 'Mandiri', 'BNI', 'BRI', 'QRIS'] as $m)
                                 <div class="mp-metode-card" data-metode="{{ $m }}" onclick="mpPilihMetode('{{ $m }}')">
                                     <div class="flex items-center gap-3">
-                                        @if($m === 'Tunai')
-                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                                        @if ($m === 'Tunai')
+                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                             </svg>
                                         @elseif($m === 'QRIS')
-                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
                                             </svg>
                                         @else
-                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
+                                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                     d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                             </svg>
@@ -342,15 +232,13 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                             <h3 class="text-[14px] font-bold text-[#213F5C]">Ringkasan Pembayaran</h3>
                         </div>
 
-                        {{-- Breakdown harga --}}
                         <div class="space-y-2 py-3 border-t border-b border-gray-100">
                             <div class="flex justify-between items-center">
                                 <span class="text-[12px] text-gray-500">Suku Cadang</span>
                                 <span id="mpRingSC" class="text-[12px] font-bold text-[#213F5C]">Rp 0</span>
                             </div>
                             <div id="mpRingJasaRow" class="hidden flex justify-between items-center">
-                                <span class="text-[12px] text-gray-500">Jasa (<span id="mpRingJasaCount">0</span>
-                                    item)</span>
+                                <span class="text-[12px] text-gray-500">Jasa (<span id="mpRingJasaCount">0</span> item)</span>
                                 <span id="mpRingJasaAmt" class="text-[12px] font-bold text-[#213F5C]">Rp 0</span>
                             </div>
                             <div class="flex justify-between items-center pt-2 border-t border-gray-100">
@@ -361,20 +249,17 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                                 <span class="text-[12px] text-gray-500">Down Payment (sudah dibayar)</span>
                                 <span id="mpRingDpAmt" class="text-[12px] font-bold text-[#F59E0B]">- Rp 0</span>
                             </div>
-                            <div class="flex justify-between items-center pt-2 border-t border-[#E5E9F2]"
-                                style="border-top-width:1.5px;">
+                            <div class="flex justify-between items-center pt-2 border-t border-[#E5E9F2]" style="border-top-width:1.5px;">
                                 <span class="text-[13px] font-bold text-[#213F5C]">Total yang Dibayar</span>
                                 <span id="mpRingTotal" class="text-[16px] font-bold text-[#16A34A]">Rp 0</span>
                             </div>
                         </div>
 
-                        {{-- Metode terpilih --}}
                         <div id="mpRingMetodeBox" class="hidden mp-info-box">
                             <span>Metode Dipilih</span>
                             <strong id="mpRingMetodeLabel">-</strong>
                         </div>
 
-                        {{-- Error: belum ada jasa --}}
                         <div id="mpErrJasa" class="mp-error-box">
                             <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
@@ -384,7 +269,6 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                             <span>Tambahkan minimal 1 jasa service</span>
                         </div>
 
-                        {{-- Error: belum pilih metode --}}
                         <div id="mpErrMetode" class="mp-error-box" style="display:none">
                             <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
@@ -394,10 +278,8 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                             <span>Pilih metode pembayaran terlebih dahulu</span>
                         </div>
 
-                        {{-- Spacer push tombol ke bawah --}}
                         <div class="flex-1"></div>
 
-                        {{-- Tombol Cetak Nota --}}
                         <button type="button" id="mpBtnCetak"
                             class="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-[14px] transition-all bg-gray-200 text-gray-400 cursor-not-allowed"
                             disabled onclick="mpHandleCetak()">
@@ -408,7 +290,6 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                             Cetak Nota Pembayaran
                         </button>
 
-                        {{-- Tombol Batal --}}
                         <button type="button"
                             class="w-full flex items-center justify-center gap-2 py-3 bg-white border border-[#E5E9F2] text-[#213F5C] rounded-xl font-bold text-[14px] hover:bg-gray-50 transition-all"
                             onclick="mpHandleBatal()">
@@ -427,57 +308,46 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
         // CONFIG STATUS PENGERJAAN
         // ════════════════════════════════════════════════════════════════════════════
         const statusConfig = {
-            'pengecekan': { border: '#FDE68A', bg: '#FFF8EC', text: '#F59E0B', chevron: '#F59E0B', optClass: 'status-option-pengecekan' },
-            'menunggu': { border: '#E5E7EB', bg: '#F5F5F5', text: '#6B7280', chevron: '#6B7280', optClass: 'status-option-menunggu' },
-            'dikerjakan': { border: '#B1D3FF', bg: '#EAF2FF', text: '#1273EB', chevron: '#1273EB', optClass: 'status-option-dalamproses' },
-            'dibatalkan': { border: '#FFE0E0', bg: '#FFF5F5', text: '#FF4D4D', chevron: '#FF4D4D', optClass: 'status-option-dibatalkan' },
-            'selesai': { border: '#A7F3D0', bg: '#EDFBF3', text: '#16A34A', chevron: '#16A34A', optClass: 'status-option-selesai' },
+            'pengecekan' : { border: '#FDE68A', bg: '#FFF8EC', text: '#F59E0B', chevron: '#F59E0B', optClass: 'status-option-pengecekan'  },
+            'menunggu'   : { border: '#E5E7EB', bg: '#F5F5F5', text: '#6B7280', chevron: '#6B7280', optClass: 'status-option-menunggu'     },
+            'dikerjakan' : { border: '#B1D3FF', bg: '#EAF2FF', text: '#1273EB', chevron: '#1273EB', optClass: 'status-option-dalamproses'  },
+            'dibatalkan' : { border: '#FFE0E0', bg: '#FFF5F5', text: '#FF4D4D', chevron: '#FF4D4D', optClass: 'status-option-dibatalkan'   },
+            'selesai'    : { border: '#A7F3D0', bg: '#EDFBF3', text: '#16A34A', chevron: '#16A34A', optClass: 'status-option-selesai'      },
         };
 
-        // ════════════════════════════════════════════════════════════════════════════
-        // FIX: paymentStatusConfig — tambah 'lunas' dengan badge hijau
-        // ════════════════════════════════════════════════════════════════════════════
         const paymentStatusConfig = {
-            'belum_lunas': { label: 'Belum Lunas', badgeClass: 'badge-payment-red' },
-            'down_payment': { label: 'DP', badgeClass: 'badge-payment-amber' },
-            'lunas': { label: 'Lunas', badgeClass: 'badge-payment-green' },
+            'belum_lunas' : { label: 'Belum Lunas', badgeClass: 'badge-payment-red'   },
+            'down_payment': { label: 'DP',           badgeClass: 'badge-payment-amber' },
+            'lunas'       : { label: 'Lunas',        badgeClass: 'badge-payment-green' },
         };
 
-        // ════════════════════════════════════════════════════════════════════════════
-        // FIX: paymentApiMap — perluas mapping untuk semua kemungkinan nilai dari backend
-        // Nilai dari DB/backend → key di paymentStatusConfig
-        // ════════════════════════════════════════════════════════════════════════════
         const paymentApiMap = {
-            // nilai standar lowercase
-            'unpaid': 'belum_lunas',
-            'dp': 'down_payment',
-            'paid': 'lunas',
-            // nilai yang sudah dinormalisasi
+            'unpaid'     : 'belum_lunas',
+            'dp'         : 'down_payment',
+            'paid'       : 'lunas',
             'belum_lunas': 'belum_lunas',
-            'down_payment': 'down_payment',
-            'lunas': 'lunas',
-            // antisipasi nilai uppercase dari backend
-            'UNPAID': 'belum_lunas',
-            'DP': 'down_payment',
-            'PAID': 'lunas',
-            // antisipasi nilai integer (jika backend kirim angka)
-            '0': 'belum_lunas',
-            '1': 'down_payment',
-            '2': 'lunas',
-            // antisipasi variasi lain
-            'pending': 'belum_lunas',
-            'partial': 'down_payment',
-            'full': 'lunas',
-            'complete': 'lunas',
-            'completed': 'lunas',
+            'down_payment':'down_payment',
+            'lunas'      : 'lunas',
+            'UNPAID'     : 'belum_lunas',
+            'DP'         : 'down_payment',
+            'PAID'       : 'lunas',
+            '0'          : 'belum_lunas',
+            '1'          : 'down_payment',
+            '2'          : 'lunas',
+            'pending'    : 'belum_lunas',
+            'partial'    : 'down_payment',
+            'full'       : 'lunas',
+            'complete'   : 'lunas',
+            'completed'  : 'lunas',
         };
 
-        const statusList = Object.keys(statusConfig);
+        const statusList    = Object.keys(statusConfig);
         const btnPembayaran = document.getElementById('btnProsesPembayaran');
-        const token = localStorage.getItem('access_token');
-        let currentStatus = 'pengecekan';
+        const token         = localStorage.getItem('access_token');
+
+        let currentStatus        = 'pengecekan';
         let currentPaymentStatus = 'belum_lunas';
-        let isStatusDropOpen = false;
+        let isStatusDropOpen     = false;
         let currentTransactionId = null;
 
         // ════════════════════════════════════════════════════════════════════════════
@@ -499,21 +369,49 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
 
         async function selectStatus(newStatus) {
             if (newStatus === currentStatus) { closeStatusDropdown(); return; }
+
             const prevStatus = currentStatus;
-            currentStatus = newStatus;
+            currentStatus    = newStatus;
             applyStatusStyle(newStatus);
             closeStatusDropdown();
+
             if (!currentTransactionId) return;
+
             try {
                 const res = await fetch(`/api/transactions/${currentTransactionId}/status`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
+                    method : 'PUT',
+                    headers: {
+                        'Content-Type' : 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                        'Accept'       : 'application/json',
+                    },
                     body: JSON.stringify({ status_service: newStatus }),
                 });
                 const result = await res.json();
+
                 if (res.ok) {
                     document.getElementById('updatedAt').textContent = formatTanggal(new Date().toISOString());
-                    Swal.fire({ icon: 'success', title: 'Status diperbarui!', text: `Status berhasil diubah ke "${newStatus}"`, timer: 1800, showConfirmButton: false });
+
+                    if (newStatus === 'selesai') {
+                        // ── Redirect ke Riwayat Transaksi setelah status selesai ──
+                        await Swal.fire({
+                            icon            : 'success',
+                            title           : 'Servis Selesai!',
+                            text            : 'Status berhasil diubah ke "selesai". Mengalihkan ke Riwayat Transaksi...',
+                            timer           : 2200,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                        });
+                        window.location.href = "{{ route('riwayat-transaksi.index') }}";
+                    } else {
+                        Swal.fire({
+                            icon : 'success',
+                            title: 'Status diperbarui!',
+                            text : `Status berhasil diubah ke "${newStatus}"`,
+                            timer: 1800,
+                            showConfirmButton: false,
+                        });
+                    }
                 } else {
                     currentStatus = prevStatus;
                     applyStatusStyle(prevStatus);
@@ -528,6 +426,7 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
         }
 
         function toggleStatusDropdown() { isStatusDropOpen ? closeStatusDropdown() : openStatusDropdown(); }
+
         function openStatusDropdown() {
             renderStatusOptions();
             document.getElementById('statusDropdownList').classList.remove('hidden');
@@ -535,6 +434,7 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
             document.getElementById('statusDropdownChevron').style.transform = 'rotate(180deg)';
             isStatusDropOpen = true;
         }
+
         function closeStatusDropdown() {
             document.getElementById('statusDropdownList').classList.add('hidden');
             document.getElementById('statusDropdownList').style.display = '';
@@ -543,15 +443,15 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
         }
 
         function applyStatusStyle(status) {
-            const cfg = statusConfig[status] || statusConfig['pengecekan'];
+            const cfg     = statusConfig[status] || statusConfig['pengecekan'];
             const trigger = document.getElementById('statusDropdownTrigger');
-            const label = document.getElementById('statusDropdownLabel');
+            const label   = document.getElementById('statusDropdownLabel');
             const chevron = document.getElementById('statusDropdownChevron');
-            trigger.style.borderColor = cfg.border;
-            trigger.style.backgroundColor = cfg.bg;
-            trigger.style.color = cfg.text;
-            chevron.style.color = cfg.chevron;
-            label.textContent = status;
+            trigger.style.borderColor      = cfg.border;
+            trigger.style.backgroundColor  = cfg.bg;
+            trigger.style.color            = cfg.text;
+            chevron.style.color            = cfg.chevron;
+            label.textContent              = status;
             updatePembayaranBtn(status);
         }
 
@@ -561,25 +461,20 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
         });
 
         // ════════════════════════════════════════════════════════════════════════════
-        // FIX: STATUS PEMBAYARAN — READ-ONLY BADGE
-        // Normalize nilai dari API sebelum apply style
+        // STATUS PEMBAYARAN — READ-ONLY BADGE
         // ════════════════════════════════════════════════════════════════════════════
 
         function applyPaymentStatusStyle(rawStatus) {
-            // Normalize: coba exact match dulu, lalu lowercase, lalu fallback
             const normalized = paymentApiMap[rawStatus]
                 ?? paymentApiMap[String(rawStatus).toLowerCase()]
                 ?? 'belum_lunas';
 
-            const cfg = paymentStatusConfig[normalized] ?? paymentStatusConfig['belum_lunas'];
+            const cfg   = paymentStatusConfig[normalized] ?? paymentStatusConfig['belum_lunas'];
             const badge = document.getElementById('paymentStatusBadge');
             if (!badge) return;
 
             badge.textContent = cfg.label;
-            // Reset semua class badge lama, ganti dengan yang baru
-            badge.className = 'payment-status-badge ' + cfg.badgeClass;
-
-            // Simpan status yang sudah dinormalisasi
+            badge.className   = 'payment-status-badge ' + cfg.badgeClass;
             currentPaymentStatus = normalized;
 
             console.log(`[PaymentStatus] raw="${rawStatus}" → normalized="${normalized}" → label="${cfg.label}"`);
@@ -601,15 +496,11 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
             }
         }
 
-        // Override fungsi handleProsesPembayaran dari detail_wrapper agar buka modal
         function handleProsesPembayaran() {
             const id = currentTransactionId ?? getAntrianId();
             if (!id) { Swal.fire('Error', 'ID transaksi tidak ditemukan!', 'error'); return; }
-            // Reset state modal
             mpReset();
-            // Muat total suku cadang dari API
             mpLoadSukuCadang(id);
-            // Tampilkan modal
             const modal = document.getElementById('modalPembayaran');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -624,8 +515,8 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
             const fromSession = sessionStorage.getItem('currentAntrianId');
             if (fromSession) return parseInt(fromSession, 10);
             const segments = window.location.pathname.split('/').filter(Boolean);
-            const lastSeg = segments[segments.length - 1];
-            const parsed = parseInt(lastSeg, 10);
+            const lastSeg  = segments[segments.length - 1];
+            const parsed   = parseInt(lastSeg, 10);
             return isNaN(parsed) ? null : parsed;
         }
 
@@ -653,41 +544,38 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
         // ════════════════════════════════════════════════════════════════════════════
 
         function renderDetail(t) {
-            // ── DEBUG: cek nilai payment yang dikirim backend ──────────────────────
-            // Hapus console.log ini setelah masalah selesai
             console.log('[DEBUG] Full transaction data:', t);
             console.log('[DEBUG] status_payment  :', t.status_payment);
             console.log('[DEBUG] payment_status  :', t.payment_status);
             console.log('[DEBUG] status_service  :', t.status_service);
-            // ──────────────────────────────────────────────────────────────────────
 
             const customer = t.vehicle?.customer ?? {};
-            const vehicle = t.vehicle ?? {};
+            const vehicle  = t.vehicle ?? {};
 
-            document.getElementById('detailName').textContent = customer.name || '-';
-            document.getElementById('detailPhone').textContent = customer.phone_number || '-';
-            document.getElementById('detailAddress').textContent = customer.address || '-';
-            document.getElementById('detailCarModel').textContent = vehicle.model || '-';
-            document.getElementById('detailKmMasuk').textContent = t.km_masuk || '-';
-            document.getElementById('detailEngineCode').textContent = vehicle.engine_code || '-';
-            document.getElementById('detailLicensePlate').textContent = vehicle.license_plate || '-';
+            document.getElementById('detailName').textContent        = customer.name          || '-';
+            document.getElementById('detailPhone').textContent       = customer.phone_number  || '-';
+            document.getElementById('detailAddress').textContent     = customer.address       || '-';
+            document.getElementById('detailCarModel').textContent    = vehicle.model          || '-';
+            document.getElementById('detailKmMasuk').textContent     = t.km_masuk             || '-';
+            document.getElementById('detailEngineCode').textContent  = vehicle.engine_code    || '-';
+            document.getElementById('detailLicensePlate').textContent= vehicle.license_plate  || '-';
 
             const cabangMap = {
                 'PELAJAR_PEJUANG': 'Pelajar Pejuang',
-                'AHMAD_YANI': 'Ahmad Yani',
-                '1': 'Pelajar Pejuang',
-                '2': 'Ahmad Yani',
+                'AHMAD_YANI'     : 'Ahmad Yani',
+                '1'              : 'Pelajar Pejuang',
+                '2'              : 'Ahmad Yani',
             };
-            const branchRaw = t.branch ?? t.cabang_id ?? null;
-            const branchKey = branchRaw ? String(branchRaw).toUpperCase().replace(/ /g, '_') : null;
+            const branchRaw  = t.branch ?? t.cabang_id ?? null;
+            const branchKey  = branchRaw ? String(branchRaw).toUpperCase().replace(/ /g, '_') : null;
             const cabangNama = branchKey ? (cabangMap[branchKey] ?? cabangMap[String(branchRaw)] ?? branchRaw) : null;
             document.getElementById('detailCabang').textContent = cabangNama ? '📍 ' + cabangNama : '-';
 
             const createdByName = t.creator?.name || 'Unknown';
-            document.getElementById('createdByName').textContent = createdByName;
+            document.getElementById('createdByName').textContent    = createdByName;
             document.getElementById('createdByInitial').textContent = createdByName.charAt(0).toUpperCase();
-            document.getElementById('createdAt').textContent = formatTanggal(t.created_at);
-            document.getElementById('updatedAt').textContent = formatTanggal(t.updated_at);
+            document.getElementById('createdAt').textContent        = formatTanggal(t.created_at);
+            document.getElementById('updatedAt').textContent        = formatTanggal(t.updated_at);
 
             const editUrl = "{{ route('antrian-pengerjaan.edit', ':id') }}".replace(':id', t.transaction_id);
             const btnEdit = document.getElementById('btnEditData');
@@ -700,12 +588,10 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                 });
             }
 
-            currentStatus = t.status_service || 'pengecekan';
+            currentStatus        = t.status_service || 'pengecekan';
             currentTransactionId = t.transaction_id;
             applyStatusStyle(currentStatus);
 
-            // FIX: gunakan semua kemungkinan field nama dari backend
-            // Cek urutan: status_payment → payment_status → status_bayar → fallback 'unpaid'
             const rawPayment = t.status_payment ?? t.payment_status ?? t.status_bayar ?? 'unpaid';
             applyPaymentStatusStyle(rawPayment);
 
@@ -718,18 +604,18 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
 
         function renderSukuCadang(items) {
             const container = document.getElementById('sukuCadangContainer');
-            const emptyEl = document.getElementById('sukuCadangEmpty');
+            const emptyEl   = document.getElementById('sukuCadangEmpty');
             Array.from(container.querySelectorAll('.sc-item')).forEach(el => el.remove());
             if (!items || items.length === 0) { emptyEl.style.display = 'block'; return; }
             emptyEl.style.display = 'none';
             items.forEach(sc => {
-                const nama = sc.item_name ?? sc.nama ?? sc.sparepart?.name ?? '-';
+                const nama      = sc.item_name ?? sc.nama ?? sc.sparepart?.name ?? '-';
                 const deskripsi = sc.item_type ?? sc.deskripsi ?? sc.sparepart?.name ?? '-';
-                const harga = sc.price ?? sc.harga ?? (sc.sparepart ? 'Rp ' + Number(sc.sparepart.selling_price).toLocaleString('id-ID') : '-');
-                const hargaFmt = (typeof harga === 'number' || !isNaN(Number(harga))) ? 'Rp ' + Number(harga).toLocaleString('id-ID') : harga;
-                const jumlah = sc.qty ?? sc.quantity ?? sc.jumlah ?? 1;
-                const tanggal = sc.tanggal ?? sc.sparepart?.date ?? '-';
-                const supplier = sc.supplier ?? sc.sparepart?.supplier?.name ?? '-';
+                const harga     = sc.price ?? sc.harga ?? (sc.sparepart ? 'Rp ' + Number(sc.sparepart.selling_price).toLocaleString('id-ID') : '-');
+                const hargaFmt  = (typeof harga === 'number' || !isNaN(Number(harga))) ? 'Rp ' + Number(harga).toLocaleString('id-ID') : harga;
+                const jumlah    = sc.qty ?? sc.quantity ?? sc.jumlah ?? 1;
+                const tanggal   = sc.tanggal ?? sc.sparepart?.date ?? '-';
+                const supplier  = sc.supplier ?? sc.sparepart?.supplier?.name ?? '-';
                 const div = document.createElement('div');
                 div.className = 'sc-item flex items-center justify-between p-4 bg-[#F9FBFF] rounded-[14px] border border-[#E5E9F2]';
                 div.innerHTML = `
@@ -763,7 +649,7 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                 Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                 try {
                     const res = await fetch(`/api/transactions/${id}`, {
-                        method: 'DELETE',
+                        method : 'DELETE',
                         headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' },
                     });
                     if (res.ok) {
@@ -783,34 +669,31 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
         // ════════════════════════════════════════════════════════════════════════════
         // STATE MODAL PEMBAYARAN
         // ════════════════════════════════════════════════════════════════════════════
-        let mpJasaList = [];
-        let mpSelectedMetode = null;
-        let mpTotalSC = 0;      // diisi dari API
-        let mpDpAmount = 0;     // DP yang sudah dibayar
-        let mpDpStatus = null;  // 'dp' | 'paid' | 'unpaid'
+        let mpJasaList      = [];
+        let mpSelectedMetode= null;
+        let mpTotalSC       = 0;
+        let mpDpAmount      = 0;
+        let mpDpStatus      = null;
 
         function mpReset() {
-            mpJasaList = [];
+            mpJasaList       = [];
             mpSelectedMetode = null;
-            mpTotalSC = 0;
-            mpDpAmount = 0;
-            mpDpStatus = null;
+            mpTotalSC        = 0;
+            mpDpAmount       = 0;
+            mpDpStatus       = null;
 
-            document.getElementById('mpInputNama').value = '';
+            document.getElementById('mpInputNama').value  = '';
             document.getElementById('mpInputBiaya').value = '';
             mpValidasiForm();
             mpRenderJasa();
             mpRenderRingkasan();
-
-            // Reset pilihan metode
             document.querySelectorAll('.mp-metode-card').forEach(c => c.classList.remove('selected'));
             document.getElementById('mpRingMetodeBox').classList.add('hidden');
         }
 
-        // ── Load suku cadang dari API untuk mendapat totalSC ────────────────────
         async function mpLoadSukuCadang(id) {
             try {
-                const res = await fetch(`/api/transactions/${id}`, {
+                const res    = await fetch(`/api/transactions/${id}`, {
                     headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
                 });
                 const result = await res.json();
@@ -818,17 +701,14 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
 
                 let totalSC = 0;
                 (result.data.items || []).forEach(item => {
-                    const harga = item.harga_num ?? item.price ?? item.sparepart?.selling_price ?? 0;
+                    const harga  = item.harga_num ?? item.price ?? item.sparepart?.selling_price ?? 0;
                     const jumlah = item.quantity ?? item.qty ?? item.jumlah ?? 1;
                     totalSC += Number(harga) * Number(jumlah);
                 });
-                mpTotalSC = totalSC;
-
-                // Ambil data DP dari transaksi
+                mpTotalSC  = totalSC;
                 mpDpStatus = result.data.status_payment ?? 'unpaid';
                 mpDpAmount = (mpDpStatus === 'dp' && result.data.dp_amount)
-                    ? Number(result.data.dp_amount)
-                    : 0;
+                    ? Number(result.data.dp_amount) : 0;
 
                 mpRenderRingkasan();
             } catch (e) {
@@ -836,23 +716,21 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
             }
         }
 
-        // ── Tutup modal ──────────────────────────────────────────────────────────
         function tutupModalPembayaran() {
             document.getElementById('modalPembayaran').classList.add('hidden');
             document.getElementById('modalPembayaran').classList.remove('flex');
             document.body.style.overflow = '';
         }
 
-        // ── Validasi form tambah jasa ────────────────────────────────────────────
         function mpValidasiForm() {
-            const nama = document.getElementById('mpInputNama').value.trim();
+            const nama  = document.getElementById('mpInputNama').value.trim();
             const biaya = document.getElementById('mpInputBiaya').value.trim();
-            const btn = document.getElementById('mpBtnTambah');
+            const btn   = document.getElementById('mpBtnTambah');
             if (nama && biaya && Number(biaya) >= 0) {
-                btn.disabled = false;
+                btn.disabled  = false;
                 btn.className = 'w-full flex items-center justify-center gap-2 py-2.5 bg-[#1273EB] text-white rounded-xl font-bold text-[13px] transition-all hover:bg-[#0E59B8] cursor-pointer';
             } else {
-                btn.disabled = true;
+                btn.disabled  = true;
                 btn.className = 'w-full flex items-center justify-center gap-2 py-2.5 bg-gray-100 text-gray-400 rounded-xl font-bold text-[13px] transition-all cursor-not-allowed';
             }
         }
@@ -860,7 +738,6 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
         document.getElementById('mpInputNama').addEventListener('input', mpValidasiForm);
         document.getElementById('mpInputBiaya').addEventListener('input', mpValidasiForm);
 
-        // Enter nama → fokus biaya; Enter biaya → tambah
         document.getElementById('mpInputNama').addEventListener('keydown', e => {
             if (e.key === 'Enter') { e.preventDefault(); document.getElementById('mpInputBiaya').focus(); }
         });
@@ -868,31 +745,28 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
             if (e.key === 'Enter') { e.preventDefault(); const b = document.getElementById('mpBtnTambah'); if (!b.disabled) mpTambahJasa(); }
         });
 
-        // ── Tambah jasa ──────────────────────────────────────────────────────────
         function mpTambahJasa() {
-            const nama = document.getElementById('mpInputNama').value.trim();
+            const nama  = document.getElementById('mpInputNama').value.trim();
             const biaya = parseInt(document.getElementById('mpInputBiaya').value.trim()) || 0;
             if (!nama) { Swal.fire('Oops!', 'Nama jasa wajib diisi!', 'warning'); return; }
             mpJasaList.push({ id: Date.now(), nama, biaya });
-            document.getElementById('mpInputNama').value = '';
+            document.getElementById('mpInputNama').value  = '';
             document.getElementById('mpInputBiaya').value = '';
             mpValidasiForm();
             mpRenderJasa();
             mpRenderRingkasan();
         }
 
-        // ── Hapus jasa ───────────────────────────────────────────────────────────
         function mpHapusJasa(id) {
             mpJasaList = mpJasaList.filter(j => j.id !== id);
             mpRenderJasa();
             mpRenderRingkasan();
         }
 
-        // ── Render list jasa ─────────────────────────────────────────────────────
         function mpRenderJasa() {
-            const list = document.getElementById('mpJasaList');
+            const list    = document.getElementById('mpJasaList');
             const section = document.getElementById('mpJasaSection');
-            const badge = document.getElementById('mpJasaBadge');
+            const badge   = document.getElementById('mpJasaBadge');
             list.innerHTML = '';
             if (mpJasaList.length === 0) { section.classList.add('hidden'); return; }
             section.classList.remove('hidden');
@@ -913,7 +787,6 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
             });
         }
 
-        // ── Pilih metode ─────────────────────────────────────────────────────────
         function mpPilihMetode(metode) {
             mpSelectedMetode = metode;
             document.querySelectorAll('.mp-metode-card').forEach(c => {
@@ -925,7 +798,6 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
             mpRenderRingkasan();
         }
 
-        // ── Render ringkasan + validasi tombol ───────────────────────────────────
         function mpRenderRingkasan() {
             const hasJasa   = mpJasaList.length > 0;
             const hasMetode = !!mpSelectedMetode;
@@ -946,7 +818,6 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                 jasaRow.classList.add('hidden');
             }
 
-            // Tampilkan baris DP jika ada
             const dpRow = document.getElementById('mpRingDpRow');
             if (mpDpAmount > 0) {
                 dpRow.classList.remove('hidden');
@@ -968,17 +839,16 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
             }
         }
 
-        // ── Cetak nota ───────────────────────────────────────────────────────────
+        // ── Cetak nota → simpan flag → redirect ke preview nota ─────────────────
         function mpHandleCetak() {
             if (mpJasaList.length === 0) { Swal.fire('Oops!', 'Tambahkan minimal 1 jasa service!', 'warning'); return; }
-            if (!mpSelectedMetode) { Swal.fire('Oops!', 'Pilih metode pembayaran!', 'warning'); return; }
+            if (!mpSelectedMetode)       { Swal.fire('Oops!', 'Pilih metode pembayaran!', 'warning'); return; }
 
             const id        = currentTransactionId ?? getAntrianId();
             const totalJasa = mpJasaList.reduce((acc, j) => acc + j.biaya, 0);
             const subtotal  = mpTotalSC + totalJasa;
             const totalAll  = Math.max(0, subtotal - mpDpAmount);
 
-            // Simpan ke sessionStorage untuk dipakai halaman previewNota
             sessionStorage.setItem('notaPembayaran', JSON.stringify({
                 transactionId   : id,
                 jasaList        : mpJasaList,
@@ -992,11 +862,12 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                 tanggal         : new Date().toISOString(),
             }));
 
-            // Redirect ke halaman preview nota
+            // ── Flag: nota sudah dicetak, setelah kembali dari preview → riwayat ──
+            sessionStorage.setItem('notaSudahDicetak', '1');
+
             window.location.href = `/antrian-pengerjaan/${id}/nota-preview`;
         }
 
-        // ── Batal modal ──────────────────────────────────────────────────────────
         function mpHandleBatal() {
             if (mpJasaList.length > 0) {
                 Swal.fire({
@@ -1009,7 +880,6 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
             }
         }
 
-        // Tutup modal saat klik overlay
         document.getElementById('modalPembayaran').addEventListener('click', function (e) {
             if (e.target === this) mpHandleBatal();
         });
@@ -1020,6 +890,14 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
 
         document.addEventListener('DOMContentLoaded', async () => {
             const id = getAntrianId();
+
+            // ── Jika baru kembali dari halaman preview nota → redirect riwayat ──
+            if (sessionStorage.getItem('notaSudahDicetak') === '1') {
+                sessionStorage.removeItem('notaSudahDicetak');
+                window.location.href = "{{ route('riwayat-transaksi.index') }}";
+                return;
+            }
+
             if (id === null) {
                 Swal.fire('Error', 'ID antrian tidak ditemukan!', 'error').then(() => {
                     window.location.href = "{{ route('antrian-pengerjaan.index') }}";
@@ -1028,7 +906,7 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
             }
 
             try {
-                const res = await fetch(`/api/transactions/${id}`, {
+                const res    = await fetch(`/api/transactions/${id}`, {
                     headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
                 });
                 const result = await res.json();

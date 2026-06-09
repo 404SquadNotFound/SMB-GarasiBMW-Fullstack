@@ -377,8 +377,7 @@ function changePage(dir){
 }
 
 function handleKembali(){
-    const id = nota?.transactionId ?? getIdFromUrl();
-    window.location.href = `/antrian-pengerjaan/${id}`;
+    window.location.href = "{{ route('riwayat-transaksi.index') }}";
 }
 function handleDownload(){
     if(!nota) return;
@@ -435,7 +434,12 @@ async function init(){
     renderAll();
 }
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', async () => {
+    await init();
+
+    // Tandai bahwa nota sudah dicetak — flag untuk mencegah redirect ganda
+    sessionStorage.setItem('notaSudahDicetak', '1');
+});
 </script>
 </body>
 </html>
