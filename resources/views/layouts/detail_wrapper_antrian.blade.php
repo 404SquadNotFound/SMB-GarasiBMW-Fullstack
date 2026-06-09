@@ -1,18 +1,15 @@
 {{--
     resources/views/layouts/detail_wrapper_antrian.blade.php
     =========================================================
-    Layout reusable untuk halaman Detail Antrian Pengerjaan.
-    Berisi: CSS halaman detail + seluruh struktur HTML identik asli.
-    Tidak ada yang berubah dari segi desain maupun fungsi.
-
-    Cara pakai di view pemanggil:
-      @include('layouts.detail_wrapper_antrian')
-
-    Lalu di view pemanggil, cukup tulis JS-nya saja di @section('content').
+    PERUBAHAN:
+    - Blok "Ubah Status Pembayaran" (dropdown) dihapus
+    - Diganti dengan baris "Status Pembayaran" + badge read-only (id="paymentStatusBadge")
+    - Badge diisi oleh JS applyPaymentStatusStyle() di detailManajemenAntrianPengerjaan.blade.php
+    - FIX: Tambah class badge-payment-green untuk status Lunas
 --}}
 
 <style>
-    /* Custom dropdown status — sesuai desain Container.png */
+    /* ── Dropdown status pengerjaan ── */
     .status-option-item {
         padding: 12px 16px;
         cursor: pointer;
@@ -22,65 +19,40 @@
         margin: 4px 6px;
         transition: opacity 0.15s;
     }
-    .status-option-item:hover {
-        opacity: 0.85;
+    .status-option-item:hover { opacity: 0.85; }
+    .status-option-pengecekan  { background-color: #FFF8EC; color: #F59E0B; border: 1.5px solid #FDE68A; }
+    .status-option-menunggu    { background-color: #F5F5F5; color: #6B7280; border: 1.5px solid #E5E7EB; }
+    .status-option-dalamproses { background-color: #EAF2FF; color: #1273EB; border: 1.5px solid #B1D3FF; }
+    .status-option-dibatalkan  { background-color: #FFF5F5; color: #FF4D4D; border: 1.5px solid #FFE0E0; }
+    .status-option-selesai     { background-color: #EDFBF3; color: #16A34A; border: 1.5px solid #A7F3D0; }
+    #statusDropdownList { padding: 6px 0; }
+
+    /* ── Badge status pembayaran (read-only) ── */
+    .payment-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1.5px solid;
+        pointer-events: none;
+        user-select: none;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
-    .status-option-pengecekan {
-        background-color: #FFF8EC;
-        color: #F59E0B;
-        border: 1.5px solid #FDE68A;
+    .payment-status-badge::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        flex-shrink: 0;
     }
-    .status-option-menunggu {
-        background-color: #F5F5F5;
-        color: #6B7280;
-        border: 1.5px solid #E5E7EB;
-    }
-    .status-option-dalamproses {
-        background-color: #EAF2FF;
-        color: #1273EB;
-        border: 1.5px solid #B1D3FF;
-    }
-    .status-option-dibatalkan {
-        background-color: #FFF5F5;
-        color: #FF4D4D;
-        border: 1.5px solid #FFE0E0;
-    }
-    .status-option-selesai {
-        background-color: #EDFBF3;
-        color: #16A34A;
-        border: 1.5px solid #A7F3D0;
-    }
-    #statusDropdownList {
-        padding: 6px 0;
-    }
-    /* Payment status dropdown options */
-    .payment-option-item {
-        padding: 10px 14px;
-        cursor: pointer;
-        font-weight: 700;
-        font-size: 13px;
-        border-radius: 10px;
-        margin-bottom: 4px;
-        transition: opacity 0.15s;
-    }
-    .payment-option-item:hover {
-        opacity: 0.8;
-    }
-    .payment-option-belum-lunas {
-        background-color: #FFF5F5;
-        color: #FF4D4D;
-        border: 1.5px solid #FFE0E0;
-    }
-    .payment-option-down-payment {
-        background-color: #FFF8EC;
-        color: #F59E0B;
-        border: 1.5px solid #FDE68A;
-    }
-    .payment-option-lunas {
-        background-color: #EDFBF3;
-        color: #16A34A;
-        border: 1.5px solid #A7F3D0;
-    }
+    .badge-payment-red   { background: #FFF5F5; color: #FF4D4D; border-color: #FFE0E0; }
+    .badge-payment-amber { background: #FFF8EC; color: #F59E0B; border-color: #FDE68A; }
+    .badge-payment-green { background: #EDFBF3; color: #16A34A; border-color: #A7F3D0; }
 </style>
 
 <div class="block w-full space-y-6">
@@ -97,14 +69,15 @@
                 </div>
                 <h1 class="text-xl font-bold text-[#213F5C]">Detail Mobil Masuk</h1>
             </div>
-
         </div>
     </div>
 
     {{-- Main Layout --}}
     <div class="grid grid-cols-12 gap-6 pb-10 w-full">
 
-        {{-- Kolom Kiri --}}
+        {{-- ═══════════════════════════════════════════════════════════════════
+        KOLOM KIRI
+        ═══════════════════════════════════════════════════════════════════ --}}
         <div class="col-span-9 space-y-6">
 
             {{-- Section 1: Informasi Pemilik Kendaraan --}}
@@ -200,18 +173,23 @@
                     <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
                     <h2 class="text-[16px] font-bold text-[#213F5C]">Penggunaan Suku Cadang</h2>
                 </div>
                 <div id="sukuCadangContainer" class="p-6 space-y-3">
-                    <p id="sukuCadangEmpty" class="text-[13px] text-gray-400 text-center py-4">Belum ada suku cadang yang digunakan.</p>
+                    <p id="sukuCadangEmpty" class="text-[13px] text-gray-400 text-center py-4">
+                        Belum ada suku cadang yang digunakan.
+                    </p>
                 </div>
             </div>
 
         </div>{{-- end kolom kiri --}}
 
-        {{-- Kolom Kanan --}}
+        {{-- ═══════════════════════════════════════════════════════════════════
+        KOLOM KANAN
+        ═══════════════════════════════════════════════════════════════════ --}}
         <div class="col-span-3 space-y-4">
 
             {{-- Quick Info --}}
@@ -228,7 +206,10 @@
                 <div>
                     <p class="text-[11px] text-gray-400 font-bold uppercase tracking-widest mb-2">Created By</p>
                     <div class="flex items-center gap-3 bg-[#F9FBFF] p-3 rounded-xl border border-[#E5E9F2]">
-                        <div id="createdByInitial" class="user-initial-box w-9 h-9 rounded-full bg-[#1273EB] flex items-center justify-center text-white font-bold text-[12px]">?</div>
+                        <div id="createdByInitial"
+                            class="user-initial-box w-9 h-9 rounded-full bg-[#1273EB] flex items-center justify-center text-white font-bold text-[12px]">
+                            ?
+                        </div>
                         <p id="createdByName" class="text-[13px] font-bold text-[#213F5C] truncate">-</p>
                     </div>
                 </div>
@@ -252,16 +233,17 @@
                         Ubah Status Pengerjaan
                     </p>
                     <div class="relative" id="statusDropdownWrapper">
-                        {{-- Trigger --}}
                         <button type="button" id="statusDropdownTrigger"
                             onclick="toggleStatusDropdown()"
                             class="w-full px-4 py-3 rounded-xl border-2 font-bold text-[14px] outline-none flex items-center justify-between cursor-pointer transition-all">
                             <span id="statusDropdownLabel">Pengecekan</span>
-                            <svg id="statusDropdownChevron" class="w-4 h-4 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+                            <svg id="statusDropdownChevron"
+                                class="w-4 h-4 transition-transform duration-200 flex-shrink-0"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
-                        {{-- Dropdown list --}}
                         <div id="statusDropdownList"
                             class="hidden absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
                             <div id="statusDropdownItems">
@@ -271,41 +253,36 @@
                     </div>
                 </div>
 
-                {{-- ── Ubah Status Pembayaran — Custom Dropdown ── --}}
+                {{-- ── Status Pembayaran — satu kotak, read-only badge ── --}}
                 <div class="pt-1">
                     <p class="text-[11px] font-bold text-[#1273EB] mb-2 flex items-center gap-1">
                         <span class="w-1.5 h-1.5 rounded-full bg-[#1273EB] inline-block"></span>
-                        Ubah Status Pembayaran
+                        Status Pembayaran
                     </p>
-                    <div class="relative" id="paymentStatusDropdownWrapper">
-                        {{-- Trigger --}}
-                        <button type="button" id="paymentStatusDropdownTrigger"
-                            onclick="togglePaymentDropdown()"
-                            class="w-full px-4 py-3 rounded-xl border-2 font-bold text-[14px] outline-none flex items-center justify-between cursor-pointer transition-all"
-                            style="border-color: #FFE0E0; background-color: #FFF5F5; color: #FF4D4D;">
-                            <span id="paymentStatusDropdownLabel">Belum Lunas</span>
-                            <svg id="paymentStatusDropdownChevron" class="w-4 h-4 transition-transform duration-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        {{-- Dropdown list --}}
-                        <div id="paymentStatusDropdownList"
-                            style="display: none;"
-                            class="absolute z-50 left-0 right-0 mt-2 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
-                            <div id="paymentStatusDropdownItems" class="p-2">
-                                {{-- Diisi oleh JS --}}
-                            </div>
-                        </div>
+                    {{-- Satu kotak: label kiri, badge kanan --}}
+                    <div class="flex items-center justify-between px-4 py-3 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl min-w-0">
+                        <span class="text-[12px] font-semibold text-gray-400 shrink-0">Pembayaran</span>
+                        {{--
+                            Badge read-only — diisi oleh applyPaymentStatusStyle().
+                            Tiga kemungkinan nilai:
+                              belum_lunas  → "Belum Lunas"   (merah)
+                              down_payment → "DP"            (kuning/amber)
+                              lunas        → "Lunas"         (hijau)
+                        --}}
+                        <span id="paymentStatusBadge" class="payment-status-badge badge-payment-red">
+                            Belum Lunas
+                        </span>
                     </div>
                 </div>
 
-            </div>
+            </div>{{-- end Quick Info --}}
 
             {{-- Action Buttons --}}
             <div class="space-y-3">
+
                 {{-- Proses Pembayaran --}}
                 <button type="button" id="btnProsesPembayaran"
-                    class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-[15px] transition-all"
+                    class="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-bold text-[15px] transition-all bg-gray-200 text-gray-400 cursor-not-allowed"
                     onclick="handleProsesPembayaran()">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -340,6 +317,7 @@
                     </svg>
                     Batal
                 </a>
+
             </div>
 
         </div>{{-- end kolom kanan --}}
@@ -353,7 +331,8 @@
     <div class="bg-white rounded-[24px] shadow-2xl w-full max-w-md mx-4 p-7 space-y-5">
         <div class="flex items-center gap-3 pb-4 border-b border-[#F0F4FA]">
             <div class="w-9 h-9 rounded-xl bg-[#EAF2FF] flex items-center justify-center">
-                <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 text-[#1273EB]" fill="none" stroke="currentColor" stroke-width="2.5"
+                    viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
                 </svg>

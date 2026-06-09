@@ -5,16 +5,15 @@ namespace Tests\Unit;
 use Tests\TestCase;
 use App\Models\CarType;
 use App\Models\EngineType;
+use App\Models\Employee;
 use App\Http\Services\CarTypeService;
 use App\Http\Services\ExportService;
 use App\Http\Services\PdfExportService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Mockery;
 
 class CarTypeExportTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected $excelServiceMock;
     protected $pdfServiceMock;
     protected $carTypeService;
@@ -39,30 +38,65 @@ class CarTypeExportTest extends TestCase
         parent::tearDown();
     }
 
-    private function createDummyCarType(): CarType
+    /**
+     * Helper untuk menginstansiasi EngineType secara in-memory (tanpa menyentuh DB)
+     */
+    private function makeEngineType(string $name): EngineType
     {
-        $engine = EngineType::create([
-            'name' => 'B48',
-            'cylinders' => '4',
-            'oil_cap' => 4.50,
-            'fuel_type' => 'Bensin',
-            'engine_cap' => 1998,
-        ]);
+        $engine = new EngineType();
+        $engine->engine_type_id = 1;
+        $engine->name = $name;
+        $engine->cylinders = '4';
+        $engine->oil_cap = 4.50;
+        $engine->fuel_type = 'Bensin';
+        $engine->engine_cap = 1998;
+        return $engine;
+    }
 
-        return CarType::create([
+    /**
+     * Helper untuk menginstansiasi Employee secara in-memory (tanpa menyentuh DB)
+     */
+    private function makeEmployee(string $name): Employee
+    {
+        $employee = new Employee();
+        $employee->employees_id = 99;
+        $employee->name = $name;
+        return $employee;
+    }
+
+    /**
+     * Helper untuk menginstansiasi CarType secara in-memory (tanpa menyentuh DB)
+     * persis seperti makeCustomer() pada CustomerServiceTest.php
+     */
+    private function makeCarType(array $attrs, $engineType = null, $creator = null): CarType
+    {
+        $carType = new CarType();
+        $carType->car_type_id = $attrs['car_type_id'] ?? 1;
+        $carType->chassis_number = $attrs['chassis_number'];
+        $carType->name = $attrs['name'];
+        $carType->series = $attrs['series'];
+        $carType->engine_code = $attrs['engine_code'];
+        $carType->engine_type_id = $attrs['engine_type_id'] ?? null;
+
+        if ($engineType) {
+            $carType->setRelation('engineType', $engineType);
+        }
+        if ($creator) {
+            $carType->setRelation('creator', $creator);
+        }
+
+        return $carType;
+    }
+
+    public function test_calls_excel_service_with_correct_headers()
+    {
+        $engine = $this->makeEngineType('B48');
+        $carType = $this->makeCarType([
             'chassis_number' => 'F30',
             'name' => 'BMW 320i',
             'series' => '3 Series',
             'engine_code' => 'B48',
-            'engine_type_id' => $engine->engine_type_id,
-            'created_by' => null,
-        ]);
-    }
-
-
-    public function it_calls_excel_service_with_correct_headers()
-    {
-        $this->createDummyCarType();
+        ], $engine);
 
         $expectedHeaders = [
             'No. Chasis',
@@ -76,7 +110,7 @@ class CarTypeExportTest extends TestCase
         $this->excelServiceMock
             ->shouldReceive('exportToExcel')
             ->once()
-            ->withArgs(function ($fileName, $headers, $query, $mapRow) use ($expectedHeaders) {
+            ->withArgs(function ($fileName, $headers, $query, $mapRow) use ($expectedHeaders, $carType) {
                 // Cek nama file formatnya benar
                 $this->assertStringStartsWith('data_tipe_mobil_', $fileName);
                 $this->assertStringEndsWith('.xlsx', $fileName);
@@ -84,30 +118,13 @@ class CarTypeExportTest extends TestCase
                 // Cek headers sesuai
                 $this->assertEquals($expectedHeaders, $headers);
 
-                return true;
-            })
-            ->andReturn(response()->download(base_path('composer.json'), 'test.xlsx'));
-
-        $this->carTypeService->downloadExcel();
-    }
-
-    public function test_calls_excel_service_with_correct_headers()
-    {
-        $carType = $this->createDummyCarType();
-
-        $this->excelServiceMock
-            ->shouldReceive('exportToExcel')
-            ->once()
-            ->withArgs(function ($fileName, $headers, $query, $mapRow) use ($carType) {
+                // Cek mapping row
                 $row = $mapRow($carType);
-
                 $this->assertEquals($carType->chassis_number, $row[0]);
                 $this->assertEquals($carType->name, $row[1]);
                 $this->assertEquals($carType->series, $row[2]);
                 $this->assertEquals($carType->engine_code, $row[3]);
-                // engineType ada
                 $this->assertEquals('B48', $row[4]);
-                // creator null → '-'
                 $this->assertEquals('-', $row[5]);
 
                 return true;
@@ -119,13 +136,42 @@ class CarTypeExportTest extends TestCase
 
     public function test_maps_excel_row_correctly()
     {
-        $carType = CarType::create([
+        $engine = $this->makeEngineType('B48');
+        $creator = $this->makeEmployee('Admin GarasiBMW');
+        $carType = $this->makeCarType([
+            'chassis_number' => 'F30',
+            'name' => 'BMW 320i',
+            'series' => '3 Series',
+            'engine_code' => 'B48',
+        ], $engine, $creator);
+
+        $this->excelServiceMock
+            ->shouldReceive('exportToExcel')
+            ->once()
+            ->withArgs(function ($fileName, $headers, $query, $mapRow) use ($carType) {
+                $row = $mapRow($carType);
+
+                $this->assertEquals($carType->chassis_number, $row[0]);
+                $this->assertEquals($carType->name, $row[1]);
+                $this->assertEquals($carType->series, $row[2]);
+                $this->assertEquals($carType->engine_code, $row[3]);
+                $this->assertEquals('B48', $row[4]);
+                $this->assertEquals('Admin GarasiBMW', $row[5]);
+
+                return true;
+            })
+            ->andReturn(response()->download(base_path('composer.json'), 'test.xlsx'));
+
+        $this->carTypeService->downloadExcel();
+    }
+
+    public function test_maps_excel_row_with_null_relations()
+    {
+        $carType = $this->makeCarType([
             'chassis_number' => 'G20',
             'name' => 'BMW 330i',
             'series' => '3 Series',
             'engine_code' => '',
-            'engine_type_id' => null,
-            'created_by' => null,
         ]);
 
         $this->excelServiceMock
@@ -147,12 +193,18 @@ class CarTypeExportTest extends TestCase
 
     public function test_calls_pdf_service_with_correct_options()
     {
-        $this->createDummyCarType();
+        $engine = $this->makeEngineType('B48');
+        $carType = $this->makeCarType([
+            'chassis_number' => 'F30',
+            'name' => 'BMW 320i',
+            'series' => '3 Series',
+            'engine_code' => 'B48',
+        ], $engine);
 
         $this->pdfServiceMock
             ->shouldReceive('export')
             ->once()
-            ->withArgs(function ($fileName, $query, $mapRow, $options) {
+            ->withArgs(function ($fileName, $query, $mapRow, $options) use ($carType) {
                 // Cek nama file
                 $this->assertStringStartsWith('data_tipe_mobil_', $fileName);
                 $this->assertStringEndsWith('.pdf', $fileName);
@@ -171,7 +223,14 @@ class CarTypeExportTest extends TestCase
 
     public function test_maps_pdf_row_correctly()
     {
-        $carType = $this->createDummyCarType();
+        $engine = $this->makeEngineType('B48');
+        $creator = $this->makeEmployee('Admin GarasiBMW');
+        $carType = $this->makeCarType([
+            'chassis_number' => 'F30',
+            'name' => 'BMW 320i',
+            'series' => '3 Series',
+            'engine_code' => 'B48',
+        ], $engine, $creator);
 
         $this->pdfServiceMock
             ->shouldReceive('export')
@@ -192,7 +251,7 @@ class CarTypeExportTest extends TestCase
                 $this->assertEquals($carType->series, $row['Seri']);
                 $this->assertEquals($carType->engine_code, $row['Kode Mesin']);
                 $this->assertEquals('B48', $row['Tipe Mesin']);
-                $this->assertEquals('-', $row['Dibuat Oleh']);
+                $this->assertEquals('Admin GarasiBMW', $row['Dibuat Oleh']);
 
                 return true;
             })
@@ -203,13 +262,11 @@ class CarTypeExportTest extends TestCase
 
     public function test_maps_pdf_row_with_null_relations()
     {
-        $carType = CarType::create([
+        $carType = $this->makeCarType([
             'chassis_number' => 'G20',
             'name' => 'BMW 330i',
             'series' => '3 Series',
             'engine_code' => '',
-            'engine_type_id' => null,
-            'created_by' => null,
         ]);
 
         $this->pdfServiceMock
