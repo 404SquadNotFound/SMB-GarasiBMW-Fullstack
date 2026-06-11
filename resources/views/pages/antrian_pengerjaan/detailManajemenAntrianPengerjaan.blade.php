@@ -392,26 +392,13 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                 if (res.ok) {
                     document.getElementById('updatedAt').textContent = formatTanggal(new Date().toISOString());
 
-                    if (newStatus === 'selesai') {
-                        // ── Redirect ke Riwayat Transaksi setelah status selesai ──
-                        await Swal.fire({
-                            icon            : 'success',
-                            title           : 'Servis Selesai!',
-                            text            : 'Status berhasil diubah ke "selesai". Mengalihkan ke Riwayat Transaksi...',
-                            timer           : 2200,
-                            timerProgressBar: true,
-                            showConfirmButton: false,
-                        });
-                        window.location.href = "{{ route('riwayat-transaksi.index') }}";
-                    } else {
-                        Swal.fire({
-                            icon : 'success',
-                            title: 'Status diperbarui!',
-                            text : `Status berhasil diubah ke "${newStatus}"`,
-                            timer: 1800,
-                            showConfirmButton: false,
-                        });
-                    }
+                    Swal.fire({
+                        icon : 'success',
+                        title: 'Status diperbarui!',
+                        text : `Status berhasil diubah ke "${newStatus}"`,
+                        timer: 1800,
+                        showConfirmButton: false,
+                    });
                 } else {
                     currentStatus = prevStatus;
                     applyStatusStyle(prevStatus);
@@ -862,9 +849,6 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
                 tanggal         : new Date().toISOString(),
             }));
 
-            // ── Flag: nota sudah dicetak, setelah kembali dari preview → riwayat ──
-            sessionStorage.setItem('notaSudahDicetak', '1');
-
             window.location.href = `/antrian-pengerjaan/${id}/nota-preview`;
         }
 
@@ -891,12 +875,8 @@ body: { jasa_list:[{nama,biaya}], metode_pembayaran, total_jasa, total_suku_cada
         document.addEventListener('DOMContentLoaded', async () => {
             const id = getAntrianId();
 
-            // ── Jika baru kembali dari halaman preview nota → redirect riwayat ──
-            if (sessionStorage.getItem('notaSudahDicetak') === '1') {
-                sessionStorage.removeItem('notaSudahDicetak');
-                window.location.href = "{{ route('riwayat-transaksi.index') }}";
-                return;
-            }
+            // ── Bersihkan flag nota jika ada ──
+            sessionStorage.removeItem('notaSudahDicetak');
 
             if (id === null) {
                 Swal.fire('Error', 'ID antrian tidak ditemukan!', 'error').then(() => {

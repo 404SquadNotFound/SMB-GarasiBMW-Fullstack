@@ -35,8 +35,12 @@ class ServiceTransactionController extends Controller
             });
         }
 
-        if ($request->filled('status')) {
-            $query->where('status_service', $request->status);
+        $statusFilter = $request->status ?? $request->status_service ?? null;
+        if ($statusFilter) {
+            $query->where('status_service', $statusFilter);
+        } else {
+            // Default: sembunyikan transaksi "selesai" dari antrian (sudah masuk riwayat)
+            $query->where('status_service', '!=', 'selesai');
         }
 
         return $query->orderBy('created_at', 'desc')
@@ -335,6 +339,28 @@ class ServiceTransactionController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Status pengerjaan berhasil diupdate!',
+            'data' => $transaction,
+        ], 200);
+    }
+
+    /**
+     * Finalize transaction after nota is printed.
+     * Sets status_payment to 'paid' and status_service to 'selesai'.
+     * POST /api/transactions/{id}/finalize
+     */
+    public function finalize(Request $request, $id)
+    {
+        $transaction = ServiceTransaction::findOrFail($id);
+
+        $transaction->update([
+            'status_payment' => 'paid',
+            'status_service' => 'selesai',
+            'edited_by' => $request->user()->employees_id ?? 1,
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Transaksi berhasil diselesaikan dan pembayaran lunas!',
             'data' => $transaction,
         ], 200);
     }
