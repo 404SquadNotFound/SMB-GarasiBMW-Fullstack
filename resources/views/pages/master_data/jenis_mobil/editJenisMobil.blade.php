@@ -118,12 +118,33 @@
 
         document.getElementById('submitBtnApi').onclick = async (e) => {
             e.preventDefault();
+            
+            // 1. Ambil value dan bersihkan spasi
+            const chassisVal = document.getElementById('chassis_number').value.trim();
+            const nameVal = document.getElementById('name').value.trim();
+            const seriesVal = document.getElementById('series').value.trim();
             const selectedEngines = Array.from(engineSelect.selectedOptions).map(opt => opt.value);
 
+            // 2. Kumpulkan field mandatory yang masih kosong
+            let emptyFields = [];
+
+            if (!chassisVal) emptyFields.push('Kode Sasis');
+            if (!nameVal) emptyFields.push('Nama Model');
+            if (!seriesVal) emptyFields.push('Seri');
+            if (selectedEngines.length === 0) emptyFields.push('Jenis Mesin');
+
+            // 3. Tampilkan Swal jika ada yang terlewat
+            if (emptyFields.length > 0) {
+                let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
+                Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
+                return;
+            }
+
+            // 4. Lanjut susun payload
             const updatedData = {
-                chassis_number: document.getElementById('chassis_number').value,
-                name: document.getElementById('name').value,
-                series: document.getElementById('series').value,
+                chassis_number: chassisVal,
+                name: nameVal,
+                series: seriesVal,
                 engine_ids: selectedEngines // Kirim array ID
             };
 

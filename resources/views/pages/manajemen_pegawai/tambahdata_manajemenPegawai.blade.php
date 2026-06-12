@@ -18,7 +18,6 @@
         <input style="display:none" type="email" name="fakeusernameremembered"/>
         <input style="display:none" type="password" name="fakepasswordremembered"/>
 
-
         {{-- Informasi Pribadi Pegawai --}}
         <div class="bg-white border border-[#E5E9F2] rounded-2xl p-6 space-y-4">
             <div class="flex items-center gap-2 mb-2">
@@ -189,16 +188,44 @@
         // ─── Submit ───────────────────────────────────────────────
         document.getElementById('submitBtnApi').onclick = async (e) => {
             e.preventDefault();
-            const token = localStorage.getItem('access_token');
 
+            // 1. Ambil value dan bersihkan dari spasi berlebih
+            const nameVal = document.getElementById('name').value.trim();
+            const joinDateVal = document.getElementById('join_date').value.trim();
+            const birthDateVal = document.getElementById('birth_date').value.trim();
+            const addressVal = document.getElementById('address').value.trim();
+            const emailVal = document.getElementById('email').value.trim();
+            const passwordVal = document.getElementById('password').value.trim();
+            const roleVal = document.getElementById('role').value;
+
+            // 2. Cek mandatory fields
+            let emptyFields = [];
+
+            if (!nameVal) emptyFields.push('Nama Lengkap');
+            if (!joinDateVal) emptyFields.push('Tanggal Bergabung');
+            if (!birthDateVal) emptyFields.push('Tanggal Lahir');
+            if (!addressVal) emptyFields.push('Alamat');
+            if (!emailVal) emptyFields.push('Email');
+            if (!passwordVal) emptyFields.push('Password');
+            if (!roleVal) emptyFields.push('Roles');
+
+            // 3. Eksekusi Swal kalau ada field kosong
+            if (emptyFields.length > 0) {
+                let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
+                Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
+                return;
+            }
+
+            // 4. Lanjut hit API jika semua aman
+            const token = localStorage.getItem('access_token');
             const data = {
-                name:        document.getElementById('name').value,
-                join_date:   document.getElementById('join_date').value,
-                birth_date:  document.getElementById('birth_date').value,
-                address:     document.getElementById('address').value,
-                email:       document.getElementById('email').value,
-                password:    document.getElementById('password').value,
-                role:        document.getElementById('role').value,
+                name:        nameVal,
+                join_date:   joinDateVal,
+                birth_date:  birthDateVal,
+                address:     addressVal,
+                email:       emailVal,
+                password:    passwordVal,
+                role:        roleVal,
                 base_salary: Number(document.getElementById('base_salary').value) || 0,
             };
 
