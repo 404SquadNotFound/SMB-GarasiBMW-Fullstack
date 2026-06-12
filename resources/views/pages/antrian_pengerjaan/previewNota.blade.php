@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Preview Nota Pembayaran – GARASIBMW</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Arial',sans-serif;font-size:12px;background:#f0f4f8;color:#222;min-height:100vh;}
@@ -50,85 +51,89 @@ body{font-family:'Arial',sans-serif;font-size:12px;background:#f0f4f8;color:#222
 .nota-paper{
     background:#fff;width:794px;
     box-shadow:0 4px 24px rgba(0,0,0,.12);border-radius:4px;
-    padding:32px 36px;margin-top:16px;
+    padding:20px 28px;margin-top:16px;
 }
 
 /* ── COPY ── */
 .nota-copy{width:100%;}
-.copy-separator{border:none;border-top:2px dashed #ccc;margin:20px 0;}
+.copy-separator{border:none;border-top:2px dashed #ccc;margin:10px 0;}
 
 /* ── HEADER ── */
-.copy-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
-.brand-name{font-size:17px;font-weight:900;color:#111;letter-spacing:.5px;}
-.brand-cabang{font-size:10px;color:#666;margin-top:2px;}
+.copy-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;}
+.brand-name{font-size:15px;font-weight:900;color:#111;letter-spacing:.5px;}
+.brand-cabang{font-size:9px;color:#666;margin-top:1px;}
 .nota-right{text-align:right;}
-.nota-title-line{display:flex;align-items:center;justify-content:flex-end;gap:6px;}
-.nota-title{font-size:13px;font-weight:800;color:#1273EB;text-transform:uppercase;letter-spacing:.4px;}
-.badge{display:inline-block;padding:3px 8px;border-radius:4px;font-size:9px;font-weight:800;color:#fff;letter-spacing:.5px;}
+.nota-title-line{display:flex;align-items:center;justify-content:flex-end;gap:5px;}
+.nota-title{font-size:12px;font-weight:800;color:#1273EB;text-transform:uppercase;letter-spacing:.4px;}
+.badge{display:inline-block;padding:2px 7px;border-radius:3px;font-size:8px;font-weight:800;color:#fff;letter-spacing:.5px;}
 .badge-admin{background:#1273EB;}
 .badge-customer{background:#16A34A;}
-.nota-meta{font-size:9.5px;color:#555;margin-top:3px;line-height:1.6;}
+.nota-meta{font-size:8.5px;color:#555;margin-top:2px;line-height:1.5;}
 
 /* ── DIVIDERS ── */
-.divider-bold{border:none;border-top:2px solid #1273EB;margin:7px 0 0;}
+.divider-bold{border:none;border-top:2px solid #1273EB;margin:4px 0 0;}
 .divider-thin{border:none;border-top:1px solid #E5E9F2;margin:0;}
 
 /* ── SECTION HEADER ── */
 .section-header{
-    background:#F1F5F9;padding:5px 10px;
-    font-size:9.5px;font-weight:800;color:#334155;
+    background:#F1F5F9;padding:3px 8px;
+    font-size:8.5px;font-weight:800;color:#334155;
     text-transform:uppercase;letter-spacing:.5px;
     border-left:3px solid #1273EB;
 }
 
 /* ── INFO GRID ── */
-.info-grid{display:flex;padding:8px 4px 6px;gap:0;}
-.info-cell{flex:1;padding-right:12px;}
-.info-cell-label{font-size:8.5px;color:#94A3B8;text-transform:uppercase;letter-spacing:.3px;margin-bottom:2px;}
-.info-cell-value{font-size:10.5px;font-weight:700;color:#111;line-height:1.4;}
+.info-grid{display:flex;padding:4px 4px 3px;gap:0;}
+.info-cell{flex:1;padding-right:10px;}
+.info-cell-label{font-size:7.5px;color:#94A3B8;text-transform:uppercase;letter-spacing:.3px;margin-bottom:1px;}
+.info-cell-value{font-size:9.5px;font-weight:700;color:#111;line-height:1.3;}
 
 /* ── TABEL LAYANAN ── */
 .layanan-table{width:100%;border-collapse:collapse;}
-.layanan-table th{font-size:9.5px;font-weight:700;color:#475569;
-    padding:6px 6px;border-bottom:1.5px solid #CBD5E1;text-align:left;}
+.layanan-table th{font-size:8.5px;font-weight:700;color:#475569;
+    padding:3px 5px;border-bottom:1.5px solid #CBD5E1;text-align:left;}
 .layanan-table th.r,.layanan-table td.r{text-align:right;}
 .layanan-table th.c,.layanan-table td.c{text-align:center;}
-.layanan-table td{font-size:10px;padding:5px 6px;border-bottom:1px solid #F1F5F9;color:#222;vertical-align:middle;}
-.layanan-table tr.empty td{height:22px;border-bottom:1px solid #F1F5F9;}
+.layanan-table td{font-size:9px;padding:3px 5px;border-bottom:1px solid #F1F5F9;color:#222;vertical-align:middle;}
+.layanan-table tr.empty td{height:14px;border-bottom:1px solid #F1F5F9;}
 .layanan-table tr:last-child td{border-bottom:1.5px solid #CBD5E1;}
 
 /* ── FOOTER ── */
 .copy-footer{display:flex;justify-content:space-between;align-items:flex-start;
-    margin-top:10px;padding-top:8px;}
-.metode-label{font-size:9px;color:#64748B;margin-bottom:4px;}
+    margin-top:6px;padding-top:4px;}
+.metode-label{font-size:8px;color:#64748B;margin-bottom:2px;}
 .metode-badge{display:inline-block;background:#1273EB;color:#fff;
-    font-size:9.5px;font-weight:700;padding:3px 12px;border-radius:5px;}
-.summary-block{min-width:210px;}
-.sum-row{display:flex;justify-content:space-between;font-size:9.5px;margin-bottom:3px;}
+    font-size:8.5px;font-weight:700;padding:2px 10px;border-radius:4px;}
+.summary-block{min-width:200px;}
+.sum-row{display:flex;justify-content:space-between;font-size:8.5px;margin-bottom:2px;}
 .sum-lbl{color:#64748B;}
 .sum-val{font-weight:600;color:#111;}
-.sum-sep{border:none;border-top:1.5px solid #111;margin:4px 0;}
+.sum-sep{border:none;border-top:1.5px solid #111;margin:3px 0;}
 .sum-total{display:flex;justify-content:space-between;align-items:center;}
-.sum-total-lbl{font-size:11px;font-weight:800;color:#111;}
-.sum-total-val{font-size:13px;font-weight:800;color:#1273EB;}
+.sum-total-lbl{font-size:10px;font-weight:800;color:#111;}
+.sum-total-val{font-size:12px;font-weight:800;color:#1273EB;}
 
 /* ── TTD ── */
-.ttd-row{display:flex;justify-content:space-between;margin-top:24px;padding:0 20px;}
+.ttd-row{display:flex;justify-content:space-between;margin-top:12px;padding:0 16px;}
 .ttd-cell{text-align:center;width:40%;}
-.ttd-role{font-size:10px;color:#555;margin-bottom:42px;}/* space kosong untuk ttd */
-.ttd-line{border:none;border-top:1px solid #888;width:100%;margin-bottom:5px;}
-.ttd-name{font-size:11px;font-weight:700;color:#111;}
+.ttd-role{font-size:9px;color:#555;margin-bottom:24px;}
+.ttd-line{border:none;border-top:1px solid #888;width:100%;margin-bottom:3px;}
+.ttd-name{font-size:10px;font-weight:700;color:#111;}
 
 /* ── WATERMARK ── */
-.wm{text-align:center;font-size:8.5px;color:#CBD5E1;margin-top:14px;}
+.wm{text-align:center;font-size:7.5px;color:#CBD5E1;margin-top:6px;}
 
 /* ── PRINT ── */
 @media print{
-    @page{size:A4 portrait;margin:8mm 10mm;}
+    @page{size:A4 portrait;margin:5mm 8mm;}
     body{background:#fff;}
     .action-bar,.nav-box{display:none!important;}
     .preview-wrapper{padding:0;}
-    .nota-paper{box-shadow:none;border-radius:0;padding:0;margin:0;width:100%;}
+    .nota-paper{box-shadow:none;border-radius:0;padding:12px 20px;margin:0;width:100%;}
+    .copy-separator{margin:8px 0;}
+    .ttd-role{margin-bottom:20px;}
+    .ttd-row{margin-top:8px;}
+    .wm{margin-top:4px;}
 }
 </style>
 </head>
@@ -142,12 +147,12 @@ body{font-family:'Arial',sans-serif;font-size:12px;background:#f0f4f8;color:#222
         </svg>
         Kembali
     </button>
-    <button class="btn btn-print" onclick="window.print()">
+    <button class="btn btn-print" onclick="handleCetakNota()">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round"
                 d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H3.231a1.125 1.125 0 01-1.12-1.227L2.34 18m15.32 0H2.34"/>
         </svg>
-        Print Nota
+        Cetak Nota
     </button>
     <button class="btn btn-download" onclick="handleDownload()">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -376,18 +381,60 @@ function changePage(dir){
     document.getElementById('notaPaper').scrollIntoView({behavior:'smooth'});
 }
 
+async function init(){
+    const raw = sessionStorage.getItem('notaPembayaran');
+    if(!raw){ alert('Data nota tidak ditemukan. Silakan ulangi proses pembayaran.'); history.back(); return; }
+    nota = JSON.parse(raw);
+
+    try{
+        const res = await fetch(`/api/transactions/${nota.transactionId}`,{
+            headers:{'Authorization':`Bearer ${token}`,'Accept':'application/json'}
+        });
+        const r = await res.json();
+        if(res.ok&&r.status==='success') txData=r.data;
+    }catch(e){ console.warn('Gagal fetch transaksi:',e); }
+
+    allItems   = buildAllItems();
+    totalPages = Math.max(1, Math.ceil(allItems.length/PER_PAGE));
+    renderAll();
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await init();
+});
+
 function handleKembali(){
     window.location.href = "{{ route('riwayat-transaksi.index') }}";
 }
-function handleDownload(){
+
+/**
+ * Cetak Nota — hanya print saja, tanpa finalize
+ */
+function handleCetakNota() {
+    window.print();
+}
+
+/**
+ * Download PDF → finalize transaksi → redirect ke Riwayat Transaksi
+ */
+async function handleDownload(){
     if(!nota) return;
     const id = nota.transactionId ?? getIdFromUrl();
-    
-    // Gunakan form POST agar data JSON tidak terpotong oleh limit GET URL
+    if (!id) {
+        Swal.fire('Error', 'ID transaksi tidak ditemukan!', 'error');
+        return;
+    }
+
+    // 1. Download PDF via hidden iframe (agar tidak navigate away)
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = `/antrian-pengerjaan/${id}/nota-pdf`;
-    
+    form.target = iframe.name = 'pdfDownloadFrame_' + Date.now();
+
     const csrf = document.createElement('input');
     csrf.type = 'hidden';
     csrf.name = '_token';
@@ -414,32 +461,50 @@ function handleDownload(){
 
     document.body.appendChild(form);
     form.submit();
-}
 
-async function init(){
-    const raw = sessionStorage.getItem('notaPembayaran');
-    if(!raw){ alert('Data nota tidak ditemukan. Silakan ulangi proses pembayaran.'); history.back(); return; }
-    nota = JSON.parse(raw);
+    // 2. Tunggu sebentar agar download mulai, lalu finalize
+    await new Promise(r => setTimeout(r, 1500));
 
-    try{
-        const res = await fetch(`/api/transactions/${nota.transactionId}`,{
-            headers:{'Authorization':`Bearer ${token}`,'Accept':'application/json'}
+    try {
+        const res = await fetch(`/api/transactions/${id}/finalize`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/json',
+            },
         });
-        const r = await res.json();
-        if(res.ok&&r.status==='success') txData=r.data;
-    }catch(e){ console.warn('Gagal fetch transaksi:',e); }
+        const result = await res.json();
 
-    allItems   = buildAllItems();
-    totalPages = Math.max(1, Math.ceil(allItems.length/PER_PAGE));
-    renderAll();
+        if (res.ok && result.status === 'success') {
+            // Bersihkan session data nota
+            sessionStorage.removeItem('notaPembayaran');
+            sessionStorage.removeItem('notaSudahDicetak');
+
+            await Swal.fire({
+                icon: 'success',
+                title: 'Transaksi Selesai!',
+                text: 'PDF berhasil didownload. Pembayaran lunas & data dipindahkan ke Riwayat Transaksi.',
+                timer: 2500,
+                timerProgressBar: true,
+                showConfirmButton: false,
+            });
+
+            window.location.href = '/riwayat-transaksi';
+        } else {
+            Swal.fire('Gagal!', result.message ?? 'Gagal menyelesaikan transaksi.', 'error');
+        }
+    } catch (err) {
+        console.error('Finalize error:', err);
+        Swal.fire('Error', 'Tidak bisa terhubung ke server.', 'error');
+    }
+
+    // Cleanup
+    setTimeout(() => {
+        iframe.remove();
+        form.remove();
+    }, 5000);
 }
-
-document.addEventListener('DOMContentLoaded', async () => {
-    await init();
-
-    // Tandai bahwa nota sudah dicetak — flag untuk mencegah redirect ganda
-    sessionStorage.setItem('notaSudahDicetak', '1');
-});
 </script>
 </body>
 </html>

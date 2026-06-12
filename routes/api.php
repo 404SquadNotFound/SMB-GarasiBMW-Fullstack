@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route custom buat update status servis
     Route::get('/transactions/status-summary', [ServiceTransactionController::class, 'statusSummary']);
     Route::put('/transactions/{id}/status', [ServiceTransactionController::class, 'updateStatus']);
+    Route::post('/transactions/{id}/finalize', [ServiceTransactionController::class, 'finalize']);
 
     // Endpoint data stok suku cadang untuk dropdown antrian pengerjaan
     Route::get('/spareparts-for-antrian', [SparepartController::class, 'listForAntrian']);
