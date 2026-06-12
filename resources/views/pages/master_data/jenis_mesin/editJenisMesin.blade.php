@@ -77,7 +77,8 @@
                     document.getElementById('name').value = data.name;
                     document.getElementById('cylinders').value = data.cylinders;
                     document.getElementById('engine_cap').value = new Intl.NumberFormat('id-ID').format(data.engine_cap);
-                    document.getElementById('oil_cap').value = data.oil_cap;
+                    // Sesuaikan format oli (mengubah titik dari database menjadi koma untuk display user)
+                    document.getElementById('oil_cap').value = data.oil_cap.toString().replace('.', ',');
                     document.getElementById('fuel_type').value = data.fuel_type;
                     document.getElementById('editEngineForm').addEventListener('input', () => isDirty = true);
                 }
@@ -89,15 +90,39 @@
         document.getElementById('submitBtnApi').onclick = async (e) => {
             e.preventDefault();
             
-            const rawEngineCap = document.getElementById('engine_cap').value.replace(/\./g, '');
-            const rawOilCap = document.getElementById('oil_cap').value.replace(',', '.');
-            
+            // 1. Ambil raw value dari inputan dan hapus spasi berlebih
+            const nameVal = document.getElementById('name').value.trim();
+            const cylindersVal = document.getElementById('cylinders').value.trim();
+            const rawEngineCap = document.getElementById('engine_cap').value.trim();
+            const rawOilCap = document.getElementById('oil_cap').value.trim();
+            const fuelTypeVal = document.getElementById('fuel_type').value.trim();
+
+            // 2. Kumpulkan array error jika ada yang kosong
+            let emptyFields = [];
+
+            if (!nameVal) emptyFields.push('Kode Mesin');
+            if (!cylindersVal) emptyFields.push('Konfigurasi Silinder');
+            if (!rawEngineCap) emptyFields.push('Kapasitas Mesin');
+            if (!rawOilCap) emptyFields.push('Kapasitas Oli');
+            if (!fuelTypeVal) emptyFields.push('Bahan Bakar');
+
+            // 3. Tampilkan Swal jika ada field yang terlewat
+            if (emptyFields.length > 0) {
+                let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
+                Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
+                return;
+            }
+
+            // 4. Bersihkan format sebelum masuk payload
+            const cleanEngineCap = rawEngineCap.replace(/\./g, '');
+            const cleanOilCap = rawOilCap.replace(',', '.'); // Ubah koma jadi titik biar diterima database
+
             const updatedData = {
-                name: document.getElementById('name').value,
-                cylinders: document.getElementById('cylinders').value,
-                engine_cap: Number(rawEngineCap),
-                oil_cap: parseFloat(rawOilCap),
-                fuel_type: document.getElementById('fuel_type').value,
+                name: nameVal,
+                cylinders: cylindersVal,
+                engine_cap: Number(cleanEngineCap),
+                oil_cap: parseFloat(cleanOilCap),
+                fuel_type: fuelTypeVal,
             };
 
             try {

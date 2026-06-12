@@ -50,9 +50,27 @@
 
         document.getElementById('submitBtnApi').onclick = async (e) => {
             e.preventDefault();
+
+            // 1. Ambil value dan hapus spasi berlebih
+            const nameVal = document.getElementById('name').value.trim();
+            const descVal = document.getElementById('description').value.trim();
+
+            // 2. Kumpulkan field yang wajib tapi masih kosong
+            let emptyFields = [];
+            
+            if (!nameVal) emptyFields.push('Nama Supplier');
+
+            // 3. Tampilkan peringatan jika ada yang kosong
+            if (emptyFields.length > 0) {
+                let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
+                Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
+                return; // Stop proses ke bawah
+            }
+
+            // 4. Kalau aman, lanjut susun payload data
             const data = {
-                name: document.getElementById('name').value,
-                description: document.getElementById('description').value
+                name: nameVal,
+                description: descVal
             };
 
             Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });

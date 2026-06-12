@@ -33,7 +33,6 @@
                 </div>
                 <div>
                     <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Nomor Telepon <span class="text-red-500">*</span></label>
-                    {{-- FIX 1: maxlength + hanya angka (konsisten dengan create) --}}
                     <input type="text" x-model="formData.phone_number" maxlength="15"
                         x-on:input="formData.phone_number = $el.value.replace(/[^0-9]/g, '')"
                         placeholder="Masukkan nomor telepon"
@@ -92,7 +91,6 @@
                         {{-- Model Mobil --}}
                         <div>
                             <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Model Mobil</label>
-                            {{-- FIX 4: stopPropagation biar klik dalam dropdown gak nutup dirinya sendiri --}}
                             <div class="relative" @click.stop>
                                 <input type="text" x-model="carSearch" @input="filterCarTypes" @focus="showCarDropdown = true"
                                     placeholder="Ketik untuk cari model BMW..."
@@ -144,7 +142,6 @@
                         {{-- Tahun Mobil --}}
                         <div>
                             <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Tahun Mobil</label>
-                            {{-- FIX: Sama persis dengan create — ada validasi min/max/blur --}}
                             <input type="number"
                                 min="1928"
                                 max="2026"
@@ -158,7 +155,6 @@
                         {{-- Nomor Polisi --}}
                         <div>
                             <label class="block text-[13px] font-bold text-[#213F5C] mb-2">Nomor Polisi</label>
-                            {{-- FIX 1: Auto uppercase, hanya huruf/angka/spasi, max 10 char --}}
                             <input type="text" x-model="tempCar.license_plate" maxlength="8"
                                 x-on:input="tempCar.license_plate = $el.value.toUpperCase().replace(/[^A-Z0-9 ]/g, '')"
                                 placeholder="B1040JAW"
@@ -167,7 +163,6 @@
                         {{-- KM Masuk Bengkel --}}
                         <div>
                             <label class="block text-[13px] font-bold text-[#213F5C] mb-2">KM Masuk Bengkel</label>
-                            {{-- FIX 2: Hanya angka positif, blokir e/-/. --}}
                             <input type="number"
                                 min="0"
                                 max="9999999"
@@ -239,7 +234,7 @@
                             this.formData.phone_number = data.phone_number;
                             this.formData.address = data.address;
 
-                            // FIX: Map field API ke field internal yang konsisten
+                            // Map field API ke field internal yang konsisten
                             this.cars = data.vehicles.map(v => {
                                 const matchedType = this.carTypes.find(t => t.car_type_id == v.car_type_id);
                                 return {
@@ -256,11 +251,10 @@
                         }
                     } catch (e) { console.error("Gagal load data edit", e); }
 
-                    // FIX: ID tombol di form_wrapper adalah 'submitUpdateBtn'
+                    // Hook ke form wrapper
                     const btn = document.getElementById('submitUpdateBtn');
                     if (btn) btn.onclick = (e) => { e.preventDefault(); this.submitUpdateData(); };
 
-                    // FIX 4: Close dropdown saat klik luar
                     document.addEventListener('click', () => { this.showCarDropdown = false; this.showEngineDropdown = false; });
                 },
 
@@ -276,10 +270,9 @@
                     this.tempCar.car_type_id = type.car_type_id;
                     this.carSearch = type.name;
                     this.showCarDropdown = false;
-                    this.updateAvailableEngines(true); // reset engine_name saat pilih model baru
+                    this.updateAvailableEngines(true);
                 },
 
-                // FIX 3: Parameter resetEngine — false saat edit supaya nilai existing tetap terpilih
                 updateAvailableEngines(resetEngine = true) {
                     const selected = this.carTypes.find(t => t.car_type_id == this.tempCar.car_type_id);
                     this.availableEngines = (selected && selected.engine_code)
@@ -305,12 +298,11 @@
                     this.showEngineDropdown = false;
                 },
 
-                // FIX 3: Edit mobil — load engines tanpa reset engine_name yang sudah ada
                 editCarFromList(index) {
                     this.editIndex = index;
                     this.tempCar = { ...this.cars[index] };
                     this.carSearch = this.cars[index].car_name || '';
-                    this.updateAvailableEngines(false); // false = pertahankan engine_name existing
+                    this.updateAvailableEngines(false); 
                     this.showForm = true;
                 },
 
@@ -318,7 +310,6 @@
                     if (!this.tempCar.car_type_id || !this.tempCar.license_plate) {
                         return Swal.fire('Data Belum Lengkap!', 'Pilih model dan isi nomor polisi dulu.', 'warning');
                     }
-                    // FIX 2: Sanitasi km sebelum simpan
                     if (this.tempCar.km_reading < 0 || this.tempCar.km_reading === '') {
                         this.tempCar.km_reading = 0;
                     }
@@ -326,7 +317,6 @@
                     const carData = { ...this.tempCar, car_name: model ? model.name : '' };
                     if (this.editIndex !== null) {
                         this.cars[this.editIndex] = carData;
-                        // FIX 3: Trigger reactivity Alpine setelah index-assign
                         this.cars = [...this.cars];
                     } else {
                         this.cars.push(carData);
@@ -339,9 +329,10 @@
                 async submitUpdateData() {
                     let emptyFields = [];
 
-                    if (!this.formData.name) emptyFields.push('Nama Lengkap');
-                    if (!this.formData.phone_number) emptyFields.push('Nomor Telepon');
-                    if (!this.formData.address) emptyFields.push('Alamat');
+                    // Penambahan .trim() untuk memastikan tidak ada inputan hanya spasi
+                    if (!this.formData.name.trim()) emptyFields.push('Nama Lengkap');
+                    if (!this.formData.phone_number.trim()) emptyFields.push('Nomor Telepon');
+                    if (!this.formData.address.trim()) emptyFields.push('Alamat');
                     if (this.cars.length === 0) emptyFields.push('Data Mobil');
                     
                     if (emptyFields.length > 0) {

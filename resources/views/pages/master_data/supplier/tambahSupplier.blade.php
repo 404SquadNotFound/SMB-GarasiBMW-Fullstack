@@ -30,29 +30,58 @@
 
 @section('content')
     @include('layouts.form_wrapper', ['backUrl' => route('supplier.index'), 'submitBtnText' => 'Simpan Supplier'])
+    
     <script>
-        document.getElementById('submitBtnApi').onclick = async () => {
-            const data = { name: document.getElementById('name').value, description: document.getElementById('description').value };
+        document.getElementById('submitBtnApi').onclick = async (e) => {
+            e.preventDefault(); // Mencegah reload bawaan form (jika ada)
+
+            // 1. Ambil value dan hapus spasi berlebih
+            const nameVal = document.getElementById('name').value.trim();
+            const descVal = document.getElementById('description').value.trim();
+
+            // 2. Kumpulkan field yang wajib tapi masih kosong
+            let emptyFields = [];
+            
+            if (!nameVal) emptyFields.push('Nama Supplier');
+
+            // 3. Tampilkan peringatan jika ada yang kosong
+            if (emptyFields.length > 0) {
+                let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
+                Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
+                return; // Stop eksekusi API
+            }
+
+            // 4. Lanjut hit API jika aman
+            const data = { 
+                name: nameVal, 
+                description: descVal 
+            };
+            
             const token = localStorage.getItem('access_token');
-            Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });
+            
+            Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-            const res = await fetch('/api/suppliers', {
-                method: 'POST',
-                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify(data)
-            });
-
-            if (res.ok) {
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: 'Supplier baru berhasil ditambahkan.',
-                    timer: 1500,
-                    showConfirmButton: false
+            try {
+                const res = await fetch('/api/suppliers', {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify(data)
                 });
-                window.location.href = "{{ route('supplier.index') }}";
-            } else {
-                Swal.fire('Gagal!', 'Cek lagi inputannya.', 'error');
+
+                if (res.ok) {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: 'Supplier baru berhasil ditambahkan.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    window.location.href = "{{ route('supplier.index') }}";
+                } else {
+                    Swal.fire('Gagal!', 'Cek lagi inputannya.', 'error');
+                }
+            } catch (error) {
+                Swal.fire('Error!', 'Koneksi API terputus.', 'error');
             }
         };
     </script>
