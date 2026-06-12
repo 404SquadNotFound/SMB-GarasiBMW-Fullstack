@@ -7,6 +7,8 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\EngineTypeController;
 use App\Http\Controllers\CarTypeController;
 use App\Http\Controllers\AntrianPengerjaanController;
+use App\Http\Controllers\PayrollController;
+use App\Http\Controllers\NotaController;
 
 
 // Route Login
@@ -170,6 +172,7 @@ Route::get('/payroll/edit/{id}', function ($id) {
 Route::get('/payroll/delete/{id}', function ($id) {
     return view('pages.payroll.payroll');
 })->name('payroll.delete');
+Route::get('/payroll/{id}', [PayrollController::class, 'show'])->name('payroll.show');
 
 // Route Layanan Servis -> Antrian Pengerjaan 
 Route::get('/manajemen-servis', function () {
@@ -236,3 +239,10 @@ Route::get('/antrian-pengerjaan/{id}/pembayaran', function ($id) {
     return view('pages.antrian_pengerjaan.prosesPembayaran');
 })->name('antrian-pengerjaan.pembayaran');
 
+// Preview nota (HTML page — data jasa dibawa via sessionStorage)
+Route::get('/antrian-pengerjaan/{id}/nota-preview', [NotaController::class, 'previewPage'])
+    ->name('antrian-pengerjaan.previewNota');
+
+// Download / stream PDF nota
+Route::post('/antrian-pengerjaan/{id}/nota-pdf', [NotaController::class, 'downloadPdf'])
+    ->name('antrian-pengerjaan.notaPdf');

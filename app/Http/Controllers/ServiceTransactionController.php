@@ -16,7 +16,7 @@ class ServiceTransactionController extends Controller
         $query = ServiceTransaction::with([
             'vehicle.customer',
             'vehicle.carType',
-            'items.sparepart',
+            'items.sparepart.supplier',
             'creator',
         ]);
 
@@ -25,13 +25,13 @@ class ServiceTransactionController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->whereHas('vehicle.customer', function ($cq) use ($search) {
                     $cq->where('name', 'LIKE', "%{$search}%")
-                       ->orWhere('phone_number', 'LIKE', "%{$search}%");
+                        ->orWhere('phone_number', 'LIKE', "%{$search}%");
                 })
-                ->orWhereHas('vehicle', function ($vq) use ($search) {
-                    $vq->where('license_plate', 'LIKE', "%{$search}%")
-                       ->orWhere('model', 'LIKE', "%{$search}%");
-                })
-                ->orWhere('invoice_number', 'LIKE', "%{$search}%");
+                    ->orWhereHas('vehicle', function ($vq) use ($search) {
+                        $vq->where('license_plate', 'LIKE', "%{$search}%")
+                            ->orWhere('model', 'LIKE', "%{$search}%");
+                    })
+                    ->orWhere('invoice_number', 'LIKE', "%{$search}%");
             });
         }
 
@@ -40,7 +40,7 @@ class ServiceTransactionController extends Controller
         }
 
         return $query->orderBy('created_at', 'desc')
-                     ->paginate($request->limit ?? 10);
+            ->paginate($request->limit ?? 10);
     }
 
     public function show($id)
@@ -48,38 +48,40 @@ class ServiceTransactionController extends Controller
         $transaction = ServiceTransaction::with([
             'vehicle.customer',
             'vehicle.carType',
-            'items.sparepart',
+            'items.sparepart.supplier',
             'creator',
         ])->find($id);
 
         if (!$transaction) {
             return response()->json([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Data transaksi tidak ditemukan',
             ], 404);
         }
 
         return response()->json([
             'status' => 'success',
-            'data'   => $transaction,
+            'data' => $transaction,
         ], 200);
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'customer_id'   => 'nullable|exists:customers,customer_id',
-            'vehicle_id'    => 'nullable|exists:vehicles,vehicles_id',
+            'customer_id' => 'nullable|exists:customers,customer_id',
+            'vehicle_id' => 'nullable|exists:vehicles,vehicles_id',
             'customer_name' => 'nullable|string',
-            'phone_number'  => 'nullable|string',
-            'address'       => 'nullable|string',
+            'phone_number' => 'nullable|string',
+            'address' => 'nullable|string',
             'license_plate' => 'nullable|string',
-            'car_model'     => 'nullable|string',
-            'engine_code'   => 'nullable|str    ing',
-            'km_masuk'      => 'nullable|numeric',
-            'items'         => 'nullable|array',
+            'car_model' => 'nullable|string',
+            'engine_code' => 'nullable|str    ing',
+            'km_masuk' => 'nullable|numeric',
+            'items' => 'nullable|array',
             'items.*.sparepart_id' => 'nullable|exists:spareparts,sparepart_id',
-            'items.*.quantity'     => 'nullable|integer|min:1',
+            'items.*.quantity' => 'nullable|integer|min:1',
+            'status_payment' => 'nullable|in:unpaid,dp,paid',
+            'dp_amount' => 'nullable|numeric|min:0',
         ]);
 
         DB::beginTransaction();
@@ -95,8 +97,8 @@ class ServiceTransactionController extends Controller
                 $customer = Customer::firstOrCreate(
                     ['phone_number' => $request->phone_number],
                     [
-                        'name'       => $request->customer_name,
-                        'address'    => $request->address ?? '-',
+                        'name' => $request->customer_name,
+                        'address' => $request->address ?? '-',
                         'created_by' => $request->user()->employees_id ?? 1,
                     ]
                 );
@@ -110,30 +112,31 @@ class ServiceTransactionController extends Controller
                 $vehicle = Vehicle::firstOrCreate(
                     ['license_plate' => $licensePlate, 'customer_id' => $customer->customer_id],
                     [
-                        'car_type_id'     => null,
-                        'model'           => $request->car_model ?? '-',
-                        'engine_code'     => $request->engine_code ?? '-',
+                        'car_type_id' => null,
+                        'model' => $request->car_model ?? '-',
+                        'engine_code' => $request->engine_code ?? '-',
                         'production_code' => '-',
-                        'odometer'        => (int) preg_replace('/[^0-9]/', '', $request->km_masuk ?? '0'),
-                        'created_by'      => $request->user()->employees_id ?? 1,
+                        'odometer' => (int) preg_replace('/[^0-9]/', '', $request->km_masuk ?? '0'),
+                        'created_by' => $request->user()->employees_id ?? 1,
                     ]
                 );
             }
 
             // 3. Generate nomor invoice
-            $dateCode    = date('Ymd');
-            $countToday  = ServiceTransaction::whereDate('created_at', date('Y-m-d'))->count() + 1;
+            $dateCode = date('Ymd');
+            $countToday = ServiceTransaction::whereDate('created_at', date('Y-m-d'))->count() + 1;
             $invoiceNumber = 'INV-PP-' . $dateCode . '-' . str_pad($countToday, 3, '0', STR_PAD_LEFT);
 
             // 4. Buat transaksi
             $transaction = ServiceTransaction::create([
-                'vehicle_id'     => $vehicle->vehicles_id,
+                'vehicle_id' => $vehicle->vehicles_id,
                 'invoice_number' => $invoiceNumber,
-                'branch'         => 'PELAJAR_PEJUANG',
-                'odometer'       => (int) preg_replace('/[^0-9]/', '', $request->km_masuk ?? '0'),
+                'branch' => 'PELAJAR_PEJUANG',
+                'odometer' => (int) preg_replace('/[^0-9]/', '', $request->km_masuk ?? '0'),
                 'status_service' => 'pengecekan',
-                'status_payment' => 'unpaid',
-                'created_by'     => $request->user()->employees_id ?? 1,
+                'status_payment' => $request->status_payment ?? 'unpaid',
+                'dp_amount' => $request->dp_amount ?? null,
+                'created_by' => $request->user()->employees_id ?? 1,
             ]);
 
             // 5. Simpan items (suku cadang) jika ada
@@ -141,22 +144,42 @@ class ServiceTransactionController extends Controller
                 foreach ($request->items as $item) {
                     if (!empty($item['sparepart_id'])) {
                         $sparepart = \App\Models\Sparepart::find($item['sparepart_id']);
-                        $qty       = $item['quantity'] ?? 1;
-                        $price     = $sparepart?->selling_price ?? 0;
+                        $qty = $item['quantity'] ?? 1;
+                        $price = $sparepart?->selling_price ?? 0;
 
                         TransactionItem::create([
                             'transaction_id' => $transaction->transaction_id,
-                            'spare_part_id'  => $item['sparepart_id'],
-                            'item_name'      => $sparepart?->name ?? 'Unknown',
-                            'item_type'      => 'Parts',
-                            'qty'            => $qty,
-                            'price'          => $price,
-                            'subtotal'       => $price * $qty,
+                            'spare_part_id' => $item['sparepart_id'],
+                            'item_name' => $sparepart?->name ?? 'Unknown',
+                            'item_type' => 'Parts',
+                            'qty' => $qty,
+                            'price' => $price,
+                            'subtotal' => $price * $qty,
                         ]);
 
-                        // Kurangi stok
                         if ($sparepart) {
+                            // Kurangi stok di tabel spareparts (agregat)
                             $sparepart->decrement('quantity', $qty);
+
+                            // FIX: Kurangi juga stok di tabel sparepart_stocks
+                            // Ambil stok terlama yang masih ada (FIFO)
+                            $stocks = \App\Models\SparepartStock::where('sparepart_id', $sparepart->sparepart_id)
+                                ->where('quantity', '>', 0)
+                                ->orderBy('date', 'asc')
+                                ->get();
+
+                            $remaining = $qty;
+                            foreach ($stocks as $stock) {
+                                if ($remaining <= 0)
+                                    break;
+                                if ($stock->quantity >= $remaining) {
+                                    $stock->decrement('quantity', $remaining);
+                                    $remaining = 0;
+                                } else {
+                                    $remaining -= $stock->quantity;
+                                    $stock->update(['quantity' => 0]);
+                                }
+                            }
                         }
                     }
                 }
@@ -165,15 +188,15 @@ class ServiceTransactionController extends Controller
             DB::commit();
 
             return response()->json([
-                'status'  => 'success',
+                'status' => 'success',
                 'message' => 'Antrian berhasil ditambahkan!',
-                'data'    => $transaction->load(['vehicle.customer', 'vehicle.carType', 'items.sparepart', 'creator']),
+                'data' => $transaction->load(['vehicle.customer', 'vehicle.carType', 'items.sparepart.supplier', 'creator']),
             ], 201);
 
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Gagal menyimpan data: ' . $e->getMessage(),
             ], 500);
         }
@@ -184,18 +207,18 @@ class ServiceTransactionController extends Controller
         $transaction = ServiceTransaction::with(['vehicle.customer'])->findOrFail($id);
 
         $request->validate([
-            'customer_id'   => 'nullable|exists:customers,customer_id',
-            'vehicle_id'    => 'nullable|exists:vehicles,vehicles_id',
+            'customer_id' => 'nullable|exists:customers,customer_id',
+            'vehicle_id' => 'nullable|exists:vehicles,vehicles_id',
             'customer_name' => 'nullable|string',
-            'phone_number'  => 'nullable|string',
-            'address'       => 'nullable|string',
-            'car_model'     => 'nullable|string',
-            'engine_code'   => 'nullable|string',
-            'km_masuk'      => 'nullable|numeric',
+            'phone_number' => 'nullable|string',
+            'address' => 'nullable|string',
+            'car_model' => 'nullable|string',
+            'engine_code' => 'nullable|string',
+            'km_masuk' => 'nullable|numeric',
             'license_plate' => 'nullable|string',
-            'items'         => 'nullable|array',
+            'items' => 'nullable|array',
             'items.*.sparepart_id' => 'nullable|exists:spareparts,sparepart_id',
-            'items.*.quantity'     => 'nullable|integer|min:1',
+            'items.*.quantity' => 'nullable|integer|min:1',
         ]);
 
         DB::beginTransaction();
@@ -208,8 +231,8 @@ class ServiceTransactionController extends Controller
                 $customer = Customer::firstOrCreate(
                     ['phone_number' => $request->phone_number],
                     [
-                        'name'       => $request->customer_name,
-                        'address'    => $request->address ?? '-',
+                        'name' => $request->customer_name,
+                        'address' => $request->address ?? '-',
                         'created_by' => $request->user()->employees_id ?? 1,
                     ]
                 );
@@ -226,12 +249,12 @@ class ServiceTransactionController extends Controller
                 $vehicle = Vehicle::firstOrCreate(
                     ['license_plate' => $licensePlate, 'customer_id' => $customer->customer_id],
                     [
-                        'car_type_id'     => null,
-                        'model'           => $request->car_model ?? '-',
-                        'engine_code'     => $request->engine_code ?? '-',
+                        'car_type_id' => null,
+                        'model' => $request->car_model ?? '-',
+                        'engine_code' => $request->engine_code ?? '-',
                         'production_code' => '-',
-                        'odometer'        => (int) preg_replace('/[^0-9]/', '', $request->km_masuk ?? '0'),
-                        'created_by'      => $request->user()->employees_id ?? 1,
+                        'odometer' => (int) preg_replace('/[^0-9]/', '', $request->km_masuk ?? '0'),
+                        'created_by' => $request->user()->employees_id ?? 1,
                     ]
                 );
             } else {
@@ -252,17 +275,17 @@ class ServiceTransactionController extends Controller
                 foreach ($request->items as $item) {
                     if (!empty($item['sparepart_id'])) {
                         $sparepart = \App\Models\Sparepart::find($item['sparepart_id']);
-                        $qty       = $item['quantity'] ?? 1;
-                        $price     = $sparepart?->selling_price ?? 0;
+                        $qty = $item['quantity'] ?? 1;
+                        $price = $sparepart?->selling_price ?? 0;
 
                         TransactionItem::create([
                             'transaction_id' => $transaction->transaction_id,
-                            'spare_part_id'  => $item['sparepart_id'],
-                            'item_name'      => $sparepart?->name ?? 'Unknown',
-                            'item_type'      => 'Parts',
-                            'qty'            => $qty,
-                            'price'          => $price,
-                            'subtotal'       => $price * $qty,
+                            'spare_part_id' => $item['sparepart_id'],
+                            'item_name' => $sparepart?->name ?? 'Unknown',
+                            'item_type' => 'Parts',
+                            'qty' => $qty,
+                            'price' => $price,
+                            'subtotal' => $price * $qty,
                         ]);
 
                         // Kurangi stok dengan yang baru
@@ -275,22 +298,22 @@ class ServiceTransactionController extends Controller
 
             $transaction->update([
                 'vehicle_id' => $vehicle ? $vehicle->vehicles_id : $transaction->vehicle_id,
-                'odometer'   => $request->filled('km_masuk') ? (int) preg_replace('/[^0-9]/', '', $request->km_masuk) : $transaction->odometer,
-                'edited_by'  => $request->user()->employees_id ?? 1,
+                'odometer' => $request->filled('km_masuk') ? (int) preg_replace('/[^0-9]/', '', $request->km_masuk) : $transaction->odometer,
+                'edited_by' => $request->user()->employees_id ?? 1,
             ]);
 
             DB::commit();
 
             return response()->json([
-                'status'  => 'success',
+                'status' => 'success',
                 'message' => 'Data antrian berhasil diupdate!',
-                'data'    => $transaction->fresh(['vehicle.customer', 'vehicle.carType', 'items.sparepart', 'creator']),
+                'data' => $transaction->fresh(['vehicle.customer', 'vehicle.carType', 'items.sparepart.supplier', 'creator']),
             ], 200);
 
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json([
-                'status'  => 'error',
+                'status' => 'error',
                 'message' => 'Gagal update data: ' . $e->getMessage(),
             ], 500);
         }
@@ -306,13 +329,13 @@ class ServiceTransactionController extends Controller
 
         $transaction->update([
             'status_service' => $request->status_service,
-            'edited_by'      => $request->user()->employees_id ?? 1,
+            'edited_by' => $request->user()->employees_id ?? 1,
         ]);
 
         return response()->json([
-            'status'  => 'success',
+            'status' => 'success',
             'message' => 'Status pengerjaan berhasil diupdate!',
-            'data'    => $transaction,
+            'data' => $transaction,
         ], 200);
     }
 
@@ -332,7 +355,7 @@ class ServiceTransactionController extends Controller
         $transaction->delete();
 
         return response()->json([
-            'status'  => 'success',
+            'status' => 'success',
             'message' => 'Data antrian berhasil dihapus!',
         ], 200);
     }
@@ -349,13 +372,13 @@ class ServiceTransactionController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'data'   => [
-                'menunggu'    => $counts['menunggu']    ?? 0,
-                'pengecekan'  => $counts['pengecekan']  ?? 0,
-                'dikerjakan'  => $counts['dikerjakan']  ?? 0,
-                'selesai'     => $counts['selesai']     ?? 0,
-                'dibatalkan'  => $counts['dibatalkan']  ?? 0,
-                'total'       => ServiceTransaction::count(),
+            'data' => [
+                'menunggu' => $counts['menunggu'] ?? 0,
+                'pengecekan' => $counts['pengecekan'] ?? 0,
+                'dikerjakan' => $counts['dikerjakan'] ?? 0,
+                'selesai' => $counts['selesai'] ?? 0,
+                'dibatalkan' => $counts['dibatalkan'] ?? 0,
+                'total' => ServiceTransaction::count(),
             ],
         ]);
     }

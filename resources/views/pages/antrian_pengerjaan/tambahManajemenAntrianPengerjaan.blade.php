@@ -439,7 +439,7 @@
                                 :class="downPaymentAktif
                                     ? 'bg-[#EAF2FF] border-[#1273EB]'
                                     : 'bg-[#F9FBFF] border-[#E5E9F2] hover:bg-[#F0F7FF]'">
-                                <input type="checkbox" x-model="downPaymentAktif" class="hidden">
+                                <input type="checkbox" :checked="downPaymentAktif" @change="downPaymentAktif = $event.target.checked; onDownPaymentToggle()" class="hidden">
                                 {{-- Custom checkbox --}}
                                 <div class="w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all"
                                     :class="downPaymentAktif ? 'bg-[#1273EB] border-[#1273EB]' : 'bg-white border-gray-300'">
@@ -455,73 +455,97 @@
                             </label>
                         </div>
 
-                        {{-- Status Pembayaran --}}
-                        <div>
-                            <label class="block text-[14px] font-bold mb-2 transition-colors"
-                                :class="downPaymentAktif ? 'text-[#213F5C]' : 'text-gray-300'">
-                                Status Pembayaran <span x-show="downPaymentAktif" class="text-red-500">*</span>
+                        {{--
+                            Jika downPaymentAktif = false → status_payment dikirim 'unpaid' (Belum Lunas)
+                            Jika downPaymentAktif = true  → user pilih antara:
+                                'dp'   → DP
+                                'paid' → Lunas
+                        --}}
+
+                        {{-- Pilih tipe DP: hanya tampil jika downPaymentAktif --}}
+                        <div x-show="downPaymentAktif" x-cloak>
+                            <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
+                                Status Pembayaran <span class="text-red-500">*</span>
                             </label>
-                            <div class="relative" @click.stop>
-                                <input type="text" readonly
-                                    :value="selectedStatusPembayaran ? selectedStatusPembayaran.label : ''"
-                                    :disabled="!downPaymentAktif"
-                                    @click="if(downPaymentAktif) showStatusPembayaranDropdown = !showStatusPembayaranDropdown"
-                                    placeholder="Pilih status pembayaran..."
-                                    class="w-full px-5 py-3.5 border rounded-xl outline-none text-[14px] font-semibold transition-all"
-                                    :class="!downPaymentAktif
-                                        ? 'bg-[#F4F6F9] border-[#EAECF0] text-gray-300 cursor-not-allowed placeholder-gray-200'
-                                        : showStatusPembayaranDropdown
-                                            ? 'bg-[#F9FBFF] border-[#1273EB] ring-2 ring-[#1273EB]/10 text-[#213F5C] cursor-pointer'
-                                            : 'bg-[#F9FBFF] border-[#E5E9F2] text-[#213F5C] cursor-pointer hover:border-[#B1D3FF]'">
-                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-colors"
-                                    :class="downPaymentAktif ? 'text-gray-400' : 'text-gray-200'">
-                                    <svg class="w-4 h-4 transition-transform duration-200"
-                                        :class="showStatusPembayaranDropdown ? 'rotate-180' : ''"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                    </svg>
-                                </div>
-                                <div x-show="showStatusPembayaranDropdown && downPaymentAktif" x-cloak
-                                    class="absolute z-50 w-full mt-1 bg-white border border-[#E5E9F2] rounded-2xl shadow-xl overflow-hidden">
-                                    <div class="max-h-[200px] overflow-y-auto dropdown-scroll">
-                                        <template x-for="opt in statusPembayaranOptions" :key="opt.value">
-                                            <div @click="selectStatusPembayaran(opt)"
-                                                class="px-5 py-3.5 text-[14px] font-semibold text-[#213F5C] hover:bg-[#F0F7FF] cursor-pointer border-b border-gray-50 last:border-0 transition-colors"
-                                                :class="selectedStatusPembayaran?.value === opt.value ? 'bg-[#EAF2FF] text-[#1273EB]' : ''"
-                                                x-text="opt.label">
-                                            </div>
-                                        </template>
+                            <div class="flex gap-3">
+                                {{-- Opsi DP --}}
+                                <label
+                                    class="flex-1 flex items-center gap-3 px-5 py-3.5 border-2 rounded-xl cursor-pointer transition-all select-none"
+                                    :class="selectedStatusPembayaran === 'dp'
+                                        ? 'bg-[#FFF8EC] border-[#F59E0B]'
+                                        : 'bg-[#F9FBFF] border-[#E5E9F2] hover:border-[#FDE68A]'">
+                                    <input type="radio" x-model="selectedStatusPembayaran" value="dp" class="hidden">
+                                    <div class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all"
+                                        :class="selectedStatusPembayaran === 'dp'
+                                            ? 'border-[#F59E0B] bg-[#F59E0B]'
+                                            : 'border-gray-300 bg-white'">
+                                        <div x-show="selectedStatusPembayaran === 'dp'"
+                                            class="w-2 h-2 rounded-full bg-white"></div>
                                     </div>
-                                </div>
+                                    <div>
+                                        <p class="text-[13px] font-bold"
+                                            :class="selectedStatusPembayaran === 'dp' ? 'text-[#F59E0B]' : 'text-[#213F5C]'">
+                                            DP
+                                        </p>
+                                        <p class="text-[11px] text-gray-400">Down Payment sebagian</p>
+                                    </div>
+                                </label>
+
+                                {{-- Opsi Lunas --}}
+                                <label
+                                    class="flex-1 flex items-center gap-3 px-5 py-3.5 border-2 rounded-xl cursor-pointer transition-all select-none"
+                                    :class="selectedStatusPembayaran === 'paid'
+                                        ? 'bg-[#EDFBF3] border-[#16A34A]'
+                                        : 'bg-[#F9FBFF] border-[#E5E9F2] hover:border-[#A7F3D0]'">
+                                    <input type="radio" x-model="selectedStatusPembayaran" value="paid" class="hidden">
+                                    <div class="w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-all"
+                                        :class="selectedStatusPembayaran === 'paid'
+                                            ? 'border-[#16A34A] bg-[#16A34A]'
+                                            : 'border-gray-300 bg-white'">
+                                        <div x-show="selectedStatusPembayaran === 'paid'"
+                                            class="w-2 h-2 rounded-full bg-white"></div>
+                                    </div>
+                                    <div>
+                                        <p class="text-[13px] font-bold"
+                                            :class="selectedStatusPembayaran === 'paid' ? 'text-[#16A34A]' : 'text-[#213F5C]'">
+                                            Lunas
+                                        </p>
+                                        <p class="text-[11px] text-gray-400">Pembayaran penuh di muka</p>
+                                    </div>
+                                </label>
                             </div>
                         </div>
 
-                        {{-- Harga Down Payment --}}
-                        <div>
-                            <label class="block text-[14px] font-bold mb-2 transition-colors"
-                                :class="downPaymentAktif ? 'text-[#213F5C]' : 'text-gray-300'">
-                                Harga Down Payment <span x-show="downPaymentAktif" class="text-red-500">*</span>
+                        {{-- Harga Down Payment — hanya tampil jika DP dipilih --}}
+                        <div x-show="downPaymentAktif && selectedStatusPembayaran === 'dp'" x-cloak>
+                            <label class="block text-[14px] font-bold text-[#213F5C] mb-2">
+                                Harga Down Payment <span class="text-red-500">*</span>
                             </label>
                             <input type="number" x-model="hargaDownPayment"
-                                :disabled="!downPaymentAktif"
                                 placeholder="Masukkan harga down payment"
                                 min="0"
                                 @keydown="if(['-','e','E','+'].includes($event.key)) $event.preventDefault()"
-                                class="w-full px-5 py-3.5 border rounded-xl outline-none text-[14px] transition-all"
-                                :class="!downPaymentAktif
-                                    ? 'bg-[#F4F6F9] border-[#EAECF0] text-gray-300 cursor-not-allowed placeholder-gray-200'
-                                    : 'bg-[#F9FBFF] border-[#E5E9F2] text-[#213F5C] placeholder-gray-300 focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10'">
+                                class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none text-[14px] text-[#213F5C] placeholder-gray-300 focus:border-[#1273EB] focus:ring-2 focus:ring-[#1273EB]/10 transition-all">
                         </div>
 
-                        {{-- Ringkasan DP (muncul jika semua field terisi) --}}
-                        <div x-show="downPaymentAktif && selectedStatusPembayaran && hargaDownPayment" x-cloak
+                        {{-- Ringkasan (muncul jika semua field terisi) --}}
+                        <div x-show="downPaymentAktif && selectedStatusPembayaran" x-cloak
                             class="bg-[#F0F7FF] border border-[#B1D3FF] rounded-xl p-4 space-y-1">
-                            <p class="text-[13px] font-bold text-[#1273EB]">💳 Ringkasan Down Payment</p>
+                            <p class="text-[13px] font-bold text-[#1273EB]">💳 Ringkasan Pembayaran</p>
                             <p class="text-[12px] text-gray-500"
-                                x-text="'Status: ' + (selectedStatusPembayaran?.label ?? '-')"></p>
-                            <p class="text-[12px] text-gray-500"
+                                x-text="'Status: ' + (selectedStatusPembayaran === 'dp' ? 'Down Payment' : 'Lunas')"></p>
+                            <p x-show="selectedStatusPembayaran === 'dp' && hargaDownPayment"
+                                class="text-[12px] text-gray-500"
                                 x-text="'Jumlah DP: Rp ' + Number(hargaDownPayment).toLocaleString('id-ID')"></p>
+                        </div>
+
+                        {{-- Info jika downPayment tidak aktif --}}
+                        <div x-show="!downPaymentAktif"
+                            class="flex items-center gap-2 px-4 py-3 bg-[#FFF5F5] border border-[#FFE0E0] rounded-xl">
+                            <span class="w-2 h-2 rounded-full bg-[#FF4D4D] flex-shrink-0"></span>
+                            <p class="text-[12px] font-semibold text-[#FF4D4D]">
+                                Status pembayaran akan tercatat sebagai <strong>Belum Lunas</strong>
+                            </p>
                         </div>
 
                     </div>
@@ -656,14 +680,11 @@
                 sukuCadangItems: [],
 
                 // Down Payment
+                // Jika downPaymentAktif = false → kirim status_payment: 'unpaid'
+                // Jika downPaymentAktif = true  → kirim status_payment: selectedStatusPembayaran ('dp' | 'paid')
                 downPaymentAktif: false,
-                selectedStatusPembayaran: null,
-                showStatusPembayaranDropdown: false,
+                selectedStatusPembayaran: null, // 'dp' | 'paid' | null
                 hargaDownPayment: '',
-                statusPembayaranOptions: [
-                    { value: 'Belum Lunas',  label: 'Belum Lunas' },
-                    { value: 'Lunas', label: 'Lunas' },
-                ],
 
                 // ── init ──────────────────────────────────────────────────
                 async init() {
@@ -675,11 +696,10 @@
 
                     // Global click-outside: tutup semua dropdown
                     document.addEventListener('click', () => {
-                        this.showCustomerDropdown        = false;
-                        this.showVehicleDropdown         = false;
-                        this.showCabangDropdown          = false;
-                        this.showBarangDropdown          = false;
-                        this.showStatusPembayaranDropdown = false;
+                        this.showCustomerDropdown         = false;
+                        this.showVehicleDropdown          = false;
+                        this.showCabangDropdown           = false;
+                        this.showBarangDropdown           = false;
                     });
 
                     document.addEventListener('keydown', (e) => {
@@ -692,6 +712,15 @@
                             e.returnValue = '';
                         }
                     });
+                },
+
+                // ── Toggle handler down payment ───────────────────────────
+                onDownPaymentToggle() {
+                    if (!this.downPaymentAktif) {
+                        // Reset pilihan saat dinonaktifkan
+                        this.selectedStatusPembayaran = null;
+                        this.hargaDownPayment         = '';
+                    }
                 },
 
                 // ── Customer ──────────────────────────────────────────────
@@ -733,21 +762,21 @@
                 },
 
                 selectCustomer(c) {
-                    this.selectedCustomer  = c;
-                    this.customerSearch    = `${c.nama} - ${c.telepon}`;
+                    this.selectedCustomer     = c;
+                    this.customerSearch       = `${c.nama} - ${c.telepon}`;
                     this.showCustomerDropdown = false;
-                    this.currentVehicles   = c.vehicles ?? [];
-                    this.filteredVehicles  = this.currentVehicles;
+                    this.currentVehicles      = c.vehicles ?? [];
+                    this.filteredVehicles     = this.currentVehicles;
                     this.clearVehicle();
                     this.isDirty = true;
                 },
 
                 clearCustomer() {
-                    this.selectedCustomer  = null;
-                    this.customerSearch    = '';
+                    this.selectedCustomer     = null;
+                    this.customerSearch       = '';
                     this.showCustomerDropdown = false;
-                    this.currentVehicles   = [];
-                    this.filteredVehicles  = [];
+                    this.currentVehicles      = [];
+                    this.filteredVehicles     = [];
                     this.clearVehicle();
                 },
 
@@ -766,8 +795,8 @@
                 },
 
                 selectVehicle(v) {
-                    this.selectedVehicle  = v;
-                    this.vehicleSearch    = `${v.model} - ${v.license_plate}`;
+                    this.selectedVehicle     = v;
+                    this.vehicleSearch       = `${v.model} - ${v.license_plate}`;
                     this.showVehicleDropdown = false;
                     if (!this.kmMasuk && v.odometer) {
                         this.kmMasuk = v.odometer;
@@ -776,10 +805,10 @@
                 },
 
                 clearVehicle() {
-                    this.selectedVehicle  = null;
-                    this.vehicleSearch    = '';
+                    this.selectedVehicle     = null;
+                    this.vehicleSearch       = '';
                     this.showVehicleDropdown = false;
-                    this.filteredVehicles = this.currentVehicles;
+                    this.filteredVehicles    = this.currentVehicles;
                 },
 
                 // ── Cabang ────────────────────────────────────────────────
@@ -797,7 +826,7 @@
                         });
                         const result = await res.json();
                         if (res.ok && result.data) {
-                            this.barangList    = result.data;
+                            this.barangList     = result.data;
                             this.filteredBarang = result.data;
                         }
                     } catch (e) {
@@ -806,7 +835,7 @@
                 },
 
                 onBarangFocus() {
-                    this.filteredBarang    = this.barangList;
+                    this.filteredBarang     = this.barangList;
                     this.showBarangDropdown = true;
                 },
 
@@ -821,23 +850,23 @@
                 },
 
                 selectBarang(b) {
-                    this.selectedBarang    = b;
-                    this.barangSearch      = b.nama;
+                    this.selectedBarang     = b;
+                    this.barangSearch       = b.nama;
                     this.showBarangDropdown = false;
-                    this.selectedBatch     = null;
-                    this.batchList         = [];
-                    this.inputJumlah       = '';
+                    this.selectedBatch      = null;
+                    this.batchList          = [];
+                    this.inputJumlah        = '';
                     this.loadBatchList(b.id);
                 },
 
                 clearBarang() {
-                    this.selectedBarang    = null;
-                    this.barangSearch      = '';
-                    this.filteredBarang    = this.barangList;
+                    this.selectedBarang     = null;
+                    this.barangSearch       = '';
+                    this.filteredBarang     = this.barangList;
                     this.showBarangDropdown = false;
-                    this.selectedBatch     = null;
-                    this.batchList         = [];
-                    this.inputJumlah       = '';
+                    this.selectedBatch      = null;
+                    this.batchList          = [];
+                    this.inputJumlah        = '';
                 },
 
                 // ── Batch / Stok tersedia ─────────────────────────────────
@@ -915,89 +944,96 @@
                     this.isDirty = true;
                 },
 
-                // ── Down Payment ──────────────────────────────────────────
-                selectStatusPembayaran(opt) {
-                    this.selectedStatusPembayaran    = opt;
-                    this.showStatusPembayaranDropdown = false;
-                    this.isDirty = true;
-                },
-
                 // ── Submit ────────────────────────────────────────────────
                 async submitData() {
-                    if (!this.selectedCustomer) {
-                        Swal.fire('Oops!', 'Pilih pelanggan terlebih dahulu!', 'warning');
-                        return;
-                    }
-                    if (!this.selectedVehicle) {
-                        Swal.fire('Oops!', 'Pilih kendaraan pelanggan!', 'warning');
-                        return;
-                    }
+    if (!this.selectedCustomer) {
+        Swal.fire('Oops!', 'Pilih pelanggan terlebih dahulu!', 'warning');
+        return;
+    }
+    if (!this.selectedVehicle) {
+        Swal.fire('Oops!', 'Pilih kendaraan pelanggan!', 'warning');
+        return;
+    }
 
-                    // Validasi down payment jika aktif
-                    if (this.downPaymentAktif) {
-                        if (!this.selectedStatusPembayaran) {
-                            Swal.fire('Oops!', 'Pilih status pembayaran untuk down payment!', 'warning');
-                            return;
-                        }
-                        if (!this.hargaDownPayment || parseInt(this.hargaDownPayment) <= 0) {
-                            Swal.fire('Oops!', 'Masukkan harga down payment yang valid!', 'warning');
-                            return;
-                        }
-                    }
+    // Validasi down payment jika aktif
+    if (this.downPaymentAktif) {
+        if (!this.selectedStatusPembayaran) {
+            Swal.fire('Oops!', 'Pilih status pembayaran (DP atau Lunas)!', 'warning');
+            return;
+        }
+        if (this.selectedStatusPembayaran === 'dp') {
+            if (!this.hargaDownPayment || parseInt(this.hargaDownPayment) <= 0) {
+                Swal.fire('Oops!', 'Masukkan harga down payment yang valid!', 'warning');
+                return;
+            }
+        }
+    }
 
-                    Swal.fire({
-                        title: 'Menyimpan data...',
-                        allowOutsideClick: false,
-                        didOpen: () => Swal.showLoading()
-                    });
+    // DEBUG — hapus setelah fix
+    console.log('=== DEBUG SUBMIT ===');
+    console.log('downPaymentAktif:', this.downPaymentAktif);
+    console.log('selectedStatusPembayaran:', this.selectedStatusPembayaran);
+    console.log('hargaDownPayment:', this.hargaDownPayment);
 
-                    const items = this.sukuCadangItems
-                        .filter(sc => sc.sparepart_id)
-                        .map(sc => ({
-                            sparepart_id: sc.sparepart_id,
-                            quantity:     parseInt(sc.jumlah) || 1,
-                        }));
+    Swal.fire({
+        title: 'Menyimpan data...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    });
 
-                    const payload = {
-                        customer_id: this.selectedCustomer.id,
-                        vehicle_id:  this.selectedVehicle.id,
-                        km_masuk:    this.kmMasuk ? parseInt(this.kmMasuk) : null,
-                        cabang_id:   this.selectedCabang ? this.selectedCabang.value : null,
-                        items,
-                        down_payment: this.downPaymentAktif ? {
-                            status: this.selectedStatusPembayaran?.value ?? null,
-                            jumlah: this.hargaDownPayment ? parseInt(this.hargaDownPayment) : null,
-                        } : null,
-                    };
+    const items = this.sukuCadangItems
+        .filter(sc => sc.sparepart_id)
+        .map(sc => ({
+            sparepart_id: sc.sparepart_id,
+            quantity:     parseInt(sc.jumlah) || 1,
+        }));
 
-                    try {
-                        const res    = await fetch('/api/transactions', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type':  'application/json',
-                                'Authorization': `Bearer ${this.token}`,
-                                'Accept':        'application/json',
-                            },
-                            body: JSON.stringify(payload),
-                        });
-                        const result = await res.json();
-                        if (res.ok && result.status === 'success') {
-                            this.isDirty = false;
-                            await Swal.fire({
-                                icon:              'success',
-                                title:             'Berhasil!',
-                                timer:             2000,
-                                showConfirmButton: false
-                            });
-                            window.location.href = "{{ route('antrian-pengerjaan.index') }}";
-                        } else {
-                            Swal.fire('Gagal!', result.message ?? 'Terjadi kesalahan.', 'error');
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        Swal.fire('Error', 'Tidak bisa terhubung ke server.', 'error');
-                    }
-                },
+    const statusPayment = this.downPaymentAktif
+        ? this.selectedStatusPembayaran
+        : 'unpaid';
+
+    const payload = {
+        customer_id:    this.selectedCustomer.id,
+        vehicle_id:     this.selectedVehicle.id,
+        km_masuk:       this.kmMasuk ? parseInt(this.kmMasuk) : null,
+        cabang_id:      this.selectedCabang ? this.selectedCabang.value : null,
+        items,
+        status_payment: statusPayment,
+        dp_amount:      (this.downPaymentAktif && this.selectedStatusPembayaran === 'dp' && this.hargaDownPayment)
+                            ? parseInt(this.hargaDownPayment)
+                            : null,
+    };
+
+    console.log('PAYLOAD:', JSON.stringify(payload, null, 2));
+
+    try {
+        const res    = await fetch('/api/transactions', {
+            method: 'POST',
+            headers: {
+                'Content-Type':  'application/json',
+                'Authorization': `Bearer ${this.token}`,
+                'Accept':        'application/json',
+            },
+            body: JSON.stringify(payload),
+        });
+        const result = await res.json();
+        if (res.ok && result.status === 'success') {
+            this.isDirty = false;
+            await Swal.fire({
+                icon:              'success',
+                title:             'Berhasil!',
+                timer:             2000,
+                showConfirmButton: false
+            });
+            window.location.href = "{{ route('antrian-pengerjaan.index') }}";
+        } else {
+            Swal.fire('Gagal!', result.message ?? 'Terjadi kesalahan.', 'error');
+        }
+    } catch (err) {
+        console.error(err);
+        Swal.fire('Error', 'Tidak bisa terhubung ke server.', 'error');
+    }
+},
             };
         }
     </script>

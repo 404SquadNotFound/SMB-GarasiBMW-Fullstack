@@ -73,6 +73,16 @@ class ItemCategoryController extends Controller
         ], 200);
     }
 
+    public function destroy($id)
+    {
+        $category = ItemCategory::findOrFail($id);
+        $category->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Kategori berhasil dihapus!',
+        ], 200);
+    }
 
     public function exportExcel(ExportService $exportService)
     {
