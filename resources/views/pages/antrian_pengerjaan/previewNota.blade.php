@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preview Nota Pembayaran – GARASIBMW</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         *,
@@ -166,7 +165,7 @@
             padding: 20px 16px 48px;
         }
 
-        /* ── KERTAS A4 (794px = 210mm) ── */
+        /* ── KERTAS A4 PREVIEW LAYAR (794px = 210mm) ── */
         .nota-paper {
             background: #fff;
             width: 794px;
@@ -455,11 +454,30 @@
             margin-top: 6px;
         }
 
+        /* ── EXPORT CONTAINER ── */
+        #exportContainer {
+            display: none;
+            width: 794px;
+            background: #fff;
+            margin: 0 auto;
+        }
+
+        .nota-paper-export {
+            background: #fff;
+            /* Paksa lebar mutlak supaya Flexbox tidak hancur saat di-capture */
+            width: 794px !important;
+            min-width: 794px !important;
+            max-width: 794px !important;
+            padding: 20px 28px;
+            box-sizing: border-box;
+            margin: 0 auto;
+        }
+
         /* ── PRINT ── */
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 5mm 8mm;
+                margin: 5mm;
             }
 
             body {
@@ -467,20 +485,33 @@
             }
 
             .action-bar,
-            .nav-box {
+            .nav-box,
+            .preview-wrapper {
                 display: none !important;
             }
 
-            .preview-wrapper {
-                padding: 0;
+            #exportContainer {
+                display: block !important;
+                position: relative !important;
+                width: 100% !important;
+                /* Bebaskan dari 794px agar pas di kertas browser */
             }
 
-            .nota-paper {
+            .nota-paper-export {
                 box-shadow: none;
                 border-radius: 0;
-                padding: 12px 20px;
+                padding: 5mm 10mm;
                 margin: 0;
-                width: 100%;
+                width: 100% !important;
+                min-width: auto !important;
+                max-width: none !important;
+                page-break-inside: avoid;
+            }
+
+            /* ── INI KUNCI PENYELAMAT PRINT PREVIEW BROWSER ── */
+            .html2pdf__page-break {
+                page-break-before: always !important;
+                break-before: page !important;
             }
 
             .copy-separator {
@@ -504,7 +535,6 @@
 
 <body>
 
-    <!-- ACTION BAR -->
     <div class="action-bar">
         <button class="btn btn-outline" onclick="handleKembali()">
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -528,7 +558,8 @@
         </button>
     </div>
 
-    <!-- NAV PAGINATION (muncul jika item > 10) -->
+    <div id="exportContainer"></div>
+
     <div class="preview-wrapper">
         <div class="nav-box" id="navBox" style="display:none;">
             <div class="nav-box-left">
@@ -542,12 +573,9 @@
             </div>
         </div>
 
-        <!-- KERTAS NOTA -->
         <div class="nota-paper" id="notaPaper">
-            <!-- ADMIN -->
             <div class="nota-copy" id="copyAdmin"></div>
             <hr class="copy-separator">
-            <!-- CUSTOMER -->
             <div class="nota-copy" id="copyCustomer"></div>
         </div>
     </div>
@@ -570,8 +598,7 @@
         }
         function fmtNomor(txId) {
             const n = new Date(); const pad = v => String(v).padStart(2, '0');
-            return n.getFullYear() + pad(n.getMonth() + 1) + pad(n.getDate()) +
-                String(txId).padStart(4, '0');
+            return n.getFullYear() + pad(n.getMonth() + 1) + pad(n.getDate()) + String(txId).padStart(4, '0');
         }
 
         function buildAllItems() {
@@ -586,7 +613,34 @@
             return items;
         }
 
-        function renderCopy(type) {
+        function prepareExportContainer() {
+            const container = document.getElementById('exportContainer');
+            container.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const paper = document.createElement('div');
+                paper.className = 'nota-paper-export';
+
+                const copyAdmin = renderCopy('admin', i);
+                const copyCustomer = renderCopy('customer', i);
+
+                paper.innerHTML = `
+            <div class="nota-copy">${copyAdmin}</div>
+            <hr class="copy-separator">
+            <div class="nota-copy">${copyCustomer}</div>
+        `;
+                container.appendChild(paper);
+
+                // TAMBAHAN: Gunakan class bawaan library untuk memotong halaman dengan sempurna
+                if (i < totalPages) {
+                    const pageBreak = document.createElement('div');
+                    pageBreak.className = 'html2pdf__page-break';
+                    container.appendChild(pageBreak);
+                }
+            }
+        }
+
+        function renderCopy(type, pageIdx = currentPage) {
             const customer = txData?.vehicle?.customer ?? {};
             const vehicle = txData?.vehicle ?? {};
             const cabangMap = { PELAJAR_PEJUANG: 'Pelajar Pejuang' };
@@ -596,8 +650,7 @@
             const badgeClass = type === 'admin' ? 'badge-admin' : 'badge-customer';
             const badgeLabel = type === 'admin' ? 'ADMIN' : 'CUSTOMER';
 
-            // items untuk halaman ini
-            const start = (currentPage - 1) * PER_PAGE;
+            const start = (pageIdx - 1) * PER_PAGE;
             const pageItems = allItems.slice(start, start + PER_PAGE);
             const emptySlots = Math.max(0, PER_PAGE - pageItems.length);
 
@@ -730,10 +783,8 @@
             const nav = document.getElementById('navBox');
             if (totalPages <= 1) { nav.style.display = 'none'; return; }
             nav.style.display = 'flex';
-            document.getElementById('navSubtitle').textContent =
-                `Total ${allItems.length} item, ditampilkan ${PER_PAGE} item per halaman`;
-            document.getElementById('navPageLabel').textContent =
-                `Halaman ${currentPage} dari ${totalPages}`;
+            document.getElementById('navSubtitle').textContent = `Total ${allItems.length} item, ditampilkan ${PER_PAGE} item per halaman`;
+            document.getElementById('navPageLabel').textContent = `Halaman ${currentPage} dari ${totalPages}`;
             document.getElementById('btnPrev').disabled = currentPage <= 1;
             document.getElementById('btnNext').disabled = currentPage >= totalPages;
         }
@@ -772,16 +823,11 @@
             window.location.href = "{{ route('riwayat-transaksi.index') }}";
         }
 
-        /**
-         * Cetak Nota — hanya print saja, tanpa finalize
-         */
         function handleCetakNota() {
+            prepareExportContainer();
             window.print();
         }
 
-        /**
-         * Download PDF → finalize transaksi → redirect ke Riwayat Transaksi
-         */
         async function handleDownload() {
             if (!nota) return;
             const id = nota.transactionId ?? getIdFromUrl();
@@ -790,7 +836,6 @@
                 return;
             }
 
-            // Tampilkan loading agar user tahu sedang diproses
             Swal.fire({
                 title: 'Menyiapkan PDF...',
                 text: 'Mohon tunggu sebentar, dokumen sedang dirender.',
@@ -800,55 +845,72 @@
                 }
             });
 
-            // Ambil elemen HTML nota yang mau dijadikan PDF
-            const element = document.getElementById('notaPaper');
+            prepareExportContainer();
 
-            // Konfigurasi html2pdf (pastikan format A4)
+            const exportDiv = document.getElementById('exportContainer');
+            const previewDiv = document.querySelector('.preview-wrapper');
+
+            exportDiv.style.display = 'block';
+            previewDiv.style.display = 'none';
+
+            // Paksa browser scroll ke paling atas biar nggak ada potongan aneh
+            window.scrollTo(0, 0);
+
+            // Setting bersih tanpa paksaan X dan Y
             const opt = {
-                margin: 0, // Margin diset 0 karena padding sudah diatur di CSS .nota-paper
+                margin: 0,
                 filename: `Nota_GARASIBMW_TRX-${fmtNomor(id)}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true }, // Scale 2 agar resolusi HD dan tidak buram
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    scrollY: 0
+                },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            try {
-                // 1. Generate dan download PDF langsung dari browser
-                await html2pdf().set(opt).from(element).save();
+            // Beri jeda 500ms agar browser selesai menggambar elemen yang baru dimunculkan
+            setTimeout(async () => {
+                try {
+                    await html2pdf().set(opt).from(exportDiv).save();
 
-                // 2. Lakukan proses finalize ke backend setelah PDF selesai terdownload
-                const res = await fetch(`/api/transactions/${id}/finalize`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/json',
-                    },
-                });
-                const result = await res.json();
+                    exportDiv.style.display = 'none';
+                    previewDiv.style.display = 'flex';
 
-                if (res.ok && result.status === 'success') {
-                    // Bersihkan session data nota
-                    sessionStorage.removeItem('notaPembayaran');
-                    sessionStorage.removeItem('notaSudahDicetak');
-
-                    await Swal.fire({
-                        icon: 'success',
-                        title: 'Transaksi Selesai!',
-                        text: 'PDF berhasil didownload. Pembayaran lunas & data dipindahkan ke Riwayat Transaksi.',
-                        timer: 2500,
-                        timerProgressBar: true,
-                        showConfirmButton: false,
+                    const res = await fetch(`/api/transactions/${id}/finalize`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                            'Accept': 'application/json',
+                        },
                     });
+                    const result = await res.json();
 
-                    window.location.href = '/riwayat-transaksi';
-                } else {
-                    Swal.fire('Gagal!', result.message ?? 'Gagal menyelesaikan transaksi.', 'error');
+                    if (res.ok && result.status === 'success') {
+                        sessionStorage.removeItem('notaPembayaran');
+                        sessionStorage.removeItem('notaSudahDicetak');
+
+                        await Swal.fire({
+                            icon: 'success',
+                            title: 'Transaksi Selesai!',
+                            text: 'PDF berhasil didownload. Pembayaran lunas & data dipindahkan ke Riwayat Transaksi.',
+                            timer: 2500,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                        });
+
+                        window.location.href = '/riwayat-transaksi';
+                    } else {
+                        Swal.fire('Gagal!', result.message ?? 'Gagal menyelesaikan transaksi.', 'error');
+                    }
+                } catch (err) {
+                    console.error('Finalize / PDF error:', err);
+                    exportDiv.style.display = 'none';
+                    previewDiv.style.display = 'flex';
+                    Swal.fire('Error', 'Terjadi kesalahan saat memproses dokumen atau menghubungi server.', 'error');
                 }
-            } catch (err) {
-                console.error('Finalize / PDF error:', err);
-                Swal.fire('Error', 'Terjadi kesalahan saat memproses dokumen atau menghubungi server.', 'error');
-            }
+            }, 500); // 500 milidetik delay
         }
     </script>
 </body>
