@@ -78,7 +78,8 @@
                     });
                     window.location.href = "{{ route('supplier.index') }}";
                 } else {
-                    Swal.fire('Gagal!', 'Cek lagi inputannya.', 'error');
+                    const err = await res.json();
+                    Swal.fire('Peringatan!', err.message || 'Cek lagi inputannya.', 'warning');
                 }
             } catch (error) {
                 Swal.fire('Error!', 'Koneksi API terputus.', 'error');

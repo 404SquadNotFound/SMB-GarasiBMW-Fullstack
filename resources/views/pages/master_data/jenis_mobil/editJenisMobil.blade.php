@@ -166,7 +166,7 @@
                     window.location.href = "{{ route('jenis-mobil.index') }}";
                 } else {
                     const err = await res.json();
-                    Swal.fire('Gagal!', err.message || 'Cek lagi inputannya.', 'error');
+                    Swal.fire('Peringatan!', err.message || 'Cek lagi inputannya.', 'warning');
                 }
             } catch (error) { Swal.fire('Error!', 'Koneksi API putus.', 'error'); }
         };

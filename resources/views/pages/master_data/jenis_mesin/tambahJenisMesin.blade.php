@@ -125,7 +125,7 @@
                     await Swal.fire({ icon: 'success', title: 'Berhasil!', timer: 2000, showConfirmButton: false });
                     window.location.href = "{{ route('jenis-mesin.index') }}";
                 } else {
-                    Swal.fire({ icon: 'error', title: 'Gagal', text: result.message || 'Cek lagi inputan!' });
+                    Swal.fire({ icon: 'warning', title: 'Peringatan!', text: result.message || 'Cek lagi inputan!' });
                 }
             } catch (error) {
                 Swal.fire('Error', 'Koneksi server bermasalah.', 'error');

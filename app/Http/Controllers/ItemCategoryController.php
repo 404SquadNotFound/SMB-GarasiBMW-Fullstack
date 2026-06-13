@@ -39,6 +39,8 @@ class ItemCategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:item_categories,name',
             'descriptions' => 'nullable|string',
+        ],[
+            'name.unique' => 'Nama kategori sudah terdaftar.',
         ]);
 
         $validated['employee_id'] = $request->user()->employees_id ?? 1;

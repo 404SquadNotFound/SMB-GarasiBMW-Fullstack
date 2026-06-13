@@ -72,11 +72,13 @@ private function applyFilters(Request $request)
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:engine_types,name',
             'cylinders' => 'required|string|max:255',
             'oil_cap' => 'required|numeric',
             'fuel_type' => 'required|in:Bensin,Diesel',
             'engine_cap' => 'required|numeric',
+        ], [
+            'name.unique' => 'Nama tipe mesin sudah terdaftar.',
         ]);
         $validated['created_by'] = $request->user()->employees_id ?? 1;
 

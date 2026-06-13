@@ -91,7 +91,7 @@
                     window.location.href = "{{ route('supplier.index') }}";
                 } else {
                     const err = await res.json();
-                    Swal.fire('Gagal!', err.message || 'Cek inputan.', 'error');
+                    Swal.fire('Peringatan!', err.message || 'Cek lagi inputannya.', 'warning');
                 }
             } catch (e) { Swal.fire('Error!', 'API Offline.', 'error'); }
         };
