@@ -692,8 +692,6 @@
                     this.userRole    = localStorage.getItem('user_role') || 'Staff';
                     this.userInitial = this.userName.charAt(0).toUpperCase();
 
-                    await this.loadBarangList();
-
                     // Global click-outside: tutup semua dropdown
                     document.addEventListener('click', () => {
                         this.showCustomerDropdown         = false;
@@ -802,6 +800,8 @@
                         this.kmMasuk = v.odometer;
                     }
                     this.isDirty = true;
+                    this.sukuCadangItems     = [];
+                    this.loadBarangList(v.car_type_id);
                 },
 
                 clearVehicle() {
@@ -809,6 +809,9 @@
                     this.vehicleSearch       = '';
                     this.showVehicleDropdown = false;
                     this.filteredVehicles    = this.currentVehicles;
+                    this.barangList          = [];
+                    this.filteredBarang      = [];
+                    this.sukuCadangItems     = [];
                 },
 
                 // ── Cabang ────────────────────────────────────────────────
@@ -819,9 +822,10 @@
                 },
 
                 // ── Barang ────────────────────────────────────────────────
-                async loadBarangList() {
+                async loadBarangList(carTypeId = '') {
                     try {
-                        const res    = await fetch('/api/spareparts-for-antrian', {
+                        const params = carTypeId ? `?car_type_id=${carTypeId}` : '';
+                        const res    = await fetch(`/api/spareparts-for-antrian${params}`, {
                             headers: { 'Authorization': `Bearer ${this.token}` }
                         });
                         const result = await res.json();
@@ -901,6 +905,10 @@
 
                 // ── Form suku cadang ──────────────────────────────────────
                 openSukuCadangForm() {
+                    if (!this.selectedVehicle) {
+                        Swal.fire('Oops!', 'Silakan pilih kendaraan pelanggan terlebih dahulu!', 'warning');
+                        return;
+                    }
                     this.showFormSukuCadang = true;
                     this.inputJumlah        = '';
                     this.clearBarang();
