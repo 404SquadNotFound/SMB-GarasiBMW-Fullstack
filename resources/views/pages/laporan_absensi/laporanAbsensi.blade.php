@@ -102,7 +102,7 @@ x-init="
             <button @click="openModal = true; activeTab = 'mingguan'; fetchRekap('mingguan')"
                 class="flex items-center gap-2 px-5 py-[11px] bg-[#1273EB] text-white rounded-[10px] font-bold text-[13px] shadow-sm hover:bg-[#0E62CC] transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                Rekap Karyawan
+                Rekap Pegawai
             </button>
         </div>
     </div>
@@ -154,7 +154,7 @@ x-init="
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-white border-b border-[#D9E2EC] text-[11px] font-bold text-[#627D98] uppercase tracking-wider">
-                        <th class="px-6 py-5">Nama Karyawan</th>
+                        <th class="px-6 py-5">Nama Pegawai</th>
                         <th class="px-6 py-5 text-center">Senin</th>
                         <th class="px-6 py-5 text-center">Selasa</th>
                         <th class="px-6 py-5 text-center">Rabu</th>
@@ -269,7 +269,7 @@ x-init="
                 <input type="hidden" name="clock_in" :value="get24HourTime()">
 
                 <div class="mb-4">
-                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Karyawan</label>
+                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Pe</label>
                     <p class="text-[14px] font-semibold text-[#213F5C]" x-text="form.employee_name"></p>
                 </div>
 

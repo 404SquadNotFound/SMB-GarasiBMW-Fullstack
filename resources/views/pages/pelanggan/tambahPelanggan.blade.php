@@ -313,7 +313,12 @@
                     if (!this.formData.phone_number) emptyFields.push('Nomor Telepon');
                     if (!this.formData.address) emptyFields.push('Alamat');
                     if (this.cars.length === 0) emptyFields.push('Data Mobil');
-                    
+
+                    if (emptyFields.length > 0) {
+                        let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
+                        return Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
+                    }
+
                     if (this.formData.phone_number.length < 7) {
                         return Swal.fire({
                             icon: 'warning',
@@ -322,13 +327,6 @@
                             confirmButtonColor: '#1273EB'
                         });
                     }
-
-                    if (emptyFields.length > 0) {
-                        let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
-                        return Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
-                    }
-
-                    
 
                     Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });
                     try {
