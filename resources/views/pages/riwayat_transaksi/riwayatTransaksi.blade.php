@@ -25,6 +25,7 @@
     @include('layouts.action_bar', [
         'placeholder' => 'Cari Riwayat Transaksi...',
         'showAddBtn'  => false,
+        'filterModalId' => 'modalFilterRiwayat',
     ])
 
     @include('layouts.table_wrapper', [
@@ -33,8 +34,52 @@
         'total' => 1,
     ])
 
+    {{-- MODAL FILTER --}}
+    <div id="modalFilterRiwayat" class="fixed inset-0 z-50 hidden overflow-y-auto">
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" onclick="toggleModal('modalFilterRiwayat')"></div>
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="relative bg-white rounded-[20px] shadow-2xl w-full max-w-md overflow-hidden">
+                <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-[#213F5C]">Filter Riwayat Transaksi</h3>
+                    <button onclick="toggleModal('modalFilterRiwayat')" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-[13px] font-bold text-[#627D98] mb-2 uppercase tracking-wider">Status Pembayaran</label>
+                        <select id="filterStatusPembayaran" class="w-full px-4 py-3 bg-[#F9FBFF] border border-[#D9E2EC] rounded-xl outline-none text-[#213F5C] font-semibold">
+                            <option value="">Semua Status</option>
+                            <option value="lunas">Lunas</option>
+                            <option value="down_payment">DP</option>
+                            <option value="belum_lunas">Belum Lunas</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[13px] font-bold text-[#627D98] mb-2 uppercase tracking-wider">Dari Tanggal</label>
+                        <input type="date" id="filterTanggalDari" class="w-full px-4 py-3 bg-[#F9FBFF] border border-[#D9E2EC] rounded-xl outline-none text-[#213F5C] font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-[13px] font-bold text-[#627D98] mb-2 uppercase tracking-wider">Sampai Tanggal</label>
+                        <input type="date" id="filterTanggalSampai" class="w-full px-4 py-3 bg-[#F9FBFF] border border-[#D9E2EC] rounded-xl outline-none text-[#213F5C] font-semibold">
+                    </div>
+                </div>
+                <div class="px-6 py-5 bg-gray-50 flex gap-3">
+                    <button onclick="resetFilter()" class="flex-1 py-3 bg-white border border-[#D9E2EC] text-[#627D98] font-bold rounded-xl text-[14px]">Reset</button>
+                    <button onclick="applyFilter()" class="flex-1 py-3 bg-[#1273EB] text-white font-bold rounded-xl text-[14px]">Terapkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         const token = localStorage.getItem('access_token');
+
+        // ── Toggle Modal ─────────────────────────────────────────────────────────
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.classList.toggle('hidden');
+        }
 
         // ── Format tanggal ────────────────────────────────────────────────────────
         function formatTanggal(dateStr) {
@@ -186,11 +231,67 @@
                     String(t.status_service || '').toLowerCase() === 'selesai'
                 );
 
-                renderTable(allData);
+                applyActiveFilters();
             } catch (err) {
                 console.error('Fetch error:', err);
                 Swal.fire('Error', 'Tidak bisa terhubung ke server.', 'error');
             }
+        }
+
+        // ── Filter logic ──────────────────────────────────────────────────────────
+        function applyActiveFilters() {
+            const searchInput = document.querySelector('input[placeholder="Cari Riwayat Transaksi..."]');
+            const searchText  = searchInput ? searchInput.value : '';
+
+            const statusPembayaran = document.getElementById('filterStatusPembayaran')?.value || '';
+            const tanggalDari      = document.getElementById('filterTanggalDari')?.value || '';
+            const tanggalSampai    = document.getElementById('filterTanggalSampai')?.value || '';
+
+            let filtered = allData;
+
+            // Filter status pembayaran
+            if (statusPembayaran) {
+                filtered = filtered.filter(t => {
+                    const raw = String(t.status_payment ?? t.payment_status ?? 'unpaid').toLowerCase();
+                    if (statusPembayaran === 'lunas')        return raw === 'lunas' || raw === 'paid';
+                    if (statusPembayaran === 'down_payment') return raw === 'down_payment' || raw === 'dp';
+                    if (statusPembayaran === 'belum_lunas')  return raw === 'belum_lunas' || raw === 'unpaid';
+                    return true;
+                });
+            }
+
+            // Filter rentang tanggal
+            if (tanggalDari) {
+                const from = new Date(tanggalDari);
+                from.setHours(0, 0, 0, 0);
+                filtered = filtered.filter(t => {
+                    const d = new Date(t.created_at);
+                    return !isNaN(d.getTime()) && d >= from;
+                });
+            }
+            if (tanggalSampai) {
+                const to = new Date(tanggalSampai);
+                to.setHours(23, 59, 59, 999);
+                filtered = filtered.filter(t => {
+                    const d = new Date(t.created_at);
+                    return !isNaN(d.getTime()) && d <= to;
+                });
+            }
+
+            renderTable(filtered, searchText);
+        }
+
+        function applyFilter() {
+            applyActiveFilters();
+            toggleModal('modalFilterRiwayat');
+        }
+
+        function resetFilter() {
+            document.getElementById('filterStatusPembayaran').value = '';
+            document.getElementById('filterTanggalDari').value = '';
+            document.getElementById('filterTanggalSampai').value = '';
+            applyActiveFilters();
+            toggleModal('modalFilterRiwayat');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -199,7 +300,7 @@
             const searchInput = document.querySelector('input[placeholder="Cari Riwayat Transaksi..."]');
             if (searchInput) {
                 searchInput.addEventListener('input', () => {
-                    renderTable(allData, searchInput.value);
+                    applyActiveFilters();
                 });
             }
 
