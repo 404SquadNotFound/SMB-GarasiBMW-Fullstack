@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
-@section('title', 'Kategori Sparepart')
-@section('title_header', 'Master Data | Kategori Sparepart')
+@section('title', 'Kategori Barang')
+@section('title_header', 'Master Data | Kategori Barang')
 
 @section('table_header')
     <th class="px-6 py-5">Nama Kategori Sparepart</th>

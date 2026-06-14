@@ -13,12 +13,37 @@ class CustomerController extends Controller
 
     public function index(Request $request)
     {
-        $query = Customer::with('vehicles');
-        if ($request->has('search')) {
+        $query = Customer::with('vehicles.carType');
+
+        // 1. Filter Pencarian BARU JALAN kalau search BENAR-BENAR ADA ISINYA
+        if ($request->filled('search')) {
             $search = $request->search;
-            $query->where('name', 'LIKE', "%{$search}%")
-                ->orWhere('phone_number', 'LIKE', "%{$search}%");
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('phone_number', 'LIKE', "%{$search}%");
+            });
         }
+
+        // 2. Filter Kendaraan (Hanya jalan kalau Model atau Seri dipilih)
+        if ($request->filled('car_type_id') || $request->filled('series')) {
+            $query->whereHas('vehicles', function ($q) use ($request) {
+
+                // Jika filter Model Mobil dipilih
+                if ($request->filled('car_type_id')) {
+                    $q->where('car_type_id', $request->car_type_id);
+                }
+
+                // Jika filter Seri Mobil dipilih (Menyeberang ke tabel car_types lewat relasi carType)
+                if ($request->filled('series')) {
+                    $series = $request->series;
+                    $q->whereHas('carType', function ($carTypeQuery) use ($series) {
+                        $carTypeQuery->where('series', $series);
+                    });
+                }
+
+            });
+        }
+
         return $query->orderBy('created_at', 'desc')->paginate($request->limit ?? 10);
     }
 
