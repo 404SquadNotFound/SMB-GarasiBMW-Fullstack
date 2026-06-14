@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Tambah Gaji Pegawai')
 @section('title_header', 'Payroll | Tambah Gaji Pegawai')
@@ -227,6 +227,8 @@
 
         // ─── Load Karyawan ────────────────────────────────────────────────────────
 
+        let employeeCache = [];
+
         async function loadEmployees() {
             try {
                 const token = localStorage.getItem('access_token');
@@ -235,17 +237,27 @@
                 });
                 const result = await response.json();
                 const select = document.getElementById('employee_id');
-                const employees = result.data ?? result;
+                const employees = result.data?.data ?? result.data ?? result;
+                employeeCache = employees;
                 employees.forEach(emp => {
                     const opt = document.createElement('option');
-                    opt.value = emp.id;
-                    opt.textContent = `${emp.name} — ${emp.employee_number ?? emp.npk ?? ''}`;
+                    opt.value = emp.employees_id;
+                    opt.textContent = `${emp.name} — ${emp.role ?? ''}`;
+                    opt.dataset.salary = emp.base_salary ?? 0;
                     select.appendChild(opt);
                 });
             } catch (err) {
                 console.error('Gagal memuat data karyawan:', err);
             }
         }
+
+        // Auto-fill gaji pokok saat pegawai dipilih
+        document.getElementById('employee_id').addEventListener('change', function() {
+            const selected = this.options[this.selectedIndex];
+            if (selected && selected.dataset.salary) {
+                document.getElementById('basic_salary').value = selected.dataset.salary;
+            }
+        });
 
         loadEmployees();
 
@@ -299,7 +311,7 @@
                     didOpen: () => { Swal.showLoading(); }
                 });
 
-                const response = await fetch('/api/payroll', {
+                const response = await fetch('/api/payrolls', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
