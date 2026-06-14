@@ -54,7 +54,7 @@ class SupplierController extends Controller
     {
         $supplier = Supplier::findOrFail($id);
         $validated = $request->validate([
-            'name'        => 'required|string|max:255|unique:suppliers,name,' . $supplier->id . ',supplier_id',
+            'name'        => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
         ],[
             'name.unique' => 'Nama supplier sudah terdaftar.',

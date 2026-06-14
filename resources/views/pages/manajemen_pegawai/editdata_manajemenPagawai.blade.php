@@ -214,6 +214,18 @@
             // 2. Cek field mandatory
             let emptyFields = [];
 
+            if (!joinDateVal) {
+                emptyFields.push('Tanggal Bergabung');
+            } else if (joinDateVal > today) {
+                emptyFields.push('Tanggal Bergabung tidak valid');
+            }
+
+            if (!birthDateVal) {
+                emptyFields.push('Tanggal Lahir');
+            } else if (birthDateVal > today) {
+                emptyFields.push('Tanggal Lahir tidak valid');
+            }
+
             if (!nameVal) emptyFields.push('Nama Lengkap');
             if (!addressVal) emptyFields.push('Alamat');
             if (!emailVal) emptyFields.push('Email');

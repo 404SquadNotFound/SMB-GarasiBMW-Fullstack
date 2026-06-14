@@ -230,7 +230,7 @@
 
             if (emptyFields.length > 0) {
                 let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
-                Swal.fire('Data Tidak Valid!', errorMessage, 'warning');
+                Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
                 return;
             }
 
