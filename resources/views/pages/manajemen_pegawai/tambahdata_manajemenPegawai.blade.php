@@ -209,27 +209,27 @@
             // 2. Cek mandatory fields
             let emptyFields = [];
 
-            if (!nameVal) emptyFields.push('Nama Lengkap kosong');
+            if (!nameVal) emptyFields.push('Nama Lengkap');
             
             if (!joinDateVal) {
-                emptyFields.push('Tanggal Bergabung kosong');
+                emptyFields.push('Tanggal Bergabung');
             } else if (joinDateVal > today) {
                 emptyFields.push('Tanggal Bergabung tidak valid');
             }
 
             if (!birthDateVal) {
-                emptyFields.push('Tanggal Lahir kosong');
+                emptyFields.push('Tanggal Lahir');
             } else if (birthDateVal > today) {
                 emptyFields.push('Tanggal Lahir tidak valid');
             }
 
-            if (!addressVal) emptyFields.push('Alamat kosong');
-            if (!emailVal) emptyFields.push('Email kosong');
-            if (!passwordVal) emptyFields.push('Password kosong');
-            if (!roleVal) emptyFields.push('Roles kosong');
+            if (!addressVal) emptyFields.push('Alamat');
+            if (!emailVal) emptyFields.push('Email');
+            if (!passwordVal) emptyFields.push('Password');
+            if (!roleVal) emptyFields.push('Roles');
 
             if (emptyFields.length > 0) {
-                let errorMessage = emptyFields.join(', ') + '!';
+                let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
                 Swal.fire('Data Tidak Valid!', errorMessage, 'warning');
                 return;
             }

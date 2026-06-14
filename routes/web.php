@@ -248,3 +248,17 @@ Route::get('/antrian-pengerjaan/{id}/nota-preview', [NotaController::class, 'pre
 // Download / stream PDF nota
 Route::post('/antrian-pengerjaan/{id}/nota-pdf', [NotaController::class, 'downloadPdf'])
     ->name('antrian-pengerjaan.notaPdf');
+
+Route::get('/run-migrate/{key}', function ($key) {
+    if ($key !== 'Edsel@S3ptaGanteng233102910') {
+        return "Akses Ditolak!";
+    }
+
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        return "Migrasi dan Seeding berhasil!";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
