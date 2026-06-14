@@ -313,10 +313,19 @@
                     if (!this.formData.phone_number) emptyFields.push('Nomor Telepon');
                     if (!this.formData.address) emptyFields.push('Alamat');
                     if (this.cars.length === 0) emptyFields.push('Data Mobil');
-                    
+
                     if (emptyFields.length > 0) {
                         let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
                         return Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
+                    }
+
+                    if (this.formData.phone_number.length < 7) {
+                        return Swal.fire({
+                            icon: 'warning',
+                            title: 'Nomor Telepon Tidak Valid!',
+                            text: 'Nomor telepon tidak sesuai dengan peraturan di indonesia (minimal 7 digit).',
+                            confirmButtonColor: '#1273EB'
+                        });
                     }
 
                     Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });
@@ -335,7 +344,7 @@
                             window.location.href = "{{ route('pelanggan.index') }}";
                         } else {
                             const err = await res.json();
-                            Swal.fire('Gagal!', err.message || 'Terjadi kesalahan.', 'error');
+                            Swal.fire('Peringatan!', err.message || 'Terjadi kesalahan.', 'warning');
                         }
                     } catch (e) { Swal.fire('Error', 'Koneksi ke API bermasalah.', 'error'); }
                 }

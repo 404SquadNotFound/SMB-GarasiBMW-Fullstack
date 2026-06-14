@@ -111,18 +111,34 @@
         document.getElementById('submitBtnApi').onclick = async (e) => {
             e.preventDefault();
 
+            // Ambil value dan bersihkan spasi untuk input text
+            const chassisVal = document.getElementById('chassis_number').value.trim();
+            const nameVal = document.getElementById('name').value.trim();
+            const seriesVal = document.getElementById('series').value.trim();
+            
             // Ambil array ID yang dipilih di multiple select
             const selectedEngines = Array.from(engineSelect.selectedOptions).map(opt => opt.value);
 
-            if (selectedEngines.length === 0) {
-                Swal.fire('Error', 'Pilih minimal satu mesin!', 'warning');
+            // Kumpulkan field mandatory yang masih kosong
+            let emptyFields = [];
+
+            if (!chassisVal) emptyFields.push('Kode Sasis');
+            if (!nameVal) emptyFields.push('Nama Model');
+            if (!seriesVal) emptyFields.push('Seri');
+            if (selectedEngines.length === 0) emptyFields.push('Jenis Mesin');
+
+            // Tampilkan Swal jika ada yang terlewat
+            if (emptyFields.length > 0) {
+                let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
+                Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
                 return;
             }
 
+            // Lanjut susun payload jika aman
             const data = {
-                chassis_number: document.getElementById('chassis_number').value,
-                name: document.getElementById('name').value,
-                series: document.getElementById('series').value,
+                chassis_number: chassisVal,
+                name: nameVal,
+                series: seriesVal,
                 engine_ids: selectedEngines // Kirim sebagai array
             };
 
@@ -144,7 +160,7 @@
                     window.location.href = "{{ route('jenis-mobil.index') }}"; 
                 } else {
                     const err = await res.json();
-                    Swal.fire('Gagal!', err.message || 'Cek inputan lu brok.', 'error');
+                    Swal.fire('Peringatan!', err.message || 'Mohon cek inputanmu.', 'warning');
                 }
             } catch (error) {
                 Swal.fire('Error!', 'Koneksi API terputus.', 'error');

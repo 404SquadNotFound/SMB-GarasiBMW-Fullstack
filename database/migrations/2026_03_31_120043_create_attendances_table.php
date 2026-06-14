@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('attendance_id');
             $table->unsignedBigInteger('employee_id');
             $table->date('date');
-            $table->enum('status', ['Hadir', 'Cuti', 'Sakit', 'Terlambat']);
+            $table->enum('status', ['Hadir', 'Cuti', 'Sakit', 'Terlambat', 'Izin Terlambat', 'Libur']);
             $table->string('reason', 255)->nullable();
             $table->time('clock_in')->nullable();
             $table->string('photo', 255)->nullable();

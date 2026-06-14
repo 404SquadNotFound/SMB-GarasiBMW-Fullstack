@@ -135,9 +135,11 @@ Route::get('/manajemen-pegawai/export', [EmployeeController::class, 'exportExcel
 Route::get('/manajemen-pegawai/export/pdf', [EmployeeController::class, 'exportPdf'])->name('manajemen-pegawai.export.pdf');
 
 // Route Kepegawaian -> Laporan Absensi
-Route::get('/laporan-absensi', function () {
-    return view('pages.laporan_absensi.laporanAbsensi');
-})->name('laporan-absensi.index');
+use App\Http\Controllers\AttendanceController;
+Route::get('/laporan-absensi', [AttendanceController::class, 'reportManual'])->name('attendance.report');
+Route::post('/laporan-absensi/manual', [AttendanceController::class, 'storeManual'])->name('attendance.storeManual');
+Route::get('/laporan-absensi', [AttendanceController::class, 'reportManual'])->name('laporan-absensi.index');
+Route::get('/attendance/rekap', [AttendanceController::class, 'getRekapData'])->name('attendance.rekap');
 
 // Route Kepegawaian -> Pendataan Izin
 Route::get('/izin-terlambat', function () {
@@ -155,6 +157,7 @@ Route::get('/izin-terlambat/edit/{id}', function ($id) {
 Route::get('/izin-terlambat/delete/{id}', function ($id) {
     return view('pages.izin_keterlambatan.manajemenIzinKeterlambatan');
 })->name('izin-terlambat.delete');
+
 
 // Route Kepegawaian -> Penggajian
 Route::get('/payroll', function () {
@@ -246,3 +249,20 @@ Route::get('/antrian-pengerjaan/{id}/nota-preview', [NotaController::class, 'pre
 // Download / stream PDF nota
 Route::post('/antrian-pengerjaan/{id}/nota-pdf', [NotaController::class, 'downloadPdf'])
     ->name('antrian-pengerjaan.notaPdf');
+
+Route::get('/run-migrate/{key}', function ($key) {
+    if ($key !== 'Edsel@S3ptaGanteng233102910') return "Akses Ditolak!";
+
+    try {
+        // Memaksa database Clever Cloud mengubah tipe ENUM-nya langsung via query mentah
+        \Illuminate\Support\Facades\DB::statement("
+            ALTER TABLE attendances 
+            MODIFY COLUMN status ENUM('Hadir', 'Cuti', 'Sakit', 'Terlambat', 'Izin Terlambat', 'Libur') NOT NULL
+        ");
+        
+        return "Struktur database berhasil dipaksa update ke ENUM baru!";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+Route::get('/payroll/{id}/slip-preview', function ($id) { return view('pages.payroll.previewSlipGaji', compact('id')); })->name('payroll.preview');

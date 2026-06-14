@@ -238,11 +238,32 @@ class SparepartController extends Controller
     /**
      * List suku cadang untuk dropdown di antrian pengerjaan
      */
-    public function listForAntrian()
+    public function listForAntrian(Request $request)
     {
-        $spareparts = Sparepart::with(['supplier'])
-            ->where('quantity', '>', 0)
-            ->orderBy('name')
+        $query = Sparepart::with(['supplier', 'carType'])
+            ->where('quantity', '>', 0);
+
+        if ($request->filled('car_type_id')) {
+            $carTypeId = $request->car_type_id;
+            $carType = \App\Models\CarType::find($carTypeId);
+            $engineTypeId = $carType ? $carType->engine_type_id : null;
+
+            $query->where(function ($q) use ($carTypeId, $engineTypeId) {
+                // 1. Generic spare parts (car_type_id is null)
+                $q->whereNull('car_type_id')
+                  // 2. Specific to this car type
+                  ->orWhere('car_type_id', $carTypeId);
+                  
+                // 3. Specific to same engine type (if engineTypeId is not null)
+                if ($engineTypeId) {
+                    $q->orWhereHas('carType', function ($ctQ) use ($engineTypeId) {
+                        $ctQ->where('engine_type_id', $engineTypeId);
+                    });
+                }
+            });
+        }
+
+        $spareparts = $query->orderBy('name')
             ->get()
             ->map(function ($item) {
                 return [

@@ -141,6 +141,16 @@
         const employeeId = pathArray[pathArray.length - 1];
         const token = localStorage.getItem('access_token');
 
+        // blokir input tanggal di masa depan
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const today = `${year}-${month}-${day}`;
+
+        document.getElementById('join_date').setAttribute('max', today);
+        document.getElementById('birth_date').setAttribute('max', today)
+
         // ─── Blokir input non-angka ───────────────────────────────
         document.querySelectorAll('input[inputmode="numeric"]').forEach(input => {
             input.addEventListener('keydown', (e) => {
@@ -192,19 +202,55 @@
         // ─── Submit Update ────────────────────────────────────────
         document.getElementById('submitBtnApi').onclick = async (e) => {
             e.preventDefault();
-            const passwordVal = document.getElementById('password').value;
+            
+            // 1. Ambil nilai dan bersihkan spasi
+            const nameVal = document.getElementById('name').value.trim();
+            const addressVal = document.getElementById('address').value.trim();
+            const emailVal = document.getElementById('email').value.trim();
+            const roleVal = document.getElementById('role').value;
+            const statusVal = document.getElementById('status').value;
+            const passwordVal = document.getElementById('password').value.trim();
 
+            // 2. Cek field mandatory
+            let emptyFields = [];
+
+            if (!joinDateVal) {
+                emptyFields.push('Tanggal Bergabung');
+            } else if (joinDateVal > today) {
+                emptyFields.push('Tanggal Bergabung tidak valid');
+            }
+
+            if (!birthDateVal) {
+                emptyFields.push('Tanggal Lahir');
+            } else if (birthDateVal > today) {
+                emptyFields.push('Tanggal Lahir tidak valid');
+            }
+
+            if (!nameVal) emptyFields.push('Nama Lengkap');
+            if (!addressVal) emptyFields.push('Alamat');
+            if (!emailVal) emptyFields.push('Email');
+            if (!roleVal) emptyFields.push('Roles');
+            if (!statusVal) emptyFields.push('Status');
+
+            // 3. Tampilkan Swal jika ada yang kosong
+            if (emptyFields.length > 0) {
+                let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
+                Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
+                return;
+            }
+
+            // 4. Lanjut susun payload jika aman
             const data = {
-                name:        document.getElementById('name').value,
-                address:     document.getElementById('address').value,
-                email:       document.getElementById('email').value,
-                role:        document.getElementById('role').value,
+                name:        nameVal,
+                address:     addressVal,
+                email:       emailVal,
+                role:        roleVal,
                 base_salary: Number(document.getElementById('base_salary').value) || 0,
-                status:      Number(document.getElementById('status').value), // kirim sebagai 1 atau 0
+                status:      Number(statusVal), // kirim sebagai 1 atau 0
             };
 
             // Hanya kirim password jika diisi
-            if (passwordVal.trim() !== '') {
+            if (passwordVal !== '') {
                 data.password = passwordVal;
             }
 
@@ -233,7 +279,9 @@
                     if (loggedInId && String(loggedInId) === String(employeeId)) {
                         const newName = document.getElementById('name').value;
                         const newRole = document.getElementById('role').value;
-                        refreshUserHeader(newName, newRole);
+                        if(typeof refreshUserHeader === 'function'){
+                             refreshUserHeader(newName, newRole);
+                        }
                     }
 
                     await Swal.fire({

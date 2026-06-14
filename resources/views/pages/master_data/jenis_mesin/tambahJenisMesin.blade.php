@@ -26,11 +26,11 @@
         </div>
         <div>
             <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kapasitas Mesin (cc) <span class="text-red-500">*</span></label>
-            <input type="number" id="engine_cap" required placeholder="Contoh: 2500" class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none">
+            <input type="text" id="engine_cap" required placeholder="Contoh: 2.500" class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none">
         </div>
         <div>
             <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Kapasitas Oli (Liter) <span class="text-red-500">*</span></label>
-            <input type="number" step="0.1" id="oil_cap" required placeholder="Contoh: 6.5" class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none">
+            <input type="text" id="oil_cap" required placeholder="Contoh: 6.5" class="w-full px-5 py-3.5 bg-[#F9FBFF] border border-[#E5E9F2] rounded-xl outline-none">
         </div>
         <div>
             <label class="block text-[14px] font-bold text-[#213F5C] mb-2">Bahan Bakar <span class="text-red-500">*</span></label>
@@ -58,6 +58,7 @@
             }
         }
 
+        // Tipe input diubah jadi text di HTML biar format titik ribuan bisa jalan
         document.getElementById('engine_cap').addEventListener('input', formatNumberInput);
         document.getElementById('oil_cap').addEventListener('input', (e) => {
             e.target.value = e.target.value.replace(/[^0-9,.]/g, '');
@@ -69,22 +70,40 @@
             e.preventDefault();
             const token = localStorage.getItem('access_token');
 
-            let valOil = document.getElementById('oil_cap').value;
-            const rawEngineCap = document.getElementById('engine_cap').value.replace(/\./g, '');
+            // 1. Ambil semua raw value dari input
+            const nameVal = document.getElementById('name').value.trim();
+            const cylindersVal = document.getElementById('cylinders').value.trim();
+            const rawEngineCap = document.getElementById('engine_cap').value.trim();
+            const valOil = document.getElementById('oil_cap').value.trim();
+            const fuelTypeVal = document.getElementById('fuel_type').value.trim();
+
+            // 2. Kumpulkan field yang kosong
+            let emptyFields = [];
+
+            if (!nameVal) emptyFields.push('Kode Mesin');
+            if (!cylindersVal) emptyFields.push('Konfigurasi Silinder');
+            if (!rawEngineCap) emptyFields.push('Kapasitas Mesin');
+            if (!valOil) emptyFields.push('Kapasitas Oli');
+            if (!fuelTypeVal) emptyFields.push('Bahan Bakar');
+
+            // 3. Tampilkan Swal jika ada yang kosong
+            if (emptyFields.length > 0) {
+                let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
+                Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
+                return;
+            }
+
+            // 4. Bersihkan format angka sebelum dikirim ke API
+            const cleanEngineCap = rawEngineCap.replace(/\./g, '');
             const cleanOilCap = parseFloat(valOil.replace(',', '.'));
             
             const data = {
-                name: document.getElementById('name').value,
-                cylinders: document.getElementById('cylinders').value,
-                engine_cap: Number(rawEngineCap),
+                name: nameVal,
+                cylinders: cylindersVal,
+                engine_cap: Number(cleanEngineCap),
                 oil_cap: cleanOilCap,
-                fuel_type: document.getElementById('fuel_type').value,
+                fuel_type: fuelTypeVal,
             };
-
-            if (!data.name || !data.engine_cap || !data.oil_cap) {
-                Swal.fire('Oops!', 'Semua field wajib diisi!', 'warning');
-                return;
-            }
 
             try {
                 Swal.fire({ title: 'Menyimpan data...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
@@ -106,7 +125,7 @@
                     await Swal.fire({ icon: 'success', title: 'Berhasil!', timer: 2000, showConfirmButton: false });
                     window.location.href = "{{ route('jenis-mesin.index') }}";
                 } else {
-                    Swal.fire({ icon: 'error', title: 'Gagal', text: result.message || 'Cek lagi inputan!' });
+                    Swal.fire({ icon: 'warning', title: 'Peringatan!', text: result.message || 'Cek lagi inputan!' });
                 }
             } catch (error) {
                 Swal.fire('Error', 'Koneksi server bermasalah.', 'error');

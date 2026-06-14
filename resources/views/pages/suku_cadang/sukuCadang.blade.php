@@ -110,7 +110,7 @@
                     supplier_id: supplierId,
                     page: page
                 });
-                
+
                 const url = `/api/spareparts?${queryParams.toString()}`;
                 const res = await fetch(url, {
                     headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
@@ -140,6 +140,7 @@
                         if (fromEl) fromEl.innerText = 0;
                         if (toEl) toEl.innerText = 0;
                         if (totalEl) totalEl.innerText = 0;
+                        renderPaginationControls(result, (p) => fetchSpareparts(search, category, supplierId, p));
                         return;
                     }
 
@@ -147,7 +148,7 @@
                     items.forEach(item => {
                         // Kategori bisa berupa string kolom atau object relasi (karena ada with('category'))
                         const catDisplay = item.category?.name ?? item.category ?? '-';
-                        
+
                         tbody.innerHTML += `
                             <tr class="hover:bg-[#F9FCFF] transition-colors group">
                                 <td class="px-6 py-[18px] font-bold text-[#213F5C]">${item.item_code || '-'}</td>
@@ -173,6 +174,8 @@
                     if (toEl) toEl.innerText = result.to || 0;
                     if (totalEl) totalEl.innerText = result.total || 0;
                     renderPaginationControls(result, (p) => fetchSpareparts(search, category, supplierId, p));
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-10 text-red-500">${result.message || 'Gagal mengambil data'}</td></tr>`;
                 }
             } catch (e) {
                 console.error(e);
@@ -184,7 +187,8 @@
         async function loadFilterOptions() {
             const catSelect = document.getElementById('filterCategory');
             const supSelect = document.getElementById('filterSupplier');
-            
+            if (!catSelect || !supSelect) return;
+
             const catSelected = catSelect.value;
             const supSelected = supSelect.value;
 
@@ -215,42 +219,28 @@
             } catch (e) { console.error(e); }
         }
 
-        // Action saat opsi filter diganti, update list optionnya (cascading)
-        document.getElementById('filterCategory').addEventListener('change', loadFilterOptions);
-        document.getElementById('filterSupplier').addEventListener('change', loadFilterOptions);
-
-        // 3. Search debounce
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => applyFilter(), 500);
-        });
-
-        // 4. Apply & Reset Filter
+        // 3. Apply & Reset Filter
         function applyFilter() {
-            const search = document.getElementById('searchInput').value;
+            const searchInput = document.getElementById('searchInput');
+            const search   = searchInput ? searchInput.value : '';
             const category = document.getElementById('filterCategory').value;
             const supplier = document.getElementById('filterSupplier').value;
             fetchSpareparts(search, category, supplier);
+
             const modal = document.getElementById('modalFilterSukuCadang');
             if (modal && !modal.classList.contains('hidden')) toggleModal('modalFilterSukuCadang');
         }
 
         function resetFilter() {
-            document.getElementById('searchInput').value = '';
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) searchInput.value = '';
             document.getElementById('filterCategory').value = '';
             document.getElementById('filterSupplier').value = '';
             fetchSpareparts();
             toggleModal('modalFilterSukuCadang');
         }
 
-        // 5. Init
-        document.addEventListener('DOMContentLoaded', () => {
-            loadFilterOptions();
-            fetchSpareparts();
-            checkLowStock();
-        });
-
-        // 6. Cek Low Stock
+        // 4. Cek Low Stock
         async function checkLowStock() {
             try {
                 const res = await fetch('/api/spareparts-low-stock', {
@@ -274,7 +264,7 @@
             } catch (e) { console.error(e); }
         }
 
-        // 7. Export Excel
+        // 5. Export Excel
         async function exportSukuCadang() {
             try {
                 Swal.fire({ title: 'Mengekspor Excel...', text: 'Mohon tunggu', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
@@ -297,7 +287,7 @@
             } catch (e) { console.error(e); Swal.fire('Error', 'Terjadi kesalahan sistem', 'error'); }
         }
 
-        // 8. Export PDF
+        // 6. Export PDF
         async function exportSukuCadangPdf() {
             try {
                 Swal.fire({ title: 'Mengekspor PDF...', text: 'Mohon tunggu', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
@@ -319,5 +309,26 @@
                 }
             } catch (e) { console.error(e); Swal.fire('Error', 'Terjadi kesalahan sistem', 'error'); }
         }
+
+        // 7. Init — semua binding & first load di sini, dijamin elemen sudah ada di DOM
+        document.addEventListener('DOMContentLoaded', () => {
+            const catSelect    = document.getElementById('filterCategory');
+            const supSelect    = document.getElementById('filterSupplier');
+            const searchInput  = document.getElementById('searchInput');
+
+            if (catSelect) catSelect.addEventListener('change', loadFilterOptions);
+            if (supSelect) supSelect.addEventListener('change', loadFilterOptions);
+
+            if (searchInput) {
+                searchInput.addEventListener('input', () => {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => applyFilter(), 500);
+                });
+            }
+
+            loadFilterOptions();
+            fetchSpareparts();
+            checkLowStock();
+        });
     </script>
 @endsection

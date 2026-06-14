@@ -550,37 +550,6 @@ Response fields yang diharapkan:
     }
 
     // ════════════════════════════════════════════════════════════
-    // DATA DUMMY (hapus setelah backend tersambung)
-    // ════════════════════════════════════════════════════════════
-    const DUMMY_PAYROLL = {
-        id: 1,
-        employee: {
-            name            : 'Edsel Septa Haryanto',
-            employee_number : '103022300016',
-            join_year       : '2025',
-            birth_date      : '2004-09-13',
-            role            : 'Developer',
-        },
-        salary: {
-            base_salary: 1200000,
-            allowances: [
-                { name: 'Tunjangan Jabatan Developer', type: 'Insentif',  amount: 1000000 },
-            ],
-            savings: [
-                { name: 'Allowance Kesetiaan Pegawai', type: 'Allowance', amount: 10000000,
-                  description: 'Bulan ke-40' },
-            ],
-            penalties: [
-                { name: 'Keterlambatan Pegawai', type: 'Penalti',
-                  description: 'Total 15 Hari',  amount: 200000 },
-            ],
-        },
-        created_by : { name: 'Edsel Septa Haryanto' },
-        created_at : '2025-01-27T08:00:00Z',
-        updated_at : '2025-01-27T09:00:00Z',
-    };
-
-    // ════════════════════════════════════════════════════════════
     // INISIALISASI
     // ════════════════════════════════════════════════════════════
     document.addEventListener('DOMContentLoaded', async () => {
@@ -592,24 +561,25 @@ Response fields yang diharapkan:
 
         const id = getPayrollId();
 
-        // ── Coba fetch dari API; fallback ke dummy ──────────────────
-        if (id && token) {
-            try {
-                const res = await fetch(`/api/payrolls/${id}`, {
-                    headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
-                });
-                const result = await res.json();
-                if (res.ok && result.status === 'success') {
-                    renderDetail(result.data);
-                    return;
-                }
-            } catch (err) {
-                console.warn('[Payroll Detail] API error, menggunakan data dummy:', err);
-            }
+        if (!id || !token) {
+            Swal.fire('Error', 'ID payroll tidak ditemukan atau belum login!', 'error');
+            return;
         }
 
-        // Fallback: gunakan data dummy sementara backend belum siap
-        renderDetail(DUMMY_PAYROLL);
+        try {
+            const res = await fetch(`/api/payrolls/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
+            });
+            const result = await res.json();
+            if (res.ok && result.status === 'success') {
+                renderDetail(result.data);
+            } else {
+                Swal.fire('Gagal', result.message || 'Gagal memuat data payroll.', 'error');
+            }
+        } catch (err) {
+            console.error('[Payroll Detail] API error:', err);
+            Swal.fire('Error', 'Tidak bisa terhubung ke server.', 'error');
+        }
     });
 </script>
 

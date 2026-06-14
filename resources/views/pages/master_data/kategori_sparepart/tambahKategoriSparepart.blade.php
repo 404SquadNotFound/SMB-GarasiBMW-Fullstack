@@ -33,15 +33,31 @@
 
     <script>
         document.getElementById('submitBtnApi').onclick = async () => {
+            // 1. Ambil value dan trim spasi kosong
+            const nameVal = document.getElementById('name').value.trim();
+            const descVal = document.getElementById('descriptions').value.trim();
+
+            // 2. Kumpulkan field yang wajib diisi tapi masih kosong
+            let emptyFields = [];
+            
+            if (!nameVal) emptyFields.push('Nama Kategori');
+
+            // 3. Tampilkan Swal jika array emptyFields ada isinya
+            if (emptyFields.length > 0) {
+                let errorMessage = emptyFields.join(', ') + ' tidak boleh kosong!';
+                Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
+                return; // Hentikan eksekusi kode di bawahnya
+            }
+
+            // 4. Lanjut proses API jika data lengkap
             const employeeId = localStorage.getItem('user_id') || 1;
+            const token = localStorage.getItem('access_token');
 
             const data = {
-                name: document.getElementById('name').value,
-                descriptions: document.getElementById('descriptions').value,
+                name: nameVal,
+                descriptions: descVal,
                 employee_id: employeeId
             };
-
-            const token = localStorage.getItem('access_token');
 
             Swal.fire({
                 title: 'Menyimpan...',
@@ -73,7 +89,7 @@
                     window.location.href = "{{ route('kategori-sparepart.index') }}";
                 } else {
                     console.log(result.errors);
-                    Swal.fire('Gagal!', result.message || 'Cek inputan lagi.', 'error');
+                    Swal.fire('Peringatan!', result.message || 'Cek inputan lagi.', 'warning');
                 }
             } catch (error) {
                 Swal.fire('Error!', 'Koneksi API terputus.', 'error');

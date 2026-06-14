@@ -40,8 +40,10 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'        => 'required|string|max:255',
+            'name'        => 'required|string|max:255|unique:suppliers,name',
             'description' => 'nullable|string|max:255',
+        ], [
+            'name.unique' => 'Nama supplier sudah terdaftar.',
         ]);
 
         $supplier = Supplier::create($validated);
@@ -54,6 +56,8 @@ class SupplierController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'description' => 'nullable|string|max:255',
+        ],[
+            'name.unique' => 'Nama supplier sudah terdaftar.',
         ]);
 
         $supplier->update($validated);

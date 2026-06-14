@@ -159,13 +159,6 @@
                     </a>
                 </div>
                 <div class="mx-[12px]">
-                    <a href="{{ route('izin-terlambat.index') }}"
-                        class="block pl-[40px] py-[12px] text-[14px] font-medium transition-colors rounded-[10px]
-                        {{ request()->is('izin-terlambat*') ? 'text-[#213F5C] font-bold bg-bmw-active-btn' : 'text-[#526D82] hover:text-bmw-blue' }}">
-                        Pendataan Izin
-                    </a>
-                </div>
-                <div class="mx-[12px]">
                     <a href="{{ route('payroll.index') }}"
                         class="block pl-[40px] py-[12px] text-[14px] font-medium transition-colors rounded-[10px]
                         {{ request()->is('payroll*') ? 'text-[#213F5C] font-bold bg-bmw-active-btn' : 'text-[#526D82] hover:text-bmw-blue' }}">

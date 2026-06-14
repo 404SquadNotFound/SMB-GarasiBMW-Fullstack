@@ -56,10 +56,12 @@ class CarTypeController extends Controller
     {
         $validated = $request->validate([
             'chassis_number' => 'required|string',
-            'name'           => 'required|string',
+            'name'           => 'required|string|unique:car_types,name',
             'series'         => 'required|string',
             'engine_ids'     => 'required|array',
             'engine_ids.*'   => 'exists:engine_types,engine_type_id',
+        ], [
+            'name.unique' => 'Nama tipe mobil sudah terdaftar.',
         ]);
 
         // 1. Ambil nama-nama mesin buat engine_code
