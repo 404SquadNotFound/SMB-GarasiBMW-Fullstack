@@ -340,6 +340,15 @@
                         return Swal.fire('Data Belum Lengkap!', errorMessage, 'warning');
                     }
 
+                    if (this.formData.phone_number.length < 7) {
+                        return Swal.fire({
+                            icon: 'warning',
+                            title: 'Nomor Telepon Tidak Valid!',
+                            text: 'Nomor telepon tidak sesuai dengan peraturan di indonesia (minimal 7 digit).',
+                            confirmButtonColor: '#1273EB'
+                        });
+                    }
+
                     Swal.fire({ title: 'Mengupdate...', didOpen: () => Swal.showLoading() });
                     try {
                         const res = await fetch(`/api/customers/${this.id}`, {
