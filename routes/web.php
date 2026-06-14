@@ -135,9 +135,11 @@ Route::get('/manajemen-pegawai/export', [EmployeeController::class, 'exportExcel
 Route::get('/manajemen-pegawai/export/pdf', [EmployeeController::class, 'exportPdf'])->name('manajemen-pegawai.export.pdf');
 
 // Route Kepegawaian -> Laporan Absensi
-Route::get('/laporan-absensi', function () {
-    return view('pages.laporan_absensi.laporanAbsensi');
-})->name('laporan-absensi.index');
+use App\Http\Controllers\AttendanceController;
+Route::get('/laporan-absensi', [AttendanceController::class, 'reportManual'])->name('attendance.report');
+Route::post('/laporan-absensi/manual', [AttendanceController::class, 'storeManual'])->name('attendance.storeManual');
+Route::get('/laporan-absensi', [AttendanceController::class, 'reportManual'])->name('laporan-absensi.index');
+Route::get('/attendance/rekap', [AttendanceController::class, 'getRekapData'])->name('attendance.rekap');
 
 // Route Kepegawaian -> Pendataan Izin
 Route::get('/izin-terlambat', function () {
