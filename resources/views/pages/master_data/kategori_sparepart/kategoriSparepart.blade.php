@@ -22,8 +22,8 @@
         'placeholder' => 'Cari Kategori Sparepart...',
         'addUrl' => route('kategori-sparepart.create'),
         'btnText' => 'Tambah Kategori Sparepart',
-        'exportExcelUrl'=> 'javascript:exportItemCategory()',
-        'exportPdfUrl'  => 'javascript:exportItemCategoryPdf()'
+        'exportExcelUrl' => 'javascript:exportItemCategory()',
+        'exportPdfUrl' => 'javascript:exportItemCategoryPdf()',
     ])
     {{-- Script: sembunyikan tombol tambah untuk role CEO, admin, kepala_bengkel --}}
     <script>
@@ -56,11 +56,14 @@
             if (!tbody) return;
 
             try {
-                const url = `/api/item-categories?limit=10&search=${search}&page=${page}`;
+                const url = `/api/item-categories?limit=10&search=${encodeURIComponent(search)}&page=${page}`;
                 const res = await fetch(url, {
-                    headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
-                
+
                 const result = await res.json();
 
                 if (res.ok) {
@@ -81,10 +84,11 @@
                                     </div>
                                 </td>
                             </tr>`;
-                        
-                        if(fromEl) fromEl.innerText = 0; 
-                        if(toEl) toEl.innerText = 0; 
-                        if(totalEl) totalEl.innerText = 0;
+
+                        if (fromEl) fromEl.innerText = 0;
+                        if (toEl) toEl.innerText = 0;
+                        if (totalEl) totalEl.innerText = 0;
+                        renderPaginationControls(result, (p) => fetchCategories(search, p));
                         return;
                     }
 
@@ -108,36 +112,51 @@
                     });
 
                     // 4. Update Angka Pagination
-                    if(fromEl) fromEl.innerText = result.from || 0;
-                    if(toEl) toEl.innerText = result.to || 0;
-                    if(totalEl) totalEl.innerText = result.total || 0;
+                    if (fromEl) fromEl.innerText = result.from || 0;
+                    if (toEl) toEl.innerText = result.to || 0;
+                    if (totalEl) totalEl.innerText = result.total || 0;
                     renderPaginationControls(result, (p) => fetchCategories(search, p));
+                } else {
+                    tbody.innerHTML =
+                        `<tr><td colspan="3" class="text-center py-10 text-red-500 font-bold">${result.message || 'Gagal mengambil data kategori'}</td></tr>`;
                 }
-            } catch (e) { 
+            } catch (e) {
                 console.error(e);
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-10 text-red-500 font-bold">Waduh, koneksi API kategori bermasalah brok!</td></tr>';
+                tbody.innerHTML =
+                    '<tr><td colspan="3" class="text-center py-10 text-red-500 font-bold">Waduh, koneksi API kategori bermasalah brok!</td></tr>';
             }
         }
 
-        // 5. Logic Debounce Search
-        document.getElementById('searchInput').addEventListener('input', (e) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                fetchCategories(e.target.value, 1);
-            }, 500);
-        });
-
-        // 6. Init Load
+        // 5. Init Load + Logic Debounce Search
         document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    clearTimeout(timeout);
+                    currentSearch = e.target.value;
+                    timeout = setTimeout(() => {
+                        fetchCategories(currentSearch, 1);
+                    }, 500);
+                });
+            }
+
             fetchCategories();
         });
 
-        // 7. Export Excel
+        // 6. Export Excel
         async function exportItemCategory() {
             try {
-                Swal.fire({ title: 'Mengekspor Excel...', text: 'Mohon tunggu', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                Swal.fire({
+                    title: 'Mengekspor Excel...',
+                    text: 'Mohon tunggu',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
                 const res = await fetch('/api/item-categories-export', {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 if (res.ok) {
                     const blob = await res.blob();
@@ -152,15 +171,25 @@
                 } else {
                     Swal.fire('Error', 'Gagal mengekspor data Excel', 'error');
                 }
-            } catch (e) { console.error(e); Swal.fire('Error', 'Terjadi kesalahan sistem', 'error'); }
+            } catch (e) {
+                console.error(e);
+                Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+            }
         }
 
-        // 8. Export PDF
+        // 7. Export PDF
         async function exportItemCategoryPdf() {
             try {
-                Swal.fire({ title: 'Mengekspor PDF...', text: 'Mohon tunggu', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                Swal.fire({
+                    title: 'Mengekspor PDF...',
+                    text: 'Mohon tunggu',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
                 const res = await fetch('/api/item-categories-export-pdf', {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
                 });
                 if (res.ok) {
                     const blob = await res.blob();
@@ -175,7 +204,17 @@
                 } else {
                     Swal.fire('Error', 'Gagal mengekspor data PDF', 'error');
                 }
-            } catch (e) { console.error(e); Swal.fire('Error', 'Terjadi kesalahan sistem', 'error'); }
+            } catch (e) {
+                console.error(e);
+                Swal.fire('Error', 'Terjadi kesalahan sistem', 'error');
+            }
         }
+
+        {{-- Sembunyikan tombol Filter karena halaman ini tidak punya modal filter --}}
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtn = document.querySelector('button[onclick^="toggleModal"]');
+            if (filterBtn) filterBtn.style.display = 'none';
+        });
     </script>
 @endsection

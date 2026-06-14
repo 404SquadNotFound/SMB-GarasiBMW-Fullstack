@@ -29,6 +29,7 @@
     </tbody>
 @endsection
 
+
 @section('content')
     {{-- Kontrol Utama Menggunakan Alpine.js --}}
     <div id="attendanceContainer" x-data="{ 

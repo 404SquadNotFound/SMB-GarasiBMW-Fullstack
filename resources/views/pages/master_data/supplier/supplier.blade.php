@@ -103,5 +103,10 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => fetchSuppliers());
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterBtn = document.querySelector('button[onclick^="toggleModal"]');
+            if (filterBtn) filterBtn.style.display = 'none';
+        });
     </script>
 @endsection
