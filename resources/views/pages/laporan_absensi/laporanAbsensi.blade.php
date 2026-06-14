@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('title', 'Laporan Absensi')
-@section('title_header', 'Manajemen Rekap Pegawai')
+@section('title_header', 'Laporan Absensi')
 
 @section('content')
 {{-- Kontrol Utama Menggunakan Alpine.js --}}
