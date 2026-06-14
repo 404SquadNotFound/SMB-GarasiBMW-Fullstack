@@ -9,14 +9,71 @@ use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
-    public function index()
+    /**
+     * ✅ DIUBAH: Menggunakan Pagination 10 data per halaman & Grouping Unik per Pegawai
+     */
+    public function index(Request $request)
     {
-        $attendances = Attendance::with('employee')->orderBy('date', 'desc')->get();
+        Carbon::setLocale('id');
 
+        // 1. Ambil parameter dari request frontend AJAX
+        $weekOffset = (int) $request->query('weekOffset', 0);
+        $search = $request->query('search');
+
+        // 2. Hitung rentang tanggal senin - minggu berdasarkan offset minggu aktif
+        $baseDate = Carbon::now()->addWeeks($weekOffset);
+        $startOfWeek = $baseDate->copy()->startOfWeek(Carbon::MONDAY)->format('Y-m-d');
+        $endOfWeek = $baseDate->copy()->endOfWeek(Carbon::SUNDAY)->format('Y-m-d');
+
+        // Daftarkan key hari untuk mapping di frontend
+        $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        $periodDates = [];
+        for ($i = 0; $i < 7; $i++) {
+            $date = Carbon::parse($startOfWeek)->addDays($i);
+            $periodDates[$days[$i]] = $date->format('Y-m-d');
+        }
+
+        // 3. Query utama wajib bertumpu pada Employee agar baris nama pegawai tidak duplikat
+        $query = Employee::where('status', true);
+
+        // Filter pencarian nama pegawai jika kolom input diisi
+        if ($request->filled('search')) {
+            $query->where('name', 'LIKE', "%{$search}%");
+        }
+
+        // 4. WAJIB: Batasi data maksimal 10 pegawai per halaman
+        $paginatedEmployees = $query->paginate($request->limit ?? 10);
+
+        // 5. Transformasi data agar record absen senin-minggu bersarang di dalam tiap objek pegawai
+        $transformedData = $paginatedEmployees->getCollection()->map(function ($emp) use ($startOfWeek, $endOfWeek, $periodDates) {
+            $attendances = Attendance::where('employee_id', $emp->employees_id)
+                ->whereBetween('date', [$startOfWeek, $endOfWeek])
+                ->get();
+
+            $attendanceByDay = [];
+            foreach ($periodDates as $dayKey => $dateStr) {
+                $att = $attendances->firstWhere('date', $dateStr);
+                $attendanceByDay[$dayKey] = $att ? $att->toArray() : null;
+            }
+
+            return [
+                'employee_id' => $emp->employees_id,
+                'name' => $emp->name,
+                'attendances' => $attendanceByDay
+            ];
+        });
+
+        // 6. Return response JSON dengan menyertakan wrapper metadata paginator Laravel asli
         return response()->json([
-            'status' => 'success',
-            'message' => 'Data absensi ditarik',
-            'data' => $attendances
+            'current_page' => $paginatedEmployees->currentPage(),
+            'last_page'    => $paginatedEmployees->lastPage(),
+            'per_page'     => $paginatedEmployees->perPage(),
+            'from'         => $paginatedEmployees->firstItem(),
+            'to'           => $paginatedEmployees->lastItem(),
+            'total'        => $paginatedEmployees->total(),
+            'data'         => $transformedData,
+            'status'       => 'success',
+            'message'      => 'Data absensi ditarik'
         ], 200);
     }
 
@@ -65,18 +122,14 @@ class AttendanceController extends Controller
 
     public function reportManual(Request $request)
     {
-        Carbon::setLocale('id'); // Bahasa Indonesia
+        Carbon::setLocale('id'); 
 
-        // Cek apakah ada request pindah minggu (0 = minggu ini, -1 = minggu lalu, 1 = minggu depan)
         $weekOffset = (int) $request->query('weekOffset', 0);
-
-        // Geser waktu real-time sekarang sesuai tombol yang dipencet
         $baseDate = Carbon::now()->addWeeks($weekOffset);
 
         $startOfWeek = $baseDate->copy()->startOfWeek(Carbon::MONDAY);
         $endOfWeek = $baseDate->copy()->endOfWeek(Carbon::SUNDAY);
 
-        // String Periode (Contoh: "8 Juni - 14 Juni 2026")
         $periodeString = $startOfWeek->translatedFormat('j F') . ' - ' . $endOfWeek->translatedFormat('j F Y');
         $mingguKe = $startOfWeek->weekOfYear;
 
@@ -115,7 +168,7 @@ class AttendanceController extends Controller
             'periodDates' => $periodDates,
             'periodeString' => $periodeString,
             'mingguKe' => $mingguKe,
-            'weekOffset' => $weekOffset // <-- Kirim data offset ke view
+            'weekOffset' => $weekOffset 
         ]);
     }
 
@@ -126,14 +179,13 @@ class AttendanceController extends Controller
             'date' => 'required|date',
             'status' => 'required|in:Hadir,Cuti,Sakit,Terlambat,Libur,Izin Terlambat',
             'clock_in' => 'nullable',
-            'reason' => 'nullable|string', // Validasi alasan
-            'evidence' => 'nullable|image|mimes:png,jpg,jpeg|max:5120' // Validasi gambar max 5MB
+            'reason' => 'nullable|string', 
+            'evidence' => 'nullable|image|mimes:png,jpg,jpeg|max:5120' 
         ]);
 
         $status = $request->status;
         $clockIn = $request->clock_in;
 
-        // Logika Telat Otomatis
         if ($status === 'Hadir' && $clockIn) {
             $timeString = Carbon::parse($clockIn)->format('H:i');
             if ($timeString >= '09:01') {
@@ -141,18 +193,15 @@ class AttendanceController extends Controller
             }
         }
 
-        // Kosongkan jam jika Sakit/Cuti/Libur
         if (in_array($status, ['Sakit', 'Cuti', 'Libur'])) {
             $clockIn = null;
         }
 
-        // Handle File Upload
         $evidencePath = null;
         if ($request->hasFile('evidence')) {
             $evidencePath = $request->file('evidence')->store('attendances/evidence', 'public');
         }
 
-        // Cari absen yang sudah ada buat update (biar file lama gak nimpa jadi null kalau ga upload baru)
         $existing = Attendance::where('employee_id', $request->employee_id)->where('date', $request->date)->first();
 
         Attendance::updateOrCreate(
@@ -161,7 +210,7 @@ class AttendanceController extends Controller
                 'status' => $status,
                 'clock_in' => $clockIn,
                 'reason' => $request->reason,
-                'photo' => $evidencePath ? $evidencePath : ($existing ? $existing->photo : null), // Simpan path foto
+                'photo' => $evidencePath ? $evidencePath : ($existing ? $existing->photo : null), 
                 'updated_by' => auth()->id() ?? 1,
             ]
         );
@@ -187,14 +236,13 @@ class AttendanceController extends Controller
                 $periode = 'Tahun ini (' . $now->year . ')';
                 break;
 
-            default: // mingguan
+            default: 
                 $start = $now->copy()->startOfWeek(Carbon::MONDAY);
                 $end = $now->copy()->endOfWeek(Carbon::SUNDAY);
                 $periode = 'Minggu ini (Senin - Minggu)';
                 break;
         }
 
-        // Query aggregate langsung dari DB, efisien
         $counts = Attendance::whereBetween('date', [$start->format('Y-m-d'), $end->format('Y-m-d')])
             ->selectRaw("
             COUNT(*) as total,
@@ -206,7 +254,7 @@ class AttendanceController extends Controller
         ")
             ->first();
 
-        $total = $counts->total ?: 1; // hindari division by zero
+        $total = $counts->total ?: 1; 
 
         return response()->json([
             'hadir' => (int) $counts->hadir,
