@@ -1,4 +1,4 @@
-﻿@extends('layouts.master')
+@extends('layouts.master')
 
 @section('title', 'Edit Gaji Pegawai')
 @section('title_header', 'Payroll | Edit Gaji Pegawai')
@@ -159,7 +159,19 @@
 
     <script>
         // ─── ID dari URL ──────────────────────────────────────────────────────────
-        const PAYROLL_ID = @json(request()->route('id'));
+        function getPayrollId() {
+            const fromSession = sessionStorage.getItem('currentPayrollId');
+            if (fromSession) return parseInt(fromSession, 10);
+            const segments = window.location.pathname.split('/').filter(Boolean);
+            // URL: /payroll/edit/{id}
+            for (let i = 0; i < segments.length; i++) {
+                if (segments[i] === 'edit' && segments[i + 1]) return parseInt(segments[i + 1], 10);
+            }
+            const id = @json(request()->route('id'));
+            return id ? parseInt(id, 10) : null;
+        }
+
+        const PAYROLL_ID = getPayrollId();
 
         // ─── Dynamic Row Helpers ──────────────────────────────────────────────────
 
@@ -283,7 +295,7 @@
                     fetch('/api/employees', {
                         headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
                     }),
-                    fetch(`/api/payroll/${PAYROLL_ID}`, {
+                    fetch(`/api/payrolls/${PAYROLL_ID}`, {
                         headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/json' }
                     }),
                 ]);
@@ -294,27 +306,27 @@
                 if (!payrollRes.ok) throw new Error(payrollResult.message ?? 'Data tidak ditemukan');
 
                 const payroll   = payrollResult.data ?? payrollResult;
-                const employees = empResult.data ?? empResult;
+                const employees = empResult.data?.data ?? empResult.data ?? empResult;
 
                 // Isi dropdown karyawan
                 const empSelect = document.getElementById('employee_id');
                 employees.forEach(emp => {
                     const opt = document.createElement('option');
-                    opt.value       = emp.id;
-                    opt.textContent = `${emp.name} — ${emp.employee_number ?? emp.npk ?? ''}`;
-                    if (String(emp.id) === String(payroll.employee_id)) opt.selected = true;
+                    opt.value       = emp.employees_id;
+                    opt.textContent = `${emp.name} — ${emp.role ?? ''}`;
+                    if (String(emp.employees_id) === String(payroll.employee?.id)) opt.selected = true;
                     empSelect.appendChild(opt);
                 });
 
                 // Isi field statis
-                document.getElementById('month').value        = payroll.month        ?? '';
-                document.getElementById('year').value         = payroll.year         ?? '';
-                document.getElementById('basic_salary').value = payroll.basic_salary ?? '';
+                document.getElementById('month').value        = payroll.month ?? '';
+                document.getElementById('year').value         = payroll.year ?? '';
+                document.getElementById('basic_salary').value = payroll.salary?.base_salary ?? '';
 
                 // Isi rows dinamis dari data yang ada
-                (payroll.incomes   ?? []).forEach(r => buatRow('income_list',  INCOME_FIELDS,  { name: r.name, type: r.type, amount: r.amount }));
-                (payroll.savings   ?? []).forEach(r => buatRow('saving_list',  SAVING_FIELDS,  { name: r.name, type: r.type, amount: r.amount, month_target: r.month_target }));
-                (payroll.penalties ?? []).forEach(r => buatRow('penalty_list', PENALTY_FIELDS, { name: r.name, info: r.info, amount: r.amount }));
+                (payroll.salary?.allowances ?? []).forEach(r => buatRow('income_list',  INCOME_FIELDS,  { name: r.name, type: r.type, amount: r.amount }));
+                (payroll.salary?.savings    ?? []).forEach(r => buatRow('saving_list',  SAVING_FIELDS,  { name: r.name, type: r.type, amount: r.amount, month_target: '' }));
+                (payroll.salary?.penalties  ?? []).forEach(r => buatRow('penalty_list', PENALTY_FIELDS, { name: r.name, info: r.description, amount: r.amount }));
 
                 // Tampilkan form, sembunyikan skeleton
                 document.getElementById('loadingState').classList.add('hidden');
@@ -368,7 +380,7 @@
                     didOpen: () => { Swal.showLoading(); }
                 });
 
-                const response = await fetch(`/api/payroll/${PAYROLL_ID}`, {
+                const response = await fetch(`/api/payrolls/${PAYROLL_ID}`, {
                     method: 'PUT',
                     headers: {
                         'Accept': 'application/json',

@@ -265,3 +265,4 @@ Route::get('/run-migrate/{key}', function ($key) {
         return "Error: " . $e->getMessage();
     }
 });
+Route::get('/payroll/{id}/slip-preview', function ($id) { return view('pages.payroll.previewSlipGaji', compact('id')); })->name('payroll.preview');
