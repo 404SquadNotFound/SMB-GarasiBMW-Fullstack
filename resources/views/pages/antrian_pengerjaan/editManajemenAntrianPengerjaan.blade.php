@@ -507,7 +507,6 @@ function antrianEditForm() {
                 return;
             }
 
-            await this.loadBarangList();
             await this.loadTransactionData();
 
             document.addEventListener('click', () => {
@@ -584,12 +583,14 @@ function antrianEditForm() {
                     const fromList = this.currentVehicles.find(v => v.id === vehicleRaw.vehicles_id);
                     const vehicle  = fromList ?? {
                         id           : vehicleRaw.vehicles_id,
+                        car_type_id  : vehicleRaw.car_type_id,
                         model        : vehicleRaw.model,
                         license_plate: vehicleRaw.license_plate,
                         engine_code  : vehicleRaw.engine_code,
                         odometer     : vehicleRaw.odometer,
                     };
                     this._prefillVehicle(vehicle);
+                    await this.loadBarangList(vehicle.car_type_id);
                 }
 
                 // Pre-fill suku cadang
@@ -697,6 +698,8 @@ function antrianEditForm() {
             // Saat edit, KM TIDAK otomatis berubah saat ganti kendaraan
             this._prefillVehicle(v);
             this.isDirty = true;
+            this.sukuCadangItems     = [];
+            this.loadBarangList(v.car_type_id);
         },
 
         clearVehicle() {
@@ -704,6 +707,9 @@ function antrianEditForm() {
             this.vehicleSearch       = '';
             this.showVehicleDropdown = false;
             this.filteredVehicles    = this.currentVehicles;
+            this.barangList          = [];
+            this.filteredBarang      = [];
+            this.sukuCadangItems     = [];
         },
 
         // ── Cabang ────────────────────────────────────────────────
@@ -714,9 +720,10 @@ function antrianEditForm() {
         },
 
         // ── Barang ────────────────────────────────────────────────
-        async loadBarangList() {
+        async loadBarangList(carTypeId = '') {
             try {
-                const res    = await fetch('/api/spareparts-for-antrian', {
+                const params = carTypeId ? `?car_type_id=${carTypeId}` : '';
+                const res    = await fetch(`/api/spareparts-for-antrian${params}`, {
                     headers: { 'Authorization': `Bearer ${this.token}` }
                 });
                 const result = await res.json();
@@ -784,6 +791,10 @@ function antrianEditForm() {
 
         // ── Form suku cadang ──────────────────────────────────────
         openSukuCadangForm() {
+            if (!this.selectedVehicle) {
+                Swal.fire('Oops!', 'Silakan pilih kendaraan pelanggan terlebih dahulu!', 'warning');
+                return;
+            }
             this.showFormSukuCadang = true;
             this.inputJumlah        = '';
             this.clearBarang();

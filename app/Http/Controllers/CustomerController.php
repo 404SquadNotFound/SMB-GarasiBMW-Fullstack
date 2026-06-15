@@ -249,6 +249,7 @@ class CustomerController extends Controller
                 'vehicles' => $c->vehicles->map(function ($v) {
                     return [
                         'id' => $v->vehicles_id,
+                        'car_type_id' => $v->car_type_id,
                         'model' => $v->model,
                         'license_plate' => $v->license_plate,
                         'engine_code' => $v->engine_code,
