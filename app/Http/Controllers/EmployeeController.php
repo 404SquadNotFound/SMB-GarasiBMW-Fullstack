@@ -100,7 +100,10 @@ class EmployeeController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'join_date' => 'required|date',
+            'birth_date' => 'required|date',
             'address' => 'required|string',
+            'role' => 'required|in:ceo,finance,kepala_bengkel,kepala_admin,admin,karyawan',
             'base_salary' => 'required|numeric',
             'status' => 'required|boolean',
         ]);

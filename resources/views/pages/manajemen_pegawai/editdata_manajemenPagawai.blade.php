@@ -209,6 +209,8 @@
             const emailVal = document.getElementById('email').value.trim();
             const roleVal = document.getElementById('role').value;
             const statusVal = document.getElementById('status').value;
+            const joinDateVal = document.getElementById('join_date').value;
+            const birthDateVal = document.getElementById('birth_date').value;
             const passwordVal = document.getElementById('password').value.trim();
 
             // 2. Cek field mandatory
@@ -242,6 +244,8 @@
             // 4. Lanjut susun payload jika aman
             const data = {
                 name:        nameVal,
+                join_date:   joinDateVal,
+                birth_date:  birthDateVal,
                 address:     addressVal,
                 email:       emailVal,
                 role:        roleVal,
