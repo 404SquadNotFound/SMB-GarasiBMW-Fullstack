@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EngineType;
 use Illuminate\Http\Request;
 use App\Http\Services\PdfExportService;
-use App\Http\services\ExportService;
+use App\Http\Services\ExportService;
 
 class EngineTypeController extends Controller
 {
