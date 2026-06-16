@@ -326,7 +326,7 @@
                             text: 'Nomor telepon tidak sesuai dengan peraturan di indonesia (minimal 7 digit).',
                             confirmButtonColor: '#1273EB'
                         });
-                    }
+                    }   
 
                     Swal.fire({ title: 'Menyimpan...', didOpen: () => Swal.showLoading() });
                     try {
