@@ -39,8 +39,11 @@ class ServiceTransactionController extends Controller
         if ($statusFilter) {
             $query->where('status_service', $statusFilter);
         } else {
-            // Default: sembunyikan transaksi "selesai" dari antrian (sudah masuk riwayat)
-            $query->where('status_service', '!=', 'selesai');
+            // Default: Sembunyikan jika status_service = selesai DAN status_payment = paid
+            $query->where(function ($q) {
+                $q->where('status_service', '!=', 'selesai')
+                    ->orWhere('status_payment', '!=', 'paid');
+            });
         }
 
         return $query->orderBy('created_at', 'desc')
