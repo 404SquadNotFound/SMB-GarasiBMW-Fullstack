@@ -33,122 +33,107 @@
 @section('content')
     {{-- Kontrol Utama Menggunakan Alpine.js --}}
     <div id="attendanceContainer" x-data="{ 
-                        openModal: false, 
-                        openInputModal: false, 
-                        activeTab: 'mingguan',
+                            openModal: false, 
+                            openInputModal: false, 
+                            activeTab: 'mingguan',
 
-                        {{-- Form State untuk Modal Input Absen Manual --}}
-                        form: {
-                            employee_id: '',
-                            employee_name: '',
-                            date: '',
-                            day_name: '',
-                            status: 'Hadir',
-                            hour: '',
-                            minute: '',
-                            ampm: 'AM',
-                            reason: '',
-                            fileName: ''
-                        },
+                            {{-- Form State untuk Modal Input Absen Manual --}}
+                            form: {
+                                employee_id: '',
+                                employee_name: '',
+                                date: '',
+                                day_name: '',
+                                status: 'Hadir',
+                                hour: '',
+                                minute: '',
+                                ampm: 'AM',
+                                reason: '',
+                                fileName: ''
+                            },
 
-                        {{-- Fungsi untuk mengisi form state dari pemicu luar/JavaScript biasa --}}
-                        initForm(empId, empName, date, dayName, status, h, m, ampm, reason) {
-                            this.form.employee_id = empId;
-                            this.form.employee_name = empName;
-                            this.form.date = date;
-                            this.form.day_name = dayName;
-                            this.form.status = status || 'Hadir';
-                            this.form.hour = h || '';
-                            this.form.minute = m || '';
-                            this.form.ampm = ampm || 'AM';
-                            this.form.reason = reason || '';
-                            this.form.fileName = '';
-                            this.openInputModal = true;
-                        },
+                            {{-- Fungsi untuk mengisi form state dari pemicu luar/JavaScript biasa --}}
+                            initForm(empId, empName, date, dayName, status, h, m, ampm, reason) {
+                                this.form.employee_id = empId;
+                                this.form.employee_name = empName;
+                                this.form.date = date;
+                                this.form.day_name = dayName;
+                                this.form.status = status || 'Hadir';
+                                this.form.hour = h || '';
+                                this.form.minute = m || '';
+                                this.form.ampm = ampm || 'AM';
+                                this.form.reason = reason || '';
+                                this.form.fileName = '';
+                                this.openInputModal = true;
+                            },
 
-                        {{-- Konversi Waktu ke Format 24 Jam untuk Database --}}
-                        get24HourTime() {
-                            if (!this.form.hour) return null;
-                            let h = parseInt(this.form.hour) || 0;
-                            let m = parseInt(this.form.minute) || 0;
-                            if (this.form.ampm === 'PM' && h < 12) h += 12;
-                            if (this.form.ampm === 'AM' && h === 12) h = 0;
-                            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
-                        },
+                            {{-- Konversi Waktu ke Format 24 Jam untuk Database --}}
+                            get24HourTime() {
+                                if (!this.form.hour) return null;
+                                let h = parseInt(this.form.hour) || 0;
+                                let m = parseInt(this.form.minute) || 0;
+                                if (this.form.ampm === 'PM' && h < 12) h += 12;
+                                if (this.form.ampm === 'AM' && h === 12) h = 0;
+                                return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`;
+                            },
 
-                        {{-- Deteksi otomatis Hadir <-> Terlambat saat input jam diketik --}}
-                        autoDetectStatus() {
-                            if (!['Hadir', 'Terlambat'].includes(this.form.status)) return;
-                            if (this.form.hour === '') return;
+                            {{-- Deteksi otomatis Hadir <-> Terlambat saat input jam diketik --}}
+                            autoDetectStatus() {
+                                if (!['Hadir', 'Terlambat'].includes(this.form.status)) return;
+                                if (this.form.hour === '') return;
 
-                            let h = parseInt(this.form.hour) || 0;
-                            let m = parseInt(this.form.minute) || 0;
-                            if (this.form.ampm === 'PM' && h < 12) h += 12;
-                            if (this.form.ampm === 'AM' && h === 12) h = 0;
+                                let h = parseInt(this.form.hour) || 0;
+                                let m = parseInt(this.form.minute) || 0;
+                                if (this.form.ampm === 'PM' && h < 12) h += 12;
+                                if (this.form.ampm === 'AM' && h === 12) h = 0;
 
-                            if ((h > 9) || (h === 9 && m >= 1)) {
-                                this.form.status = 'Terlambat';
-                            } else {
-                                this.form.status = 'Hadir';
-                            }
-                        },
+                                if ((h > 9) || (h === 9 && m >= 1)) {
+                                    this.form.status = 'Terlambat';
+                                } else {
+                                    this.form.status = 'Hadir';
+                                }
+                            },
 
-                        rekap: {
-                            mingguan: null,
-                            bulanan: null,
-                            tahunan: null
-                        },
-                        rekapLoading: false,
+                            rekap: {
+                                mingguan: null,
+                                bulanan: null,
+                                tahunan: null
+                            },
+                            rekapLoading: false,
 
-                        async fetchRekap(type) {
-                            if (this.rekap[type] !== null) return; 
+                            async fetchRekap(type) {
+                                if (this.rekap[type] !== null) return; 
 
-                            this.rekapLoading = true;
-                            try {
-                                const res = await fetch(`{{ route('attendance.rekap') }}?type=${type}`);
-                                const data = await res.json();
-                                this.rekap[type] = data;
-                            } catch(e) {
-                                console.error('Gagal fetch rekap:', e);
-                            } finally {
-                                $data.rekapLoading = false;
-                            }
-                        },
-                    }" x-init="
-                        $watch('form.hour', value => autoDetectStatus());
-                        $watch('form.minute', value => autoDetectStatus());
-                        $watch('form.ampm', value => autoDetectStatus());
-                    ">
+                                this.rekapLoading = true;
+                                try {
+                                    const res = await fetch(`{{ route('attendance.rekap') }}?type=${type}`);
+                                    const data = await res.json();
+                                    this.rekap[type] = data;
+                                } catch(e) {
+                                    console.error('Gagal fetch rekap:', e);
+                                } finally {
+                                    $data.rekapLoading = false;
+                                }
+                            },
+                        }" x-init="
+                            $watch('form.hour', value => autoDetectStatus());
+                            $watch('form.minute', value => autoDetectStatus());
+                            $watch('form.ampm', value => autoDetectStatus());
+                        ">
 
         {{-- 1. Action Bar dengan ID searchInput --}}
         <div class="flex items-center justify-between mb-5">
-            <div class="relative w-[340px]">
-                <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#627D98]" fill="none"
-                    stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            <div
+                class="flex items-center w-[340px] bg-white border border-[#D9E2EC] rounded-[10px] px-4 shadow-sm focus-within:border-[#1273EB] transition-all">
+                <svg class="w-4 h-4 text-[#627D98] shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z">
+                    </path>
                 </svg>
                 <input type="text" id="searchInput" placeholder="Cari Pegawai..."
-                    class="w-full pl-10 pr-4 py-3 bg-white border border-[#D9E2EC] rounded-[10px] outline-none shadow-sm text-[14px]">
+                    class="w-full py-3 ml-3 bg-transparent outline-none text-[14px] text-[#213F5C] placeholder-gray-400">
             </div>
 
             <div class="flex items-center gap-2.5">
-                <button
-                    class="flex items-center gap-2 px-5 py-[11px] bg-white border border-[#D9E2EC] rounded-[10px] font-bold text-[13px] text-[#213F5C] shadow-sm hover:bg-gray-50 transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2">
-                        <path
-                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
-                        </path>
-                    </svg>
-                    Filter
-                </button>
-                <button
-                    class="flex items-center gap-2 px-5 py-[11px] bg-white border border-[#D9E2EC] rounded-[10px] font-bold text-[13px] text-[#213F5C] shadow-sm hover:bg-gray-50 transition-all">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                    </svg>
-                    Export
-                </button>
-
                 <button @click="openModal = true; activeTab = 'mingguan'; fetchRekap('mingguan')"
                     class="flex items-center gap-2 px-5 py-[11px] bg-[#1273EB] text-white rounded-[10px] font-bold text-[13px] shadow-sm hover:bg-[#0E62CC] transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -256,13 +241,13 @@
                                 @click.outside="dropdownOpen = false"
                                 class="w-full px-4 py-3.5 rounded-[12px] flex items-center justify-between font-bold text-[15px] border-2 transition-all duration-200 outline-none"
                                 :class="{
-                                                    'bg-[#F0FFF4] text-[#22C55E] border-[#22C55E]' : form.status === 'Hadir',
-                                                    'bg-[#f0f0ff5d] text-[#393947] border-[#9c9faf]' : form.status === 'Izin Terlambat',
-                                                    'bg-[#F3E8FF] text-[#A855F7] border-[#D8B4FE]' : form.status === 'Libur',
-                                                    'bg-[#FFF4D9] text-[#FFB800] border-[#FFB800]' : form.status === 'Terlambat',
-                                                    'bg-[#FFEAEA] text-[#FF4D4D] border-[#FF4D4D]' : form.status === 'Sakit',
-                                                    'bg-[#EAF2FF] text-[#1273EB] border-[#1273EB]' : form.status === 'Cuti'
-                                                }">
+                                                        'bg-[#F0FFF4] text-[#22C55E] border-[#22C55E]' : form.status === 'Hadir',
+                                                        'bg-[#f0f0ff5d] text-[#393947] border-[#9c9faf]' : form.status === 'Izin Terlambat',
+                                                        'bg-[#F3E8FF] text-[#A855F7] border-[#D8B4FE]' : form.status === 'Libur',
+                                                        'bg-[#FFF4D9] text-[#FFB800] border-[#FFB800]' : form.status === 'Terlambat',
+                                                        'bg-[#FFEAEA] text-[#FF4D4D] border-[#FF4D4D]' : form.status === 'Sakit',
+                                                        'bg-[#EAF2FF] text-[#1273EB] border-[#1273EB]' : form.status === 'Cuti'
+                                                    }">
                                 <span x-text="form.status"></span>
                                 <svg class="w-5 h-5 transition-transform duration-200"
                                     :class="dropdownOpen ? 'rotate-180' : ''" fill="none" stroke="currentColor"
@@ -611,17 +596,17 @@
 
                     if (employees.length === 0) {
                         tbody.innerHTML = `
-                            <tr>
-                                <td colspan="8" class="py-24 text-center">
-                                    <div class="flex flex-col items-center justify-center opacity-60">
-                                        <svg class="w-24 h-24 text-gray-200 mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                                        </svg>
-                                        <h3 class="text-[16px] font-bold text-[#213F5C] mb-1">Pegawai tidak ditemukan</h3>
-                                        <p class="text-[13px] text-gray-400 font-medium">Coba cek kembali keyword pencarian atau filter lu brok.</p>
-                                    </div>
-                                </td>
-                            </tr>`;
+                                <tr>
+                                    <td colspan="8" class="py-24 text-center">
+                                        <div class="flex flex-col items-center justify-center opacity-60">
+                                            <svg class="w-24 h-24 text-gray-200 mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                                            </svg>
+                                            <h3 class="text-[16px] font-bold text-[#213F5C] mb-1">Pegawai tidak ditemukan</h3>
+                                            <p class="text-[13px] text-gray-400 font-medium">Coba cek kembali keyword pencarian atau filter lu brok.</p>
+                                        </div>
+                                    </td>
+                                </tr>`;
                         if (fromEl) fromEl.innerText = 0;
                         if (toEl) toEl.innerText = 0;
                         if (totalEl) totalEl.innerText = 0;
@@ -659,7 +644,7 @@
                         let empId = emp.employee_id || emp.employees_id || emp.id || '';
 
                         let rowHtml = `<tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-6 py-5 font-bold text-[#213F5C]">${rawName}</td>`;
+                                <td class="px-6 py-5 font-bold text-[#213F5C]">${rawName}</td>`;
 
                         const daysKeys = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
@@ -695,14 +680,14 @@
                             let reasonClean = String(rawReason).replace(/'/g, "\\'");
 
                             rowHtml += `
-                                    <td class="px-4 py-4 text-center">
-                                        <button onclick="openManualInput('${empId}', '${cleanEmpName}', '${dateContext}', '${dayNameIndo}', '${status}', '${h}', '${m}', '${ampm}', '${reasonClean}')" 
-                                            class="w-full inline-block py-2 px-3 rounded-xl text-[12px] font-bold border transition-all ${currentBtnClass}">
-                                            <span class="flex items-center justify-center gap-1">
-                                                ${warningIcon} ${buttonText}
-                                            </span>
-                                        </button>
-                                    </td>`;
+                                        <td class="px-4 py-4 text-center">
+                                            <button onclick="openManualInput('${empId}', '${cleanEmpName}', '${dateContext}', '${dayNameIndo}', '${status}', '${h}', '${m}', '${ampm}', '${reasonClean}')" 
+                                                class="w-full inline-block py-2 px-3 rounded-xl text-[12px] font-bold border transition-all ${currentBtnClass}">
+                                                <span class="flex items-center justify-center gap-1">
+                                                    ${warningIcon} ${buttonText}
+                                                </span>
+                                            </button>
+                                        </td>`;
                         });
 
                         rowHtml += `</tr>`;
