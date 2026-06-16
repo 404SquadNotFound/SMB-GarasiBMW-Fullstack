@@ -242,6 +242,20 @@
 
             fetchPayrolls();
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide Filter button
+            const filterBtn = document.querySelector('button[onclick^="toggleModal"]');
+            if (filterBtn) filterBtn.style.display = 'none';
+
+            // Hide Export button wrapper
+            document.querySelectorAll('button').forEach(btn => {
+                if (btn.textContent.includes('Export')) {
+                    const wrapper = btn.closest('div.relative');
+                    if (wrapper) wrapper.style.display = 'none';
+                }
+            });
+        });
     </script>
 
 @endsection
