@@ -227,9 +227,12 @@
                         : [];
 
                 // Filter sisi client — fallback jika backend tidak support query param
-                allData = allData.filter(t =>
-                    String(t.status_service || '').toLowerCase() === 'selesai'
-                );
+                allData = allData.filter(t => {
+                    const statusService = String(t.status_service || '').toLowerCase();
+                    const statusPayment = String(t.status_payment || t.payment_status || '').toLowerCase();
+                    
+                    return statusService === 'selesai' && (statusPayment === 'paid' || statusPayment === 'lunas');
+                });
 
                 applyActiveFilters();
             } catch (err) {

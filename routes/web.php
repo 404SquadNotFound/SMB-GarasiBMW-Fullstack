@@ -251,18 +251,20 @@ Route::post('/antrian-pengerjaan/{id}/nota-pdf', [NotaController::class, 'downlo
     ->name('antrian-pengerjaan.notaPdf');
 
 Route::get('/run-migrate/{key}', function ($key) {
-    if ($key !== 'Edsel@S3ptaGanteng233102910') return "Akses Ditolak!";
+    if ($key !== 'Edsel@S3ptaGanteng233102910')
+        return "Akses Ditolak!";
 
     try {
-        // Memaksa database Clever Cloud mengubah tipe ENUM-nya langsung via query mentah
-        \Illuminate\Support\Facades\DB::statement("
-            ALTER TABLE attendances 
-            MODIFY COLUMN status ENUM('Hadir', 'Cuti', 'Sakit', 'Terlambat', 'Izin Terlambat', 'Libur') NOT NULL
-        ");
-        
-        return "Struktur database berhasil dipaksa update ke ENUM baru!";
+        // Menjalankan perintah migrate:fresh --seed
+        Artisan::call('migrate:fresh', [
+            '--seed' => true,
+        ]);
+
+        return "Database berhasil di-reset dan di-seed!";
     } catch (\Exception $e) {
         return "Error: " . $e->getMessage();
     }
 });
-Route::get('/payroll/{id}/slip-preview', function ($id) { return view('pages.payroll.previewSlipGaji', compact('id')); })->name('payroll.preview');
+
+Route::get('/payroll/{id}/slip-preview', function ($id) {
+    return view('pages.payroll.previewSlipGaji', compact('id')); })->name('payroll.preview');

@@ -510,6 +510,7 @@
                     const today = new Date();
                     today.setHours(0, 0, 0, 0);
                     const inputDate = new Date(this.tempStock.date);
+                    inputDate.setHours(0, 0, 0, 0);
                     if (inputDate > today) {
                         return Swal.fire('Tanggal Tidak Valid!', 'Tanggal masuk barang tidak boleh di masa depan.',
                             'warning');
