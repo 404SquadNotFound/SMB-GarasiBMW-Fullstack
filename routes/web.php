@@ -199,7 +199,7 @@ Route::get('/riwayat-transaksi', function () {
     return view('pages.riwayat_transaksi.riwayatTransaksi');
 })->name('riwayat-transaksi.index');
 Route::get('/riwayat-transaksi/detail/{id}', function ($id) {
-    return view('layanan-servis.riwayat-transaksi.show');
+    return view('pages.riwayat_transaksi.detailRiwayatTransaksi');
 })->name('riwayat-transaksi.show');
 Route::get('/riwayat-transaksi/delete/{id}', function ($id) {
     return view('pages.riwayat_transaksi.riwayatTransaksi');
