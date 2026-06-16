@@ -5,7 +5,7 @@
 @section('title_header', 'Penggajian')
 
 @section('table_header')
-    <th class="px-6 py-5 font-semibold text-[#213F5C] text-[13px]">Nama Karyawan</th>
+    <th class="px-6 py-5 font-semibold text-[#213F5C] text-[13px]">Nama Pegawai</th>
     <th class="px-6 py-5 font-semibold text-[#213F5C] text-[13px]">Pendapatan</th>
     <th class="px-6 py-5 font-semibold text-[#213F5C] text-[13px]">Penalti</th>
     <th class="px-6 py-5 font-semibold text-[#213F5C] text-[13px]">Tabungan</th>
